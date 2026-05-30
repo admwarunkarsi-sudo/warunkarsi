@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Warunk Arsi - VVIP Member Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        #flash-sale-container::-webkit-scrollbar { display: none; }
+        #flash-sale-container { -ms-overflow-style: none; scrollbar-width: none; }
+        .modal-animate-in { animation: modalFadeIn 0.3s ease-out; }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .slide-up { animation: slideUp 0.3s ease-out forwards; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans relative">
+
+    <div class="bg-amber-400 text-amber-950 font-bold py-1.5 text-xs overflow-hidden shadow-sm sticky top-0 z-[60]">
+        <marquee scrollamount="5" id="running-text">Memuat pengumuman terbaru Warunk Arsi...</marquee>
+    </div>
+
+    <header class="bg-emerald-700 text-white shadow-md sticky top-[30px] z-[60]">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <img id="app-logo" src="https://img.icons8.com/color/96/store-front.png" class="w-8 h-8 object-contain rounded-full bg-white p-0.5" alt="Logo">
+                <span class="font-bold text-lg tracking-wide">WARUNK ARSI MEMBER</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 pb-32">
+        
+        <div id="member-login" class="max-w-md mx-auto bg-white rounded-3xl shadow-sm border p-8 mt-10 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-id-card-clip"></i>
+                </div>
+                <h2 class="text-xl font-bold">Cek Poin Member Warunk Arsi</h2>
+                <p class="text-sm text-gray-500">Masukkan nomor WhatsApp terdaftar Anda</p>
+            </div>
+            <div class="space-y-3">
+                <input type="text" id="member-wa-input" placeholder="Contoh: 08123456789" class="w-full border rounded-2xl px-4 py-3 text-center text-lg focus:outline-emerald-600">
+                <button onclick="checkMemberStatus()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-2xl transition">Masuk ke Dashboard</button>
+            </div>
+            <div class="border-t pt-4 text-center">
+                <p class="text-xs text-gray-400 mb-2">Belum jadi VVIP Member?</p>
+                <button onclick="toggleRegisterForm(true)" class="text-sm text-emerald-600 font-bold hover:underline">Daftar Member Baru Di Sini</button>
+            </div>
+        </div>
+
+        <div id="member-register" class="max-w-md mx-auto bg-white rounded-3xl shadow-sm border p-8 mt-10 space-y-4 hidden">
+            <h3 class="text-lg font-bold text-center">Pendaftaran Member VVIP</h3>
+            <div class="space-y-3 text-sm">
+                <div>
+                    <label class="block text-gray-600 mb-1">Nama Lengkap</label>
+                    <input type="text" id="reg-name" class="w-full border rounded-xl px-3 py-2.5 focus:outline-emerald-600">
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">No. WhatsApp</label>
+                    <input type="text" id="reg-wa" placeholder="08xxxx" class="w-full border rounded-xl px-3 py-2.5 focus:outline-emerald-600">
+                </div>
+                <button onclick="registerNewMember()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition">Simpan & Daftar</button>
+                <button onclick="toggleRegisterForm(false)" class="w-full text-gray-500 text-xs py-1 text-center block hover:underline">Kembali</button>
+            </div>
+        </div>
+
+        <div id="member-dashboard" class="hidden">
+            
+            <div class="sticky top-[80px] z-50 bg-gray-50 pt-4 pb-4 border-b border-gray-100 shadow-sm -mx-4 px-4 sm:mx-0 sm:px-0 sm:rounded-b-3xl sm:border-x sm:shadow-md mb-6">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="bg-gradient-to-br from-emerald-600 to-teal-800 text-white p-5 rounded-3xl shadow-md space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-[10px] text-emerald-200 uppercase tracking-widest font-bold">VVIP Membership</p>
+                                    <h3 id="dash-name" class="text-lg font-bold mt-1">-</h3>
+                                </div>
+                                <span class="bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 text-[10px] px-2.5 py-1 rounded-full font-bold">Warunk Arsi</span>
+                            </div>
+                            <div class="pt-2 flex justify-between items-end">
+                                <div>
+                                    <p class="text-[9px] text-emerald-200 uppercase">Total Poin Loyalitas</p>
+                                    <p class="text-3xl font-black text-amber-300" id="dash-poin">0 <span class="text-xs font-normal text-white">Poin</span></p>
+                                </div>
+                                <p class="text-xs font-mono tracking-wider text-emerald-200 text-[10px]" id="dash-id">ID: -</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button onclick="openRewardModal()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold py-3 rounded-2xl transition flex items-center justify-center gap-2 text-sm shadow-sm border border-amber-400">
+                                <i class="fa-solid fa-gift"></i> Tukar Poin
+                            </button>
+                            <button onclick="location.reload()" class="w-28 text-center text-xs text-red-500 font-bold border border-red-200 py-3 rounded-2xl hover:bg-red-50 transition">Keluar</button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 flex items-end">
+                        <div class="relative w-full shadow-sm rounded-full bg-white border border-gray-200">
+                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-magnifying-glass text-gray-400 text-lg"></i>
+                            </div>
+                            <input type="text" id="search-menu-input" oninput="filterMenu()" placeholder="Cari menu favorit Kakak..." class="bg-transparent text-gray-800 text-sm md:text-base rounded-full focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-14 py-3.5 outline-none transition-shadow">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="max-w-7xl mx-auto space-y-10 lg:pl-0">
+                
+                <div id="flash-sale-section" class="space-y-4 hidden relative">
+                    <div class="flex justify-between items-center px-1">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-red-500 text-xl"></i> 🔥 FLASH SALE (Terbatas!)
+                        </h3>
+                        <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100 shadow-sm">
+                            <i class="fa-solid fa-arrow-right text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="flex overflow-x-auto gap-4 pb-4 -mb-4 px-1" id="flash-sale-container"></div>
+                </div>
+
+                <div class="space-y-4 px-1">
+                    <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-utensils text-emerald-600"></i> Pilih Menu Order Mandiri
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6" id="member-menu-container">
+                        <p class="text-gray-400 text-sm col-span-2 sm:col-span-3 md:col-span-4 lg:col-span-5 text-center py-4">Memuat menu utama...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="sticky-order-bar" class="fixed bottom-0 left-0 right-0 z-[70] px-3 pb-3 pt-2 bg-gradient-to-t from-white/95 to-white/0 hidden pointer-events-none">
+        <div class="max-w-md mx-auto flex items-center justify-between bg-emerald-800 text-white p-4 rounded-3xl shadow-xl slide-up border border-emerald-700 pointer-events-auto">
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <i class="fa-solid fa-basket-shopping text-2xl"></i>
+                    <span id="bottom-bar-qty-badge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-emerald-800">0</span>
+                </div>
+                <div>
+                    <p class="font-bold text-sm tracking-tight">Kirim Order ke Kasir</p>
+                    <p id="bottom-bar-total" class="text-xs text-emerald-200 font-medium">Rp 0</p>
+                </div>
+            </div>
+            <button onclick="submitOrderToCloud()" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-black px-6 py-2.5 rounded-xl text-sm transition shadow-md">
+                KIRIM <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="reward-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-xl border modal-animate-in overflow-hidden">
+            <div class="bg-amber-500 p-5 flex justify-between items-center">
+                <h4 class="font-bold text-base text-amber-950 flex items-center gap-2">
+                    <i class="fa-solid fa-gift"></i> Katalog Reward Poin
+                </h4>
+                <button onclick="closeRewardModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-amber-600/30 text-amber-950 text-xl font-bold hover:bg-amber-600/50">×</button>
+            </div>
+            
+            <div class="p-5 space-y-3 text-sm max-h-[60vh] overflow-y-auto" id="reward-modal-content">
+                <p class="text-gray-400 text-center py-2">Memuat katalog hadiah...</p>
+            </div>
+
+            <div class="p-4 bg-gray-50 border-t text-center">
+                <p class="text-xs text-gray-500">Poin Kakak akan dipotong otomatis jika penukaran hadiah berhasil.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://tcaizfemtfmfeuutgbct.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_3SBNDNn6tk9Ssl6dZOxi6Q_e2ZFFH14"; 
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let memberCart = [];
+        let activeMember = null;
+        let cloudMenu = [];
+
+        async function streamTokoSettings() {
+            const { data } = await _supabase.from('toko_settings').select('*').eq('id', 1).single();
+            if(data) {
+                document.getElementById('running-text').innerText = data.pengumuman;
+                document.getElementById('app-logo').src = data.logo_url;
+            }
+        }
+
+        function toggleRegisterForm(show) {
+            document.getElementById('member-login').classList.toggle('hidden', show);
+            document.getElementById('member-register').classList.toggle('hidden', !show);
+        }
+
+        function openRewardModal() {
+            if(!activeMember) { alert('Silakan login terlebih dahulu, Kak!'); return; }
+            document.getElementById('reward-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; 
+            renderMenuUI(true); 
+        }
+
+        function closeRewardModal() {
+            document.getElementById('reward-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        async function checkMemberStatus() {
+            const wa = document.getElementById('member-wa-input').value.trim();
+            if(!wa) { alert('Mohon isi nomor WhatsApp Anda!'); return; }
+            const { data, error } = await _supabase.from('members').select('*').eq('wa', wa).single();
+            if(error || !data) { alert('Nomor WhatsApp tidak terdaftar!'); return; }
+            
+            updateMemberUI(data);
+            await syncMenuFromCloud();
+        }
+
+        function updateMemberUI(memberData) {
+            activeMember = memberData;
+            document.getElementById('member-login').classList.add('hidden');
+            document.getElementById('member-dashboard').classList.remove('hidden');
+            document.getElementById('dash-name').innerText = activeMember.nama;
+            document.getElementById('dash-poin').innerHTML = `${activeMember.poin} <span class="text-xs font-normal text-white">Poin</span>`;
+            document.getElementById('dash-id').innerText = `ID: ${activeMember.id}`;
+        }
+
+        async function syncMenuFromCloud() {
+            const { data } = await _supabase.from('menu').select('*').order('id', { ascending: true });
+            if(data) { 
+                cloudMenu = data; 
+                renderMenuUI(); 
+                renderCart(); 
+            }
+        }
+
+        function filterMenu() {
+            renderMenuUI();
+        }
+
+        function getActionBtnHtml(item, hargaFinal, isFlash) {
+            const exist = memberCart.find(c => c.id === item.id);
+            const baseClass = isFlash ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700';
+
+            if(exist && exist.qty > 0) {
+                return `
+                    <div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded-full p-1 shadow-inner relative z-10">
+                        <button onclick="decrementQty('${item.id}')" class="bg-white text-emerald-700 font-bold w-6 h-6 sm:w-7 sm:h-7 rounded-full shadow flex items-center justify-center">-</button>
+                        <span class="font-bold text-emerald-900 text-sm w-3 sm:w-4 text-center">${exist.qty}</span>
+                        <button onclick="addToCart('${item.id}', ${hargaFinal})" class="bg-emerald-600 text-white font-bold w-6 h-6 sm:w-7 sm:h-7 rounded-full shadow flex items-center justify-center">+</button>
+                    </div>
+                `;
+            } else {
+                return `<button onclick="addToCart('${item.id}', ${hargaFinal})" class="${baseClass} text-white font-bold text-lg w-8 h-8 sm:w-9 sm:h-9 rounded-full shadow-lg flex items-center justify-center transition hover:scale-105 pb-0.5 relative z-10">+</button>`;
+            }
+        }
+
+        function renderMenuUI(onlyReward = false) {
+            // FILTER UTK KATALOG REWARD: Hanya tampilkan jika butuh_poin > 0 DAN is_tersedia bernilai TRUE
+            const rewardMenus = cloudMenu.filter(item => item.butuh_poin > 0 && item.is_tersedia === true);
+            const rewardModalContent = document.getElementById('reward-modal-content');
+            
+            if (rewardMenus.length === 0) {
+                rewardModalContent.innerHTML = '<p class="text-gray-400 text-center py-6 text-sm">Belum ada reward poin tersedia, Kak.</p>';
+            } else {
+                rewardModalContent.innerHTML = rewardMenus.map(item => {
+                    const poinButuh = item.butuh_poin; 
+                    return `
+                        <div class="p-3.5 border rounded-2xl flex justify-between items-center bg-amber-50/50 border-amber-200">
+                            <div>
+                                <p class="font-bold text-gray-800 text-sm">${item.nama}</p>
+                                <p class="text-xs text-amber-600 font-bold mt-0.5">Butuh: ${poinButuh} Poin</p>
+                            </div>
+                            <button onclick="claimRewardMenu('${item.nama}', ${poinButuh})" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm">Tukar</button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            if(onlyReward) return; 
+
+            const searchInput = document.getElementById('search-menu-input');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+            // FILTER UTAMA: Hanya ambil menu yang is_tersedia === true (Stok Ready)
+            const availableMenu = cloudMenu.filter(item => item.is_tersedia === true);
+
+            // FILTER KEDUA: Jalankan pencarian kata kunci pada menu yang tersedia
+            const filteredMenu = availableMenu.filter(item => 
+                item.nama.toLowerCase().includes(searchTerm) || 
+                item.kategori.toLowerCase().includes(searchTerm)
+            );
+
+            const flashSaleItems = filteredMenu.filter(item => item.harga_flash_sale > 0 && item.is_flash_sale === 1);
+            const normalMenuItems = filteredMenu.filter(item => item.is_flash_sale !== 1);
+
+            const fsSection = document.getElementById('flash-sale-section');
+            const fsContainer = document.getElementById('flash-sale-container');
+            
+            if (flashSaleItems.length === 0) {
+                fsSection.classList.add('hidden');
+            } else {
+                fsSection.classList.remove('hidden');
+                fsContainer.innerHTML = flashSaleItems.map(item => {
+                    const imgFix = item.gambar_url || "https://img.icons8.com/illustrations/kolor/96/fast-food.png";
+                    const hargaFinal = item.harga_flash_sale;
+                    return `
+                        <div class="bg-white rounded-3xl border border-red-100 shadow-sm overflow-hidden flex flex-row w-[320px] flex-shrink-0" id="item-fs-${item.id}">
+                            <div class="relative w-2/5">
+                                <img src="${imgFix}" class="w-full h-full object-cover" alt="${item.nama}">
+                                <span class="absolute top-2 left-2 text-[9px] bg-red-600 text-white font-black px-2 py-1 rounded-full shadow-sm">FLASH SALE</span>
+                            </div>
+                            <div class="p-3 w-3/5 flex flex-col justify-between bg-red-50/10">
+                                <div class="relative z-0">
+                                    <h4 class="font-bold text-sm text-gray-800 leading-snug line-clamp-2">${item.nama}</h4>
+                                    <span class="text-[10px] text-gray-400 font-medium mt-1 block">${item.kategori}</span>
+                                </div>
+                                <div class="flex justify-between items-end mt-2">
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] line-through text-gray-400">Rp ${item.harga_normal.toLocaleString('id-ID')}</span>
+                                        <span class="text-red-600 font-black text-sm">Rp ${hargaFinal.toLocaleString('id-ID')}</span>
+                                    </div>
+                                    <div id="action-fs-${item.id}">
+                                        ${getActionBtnHtml(item, hargaFinal, true)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const normalMenuContainer = document.getElementById('member-menu-container');
+            if (normalMenuItems.length === 0 && flashSaleItems.length === 0) {
+                normalMenuContainer.innerHTML = `<p class="text-gray-400 text-sm col-span-2 sm:col-span-3 md:col-span-4 lg:col-span-5 text-center py-10">Maaf Kak, menu tidak ditemukan atau sedang habis.</p>`;
+            } else {
+                normalMenuContainer.innerHTML = normalMenuItems.map(item => {
+                    const imgFix = item.gambar_url || "https://img.icons8.com/illustrations/kolor/96/fast-food.png";
+                    const hargaFinal = item.harga_normal;
+                    return `
+                        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col relative" id="item-norm-${item.id}">
+                            <div class="relative w-full aspect-square bg-gray-50 z-0">
+                                <img src="${imgFix}" class="w-full h-full object-cover" alt="${item.nama}">
+                            </div>
+                            <div class="p-3.5 sm:p-4 flex flex-col flex-1 justify-between relative z-0">
+                                <div>
+                                    <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold tracking-wider block mb-1">${item.kategori}</span>
+                                    <h4 class="font-bold text-xs sm:text-sm text-gray-800 leading-snug line-clamp-2">${item.nama}</h4>
+                                </div>
+                                <div class="flex justify-between items-end mt-4">
+                                    <span class="text-gray-900 font-black text-sm sm:text-base">Rp ${hargaFinal.toLocaleString('id-ID')}</span>
+                                    <div id="action-norm-${item.id}" class="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10">
+                                        ${getActionBtnHtml(item, hargaFinal, false)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function addToCart(id, hargaFix) {
+            const menu = cloudMenu.find(m => m.id === id);
+            const exist = memberCart.find(c => c.id === id);
+            if(exist) { 
+                exist.qty++; 
+            } else { 
+                memberCart.push({ id: menu.id, nama: menu.nama, harga: hargaFix, qty: 1, isFlash: (menu.harga_flash_sale > 0 && menu.is_flash_sale === 1) }); 
+            }
+            renderCart();
+            updateMenuButtonHtml(menu); 
+        }
+
+        function decrementQty(id) {
+            const existIndex = memberCart.findIndex(c => c.id === id);
+            if(existIndex !== -1) {
+                memberCart[existIndex].qty--;
+                const menu = cloudMenu.find(m => m.id === id);
+                
+                if(memberCart[existIndex].qty <= 0) {
+                    memberCart.splice(existIndex, 1); 
+                }
+                renderCart();
+                updateMenuButtonHtml(menu); 
+            }
+        }
+
+        function updateMenuButtonHtml(menu) {
+            const hargaFinal = (menu.harga_flash_sale > 0 && menu.is_flash_sale === 1) ? menu.harga_flash_sale : menu.harga_normal;
+            
+            const actionFsContainer = document.getElementById(`action-fs-${menu.id}`);
+            if(actionFsContainer) actionFsContainer.innerHTML = getActionBtnHtml(menu, hargaFinal, true);
+
+            const actionNormContainer = document.getElementById(`action-norm-${menu.id}`);
+            if(actionNormContainer) actionNormContainer.innerHTML = getActionBtnHtml(menu, hargaFinal, false);
+        }
+
+        function renderCart() {
+            const totalItems = memberCart.reduce((acc, c) => acc + c.qty, 0);
+            const totalPrice = memberCart.reduce((acc, c) => acc + (c.harga * c.qty), 0);
+            
+            const stickyBar = document.getElementById('sticky-order-bar');
+            const qtyBadge = document.getElementById('bottom-bar-qty-badge');
+            const totalLabel = document.getElementById('bottom-bar-total');
+
+            if(totalItems > 0) {
+                qtyBadge.innerText = totalItems;
+                totalLabel.innerText = `Rp ${totalPrice.toLocaleString('id-ID')}`;
+                
+                if(stickyBar.classList.contains('hidden')) {
+                    stickyBar.classList.remove('hidden'); 
+                }
+            } else {
+                stickyBar.classList.add('hidden');
+            }
+        }
+
+        async function claimRewardMenu(menuNama, biayaPoin) {
+            if (activeMember.poin < biayaPoin) {
+                alert(`Maaf, poin Kakak tidak mencukupi! Anda memerlukan ${biayaPoin} poin, sementara poin Anda saat ini hanya ${activeMember.poin} poin.`);
+                return;
+            }
+
+            if (!confirm(`Yakin ingin menukarkan ${biayaPoin} poin dengan 1 ${menuNama}?`)) return;
+
+            closeRewardModal();
+
+            const poinBaru = activeMember.poin - biayaPoin;
+            const { error: errPoin } = await _supabase.from('members').update({ poin: poinBaru }).eq('id', activeMember.id);
+            
+            if(errPoin) { alert('Gagal memproses penukaran poin.'); return; }
+
+            const orderId = 'REWARD-' + Math.floor(1000 + Math.random() * 9000);
+            const rewardItem = [{ id: 'REWARD', nama: `${menuNama} (Free Poin)`, harga: 0, qty: 1 }];
+
+            await _supabase.from('orders').insert([{
+                order_id: orderId,
+                member_id: activeMember.id,
+                member_name: activeMember.nama,
+                member_wa: activeMember.wa,
+                detail_items: rewardItem,
+                total_harga: 0,
+                status: 'Antrean'
+            }]);
+
+            alert(`Sukses! ${biayaPoin} Poin berhasil dipotong. Menu reward gratisan Kakak sudah dikirim ke antrean Kasir!`);
+            
+            activeMember.poin = poinBaru;
+            document.getElementById('dash-poin').innerHTML = `${poinBaru} <span class="text-xs font-normal text-white">Poin</span>`;
+        }
+
+        async function submitOrderToCloud() {
+            if(!activeMember) return;
+            if(memberCart.length === 0) { alert('Keranjang belanja Kakak masih kosong!'); return; }
+            const total = memberCart.reduce((acc, c) => acc + (c.harga * c.qty), 0);
+            const orderId = 'TX-' + Math.floor(1000 + Math.random() * 9000);
+
+            await _supabase.from('orders').insert([{
+                order_id: orderId,
+                member_id: activeMember.id,
+                member_name: activeMember.nama,
+                member_wa: activeMember.wa,
+                detail_items: memberCart,
+                total_harga: total,
+                status: 'Antrean'
+            }]);
+
+            alert('Siap, Kak! Pesanan sukses dikirim ke Kasir Warunk Arsi! Silakan lakukan pembayaran di kasir ya.');
+            memberCart = [];
+            renderCart();
+            renderMenuUI(); 
+        }
+
+        async function registerNewMember() {
+            const name = document.getElementById('reg-name').value.trim();
+            const wa = document.getElementById('reg-wa').value.trim();
+            if(!name || !wa) { alert('Mohon lengkapi Nama & No. WA Anda!'); return; }
+            const nextId = 'WA' + Math.floor(100 + Math.random() * 900);
+            await _supabase.from('members').insert([{ id: nextId, nama: name, wa: wa, poin: 0 }]);
+            alert('Pendaftaran Sukses! Silakan Login.');
+            toggleRegisterForm(false);
+            document.getElementById('member-wa-input').value = wa;
+        }
+
+        window.onload = () => { 
+            streamTokoSettings(); 
+            setInterval(() => {
+                streamTokoSettings();
+                if(activeMember) {
+                    _supabase.from('members').select('poin').eq('id', activeMember.id).single().then(({data}) => {
+                        if(data) {
+                            activeMember.poin = data.poin;
+                            document.getElementById('dash-poin').innerHTML = `${data.poin} <span class="text-xs font-normal text-white">Poin</span>`;
+                        }
+                    });
+                }
+            }, 15000); 
+        };
+    </script>
+</body>
+</html>
