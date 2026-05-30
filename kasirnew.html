@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warunk Arsi - Pusat Kendali POS Kasir</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-4 font-sans">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-center bg-emerald-700 text-white p-4 rounded-2xl shadow gap-4">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-cash-register text-2xl text-amber-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold font-mono tracking-wide">WARUNK ARSI PUSAT KENDALI</h1>
+                    <p class="text-xs text-emerald-200">Sistem Kasir & Sinkronisasi Member Cloud</p>
+                </div>
+            </div>
+            <div class="flex space-x-2 text-xs">
+                <button onclick="switchTab('antrean')" id="tab-antrean" class="bg-amber-500 text-white font-bold px-4 py-2 rounded-xl shadow">Antrean & Member</button>
+                <button onclick="switchTab('manajemen')" id="tab-manajemen" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-4 py-2 rounded-xl">Kelola Menu & Pengumuman</button>
+            </div>
+        </div>
+
+        <div id="panel-antrean" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-3">
+                <h2 class="font-bold text-gray-700 flex items-center gap-2 text-sm uppercase"><i class="fa-solid fa-clock text-amber-500 animate-pulse"></i> Pesanan Masuk Real-Time (Klik Baris Untuk Detail)</h2>
+                <div id="kasir-orders-list" class="space-y-3"></div>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border text-xs h-[500px] flex flex-col">
+                <h3 class="font-bold text-gray-700 border-b pb-2 mb-3 uppercase flex justify-between"><span>Poin Member VVIP</span> <button onclick="loadData()" class="text-emerald-600 hover:underline">Refresh</button></h3>
+                <div id="kasir-members-list" class="space-y-2 flex-1 overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <div id="panel-manajemen" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="space-y-4">
+                <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-4 text-sm">
+                    <h3 class="font-bold text-gray-700 border-b pb-2 uppercase"><i class="fa-solid fa-gears mr-1 text-emerald-600"></i> Atur Tampilan Aplikasi</h3>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">URL Link Logo Toko</label>
+                        <input type="text" id="cfg-logo" class="w-full border rounded-xl px-3 py-2 text-xs focus:outline-emerald-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Teks Pengumuman Running Text</label>
+                        <textarea id="cfg-pengumuman" rows="3" class="w-full border rounded-xl px-3 py-2 text-xs focus:outline-emerald-600"></textarea>
+                    </div>
+                    <button onclick="saveTokoSettings()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition">Update Tampilan Member</button>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-3 text-sm">
+                    <h3 class="font-bold text-gray-700 border-b pb-2 uppercase"><i class="fa-solid fa-plus-circle mr-1 text-emerald-600"></i> Tambah Menu Baru</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="new-id" placeholder="ID (cth: MN006)" class="border rounded-xl px-3 py-2 text-xs focus:outline-emerald-600">
+                        <input type="text" id="new-nama" placeholder="Nama Menu" class="border rounded-xl px-3 py-2 text-xs focus:outline-emerald-600">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="new-kategori" placeholder="Kategori (Sarapan/Cemilan)" class="border rounded-xl px-3 py-2 text-xs focus:outline-emerald-600">
+                        <input type="number" id="new-harga" placeholder="Harga Normal" class="border rounded-xl px-3 py-2 text-xs focus:outline-emerald-600">
+                    </div>
+                    <div>
+                        <select id="new-tersedia" class="w-full border rounded-xl px-3 py-2 text-xs focus:outline-emerald-600 bg-white">
+                            <option value="true">Stok Menu: Ready (Tampilkan)</option>
+                            <option value="false">Stok Menu: Habis (Sembunyikan)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="text" id="new-gambar" placeholder="URL Gambar Produk (Link Foto)" class="w-full border rounded-xl px-3 py-2 text-xs focus:outline-emerald-600">
+                    </div>
+                    <button onclick="addNewMenu()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs transition">Tambah ke Database</button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white p-5 rounded-2xl border shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-2 gap-2">
+                    <h3 class="font-bold text-gray-700 uppercase flex items-center"><i class="fa-solid fa-utensils mr-1 text-emerald-600"></i> Master Menu & Kontrol Terintegrasi</h3>
+                    
+                    <div class="relative w-full sm:w-64">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </span>
+                        <input type="text" id="search-menu-input" oninput="filterMenuTable()" placeholder="Cari ID, nama, atau kategori..." class="w-full border rounded-xl pl-8 pr-3 py-1.5 text-xs focus:outline-emerald-600 bg-gray-50">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100 text-gray-500 uppercase">
+                                <th class="p-3">Info Menu & Foto (Link)</th>
+                                <th class="p-3">Harga Normal</th>
+                                <th class="p-3">Harga Flash Sale</th>
+                                <th class="p-3 text-center">Status Flash Sale</th>
+                                <th class="p-3 text-center">Stok / Ketersediaan</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kasir-menu-table" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-detail-pesanan" class="fixed inset-0 bg-black/50 z-50 hidden justify-center items-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div id="modal-header-bg" class="bg-emerald-700 text-white p-4 flex justify-between items-center">
+                <div>
+                    <span id="modal-order-id" class="bg-white/20 text-white font-mono font-bold text-xs px-2 py-0.5 rounded">ID: -</span>
+                    <h3 id="modal-member-name" class="font-bold text-base mt-1">-</h3>
+                </div>
+                <button onclick="closeOrderModal()" class="text-white/80 hover:text-white text-lg cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 flex-1 overflow-y-auto space-y-4 text-xs">
+                <button id="modal-btn-whatsapp" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 shadow transition cursor-pointer">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> Hubungi via WhatsApp
+                </button>
+                
+                <div class="border-b pb-3">
+                    <p class="text-gray-400 font-bold uppercase tracking-wider text-[10px]">Daftar Menu Diorder</p>
+                    <div id="modal-items-list" class="mt-2 divide-y divide-gray-100"></div>
+                </div>
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <span class="font-bold text-gray-600">Total Pembayaran Kasir</span>
+                    <span id="modal-total-price" class="text-emerald-600 font-black text-sm">Rp 0</span>
+                </div>
+            </div>
+            <div class="bg-gray-50 p-4 border-t flex justify-end gap-2">
+                <button onclick="closeOrderModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer">Batal</button>
+                <button id="modal-btn-action" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm cursor-pointer">Selesai & Beri Poin</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://tcaizfemtfmfeuutgbct.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_3SBNDNn6tk9Ssl6dZOxi6Q_e2ZFFH14";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentOrdersCache = [];
+        let currentMenusCache = []; 
+
+        function switchTab(tab) {
+            document.getElementById('panel-antrean').classList.toggle('hidden', tab !== 'antrean');
+            document.getElementById('panel-manajemen').classList.toggle('hidden', tab !== 'manajemen');
+            document.getElementById('tab-antrean').className = tab === 'antrean' ? 'bg-amber-500 text-white font-bold px-4 py-2 rounded-xl shadow' : 'bg-emerald-800 text-white font-bold px-4 py-2 rounded-xl';
+            document.getElementById('tab-manajemen').className = tab === 'manajemen' ? 'bg-amber-500 text-white font-bold px-4 py-2 rounded-xl shadow' : 'bg-emerald-800 text-white font-bold px-4 py-2 rounded-xl';
+        }
+
+        async function loadTokoSettings() {
+            const { data } = await _supabase.from('toko_settings').select('*').eq('id', 1).single();
+            if(data) {
+                document.getElementById('cfg-logo').value = data.logo_url;
+                document.getElementById('cfg-pengumuman').value = data.pengumuman;
+            }
+        }
+
+        async function saveTokoSettings() {
+            const logo = document.getElementById('cfg-logo').value.trim();
+            const info = document.getElementById('cfg-pengumuman').value.trim();
+            await _supabase.from('toko_settings').update({ logo_url: logo, pengumuman: info }).eq('id', 1);
+            alert('Tampilan aplikasi member berhasil diupdate secara online!');
+        }
+
+        async function addNewMenu() {
+            const id = document.getElementById('new-id').value.trim();
+            const nama = document.getElementById('new-nama').value.trim();
+            const kategori = document.getElementById('new-kategori').value.trim();
+            const harga = document.getElementById('new-harga').value;
+            const tersedia = document.getElementById('new-tersedia').value === 'true';
+            let gambar = document.getElementById('new-gambar').value.trim();
+
+            if(!id || !nama || !kategori || !harga) { alert('Harap isi ID, Nama, Kategori & Harga!'); return; }
+            if(!gambar) gambar = "https://img.icons8.com/illustrations/kolor/96/fast-food.png";
+
+            const { error } = await _supabase.from('menu').insert([{
+                id: id, 
+                nama: nama, 
+                kategori: kategori, 
+                harga_normal: parseInt(harga), 
+                harga_flash_sale: parseInt(harga), 
+                is_flash_sale: 0, 
+                is_tersedia: tersedia, // Mengisi kolom is_tersedia bawaan Supabase
+                gambar_url: gambar
+            }]);
+
+            if(error) { alert('Gagal tambah menu! Pastikan ID belum digunakan.'); return; }
+            alert('Menu baru berhasil ditambahkan!');
+            document.getElementById('new-id').value = ''; document.getElementById('new-nama').value = '';
+            document.getElementById('new-kategori').value = ''; document.getElementById('new-harga').value = '';
+            document.getElementById('new-gambar').value = '';
+            fetchMenuManagement();
+        }
+
+        async function fetchMenuManagement() {
+            const { data: menus } = await _supabase.from('menu').select('*').order('id', { ascending: true });
+            currentMenusCache = menus || [];
+            renderMenuTable(currentMenusCache);
+        }
+
+        // Fungsi Render Data Menu ke Tabel dengan Live Filter
+        function renderMenuTable(menusList) {
+            const tbody = document.getElementById('kasir-menu-table');
+            tbody.innerHTML = menusList.map(m => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-3 space-y-1">
+                        <div class="text-[10px] font-mono text-gray-400 font-bold">ID: ${m.id}</div>
+                        <input type="text" id="name-${m.id}" value="${m.nama}" class="w-full font-bold border-b focus:outline-none focus:border-emerald-600 bg-transparent text-gray-700">
+                        <div class="flex gap-1 text-[10px]">
+                            <input type="text" id="kat-${m.id}" value="${m.kategori}" class="w-1/2 text-gray-400 uppercase bg-transparent border-b focus:outline-none">
+                            <input type="text" id="img-${m.id}" value="${m.gambar_url || ''}" placeholder="Link Foto" class="w-1/2 text-blue-500 bg-transparent border-b focus:outline-none">
+                        </div>
+                    </td>
+                    <td class="p-3"><input type="number" id="price-${m.id}" value="${m.harga_normal}" class="w-20 border rounded px-1.5 py-1 text-center font-bold"></td>
+                    <td class="p-3"><input type="number" id="fs-price-${m.id}" value="${m.harga_flash_sale || 0}" class="w-20 border rounded px-1.5 py-1 text-center text-red-600 font-bold"></td>
+                    <td class="p-3 text-center">
+                        <select id="status-fs-${m.id}" class="border rounded p-1 font-semibold ${m.is_flash_sale ? 'text-red-600 bg-red-50' : 'text-gray-600'}">
+                            <option value="0" ${m.is_flash_sale === 0 ? 'selected' : ''}>Normal</option>
+                            <option value="1" ${m.is_flash_sale === 1 ? 'selected' : ''}>Flash Sale 🔥</option>
+                        </select>
+                    </td>
+                    <td class="p-3 text-center">
+                        <select id="tersedia-${m.id}" class="border rounded p-1 font-semibold text-[11px] ${m.is_tersedia ? 'text-emerald-700 bg-emerald-50' : 'text-red-600 bg-red-50'}">
+                            <option value="true" ${m.is_tersedia === true ? 'selected' : ''}>Ready ✅</option>
+                            <option value="false" ${m.is_tersedia === false ? 'selected' : ''}>Habis 🚫</option>
+                        </select>
+                    </td>
+                    <td class="p-3 text-center flex gap-1 justify-center mt-2">
+                        <button onclick="updateSingleMenu('${m.id}')" class="bg-emerald-600 text-white text-[11px] px-2.5 py-1 rounded-md font-bold hover:bg-emerald-700 cursor-pointer">Simpan</button>
+                        <button onclick="deleteMenu('${m.id}')" class="bg-red-100 text-red-600 text-[11px] px-1.5 py-1 rounded-md font-bold hover:bg-red-200 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Logika Real-Time Search Bar
+        function filterMenuTable() {
+            const keyword = document.getElementById('search-menu-input').value.toLowerCase().trim();
+            if(!keyword) {
+                renderMenuTable(currentMenusCache);
+                return;
+            }
+            const filtered = currentMenusCache.filter(m => 
+                m.id.toLowerCase().includes(keyword) || 
+                m.nama.toLowerCase().includes(keyword) || 
+                m.kategori.toLowerCase().includes(keyword)
+            );
+            renderMenuTable(filtered);
+        }
+
+        async function updateSingleMenu(id) {
+            const namaUbah = document.getElementById(`name-${id}`).value.trim();
+            const katUbah = document.getElementById(`kat-${id}`).value.trim();
+            const imgUbah = document.getElementById(`img-${id}`).value.trim();
+            const hgNormal = document.getElementById(`price-${id}`).value;
+            const hgFlash = document.getElementById(`fs-price-${id}`).value;
+            const statusFs = document.getElementById(`status-fs-${id}`).value;
+            const statusTersedia = document.getElementById(`tersedia-${id}`).value === 'true'; // Membaca nilai True/False
+
+            await _supabase.from('menu').update({
+                nama: namaUbah, 
+                kategori: katUbah, 
+                gambar_url: imgUbah, 
+                harga_normal: parseInt(hgNormal), 
+                harga_flash_sale: parseInt(hgFlash), 
+                is_flash_sale: parseInt(statusFs),
+                is_tersedia: statusTersedia // Update langsung ke kolom is_tersedia Supabase
+            }).eq('id', id);
+
+            alert('Menu berhasil diupdate!');
+            fetchMenuManagement();
+        }
+
+        async function deleteMenu(id) {
+            if(!confirm('Yakin ingin menghapus menu ini?')) return;
+            await _supabase.from('menu').delete().eq('id', id);
+            fetchMenuManagement();
+        }
+
+        // ================= LOGIKA RENDER DAN KLIK BARIS KASIR =================
+        async function fetchOrders() {
+            const { data: orders } = await _supabase.from('orders').select('*').eq('status', 'Antrean').order('created_at', { ascending: true });
+            const container = document.getElementById('kasir-orders-list');
+            
+            if(!orders || orders.length === 0) {
+                currentOrdersCache = [];
+                container.innerHTML = '<p class="text-gray-400 bg-white p-6 rounded-2xl border text-center">Belum ada orderan mandiri masuk.</p>';
+                return;
+            }
+            
+            currentOrdersCache = orders; 
+
+            container.innerHTML = orders.map(order => {
+                const isReward = order.total_harga === 0 || order.order_id.startsWith('REWARD');
+                const borderClass = isReward ? 'border-amber-500 bg-amber-50/40 hover:bg-amber-100/40' : 'border-emerald-600 hover:bg-emerald-50/50';
+                
+                return `
+                    <div onclick="openOrderModal('${order.order_id}')" class="bg-white border-l-4 ${borderClass} p-4 rounded-xl shadow-sm flex justify-between items-center cursor-pointer transition">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="${isReward ? 'bg-amber-500 text-white' : 'bg-emerald-100 text-emerald-800'} font-mono font-bold text-xs px-2 py-0.5 rounded">
+                                    ${order.order_id}
+                                </span>
+                                <span class="font-bold text-sm text-gray-800">${order.member_name}</span>
+                                ${isReward ? '<span class="text-[10px] font-bold text-amber-600 uppercase flex items-center gap-1"><i class="fa-solid fa-gift"></i> Reward</span>' : ''}
+                            </div>
+                            <p class="text-[11px] text-gray-400 mt-1"><i class="fa-solid fa-folder-open mr-1"></i> Klik untuk memeriksa item orderan</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs font-black ${isReward ? 'text-amber-600' : 'text-emerald-700'}">
+                                ${isReward ? 'FREE REWARD' : `Rp ${order.total_harga.toLocaleString('id-ID')}`}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openOrderModal(orderIdText) {
+            const order = currentOrdersCache.find(o => o.order_id === orderIdText);
+            if(!order) {
+                console.error("Data orderan tidak ditemukan di cache untuk ID:", orderIdText);
+                return;
+            }
+
+            const isReward = order.total_harga === 0 || order.order_id.startsWith('REWARD');
+            
+            const headerBg = document.getElementById('modal-header-bg');
+            if(isReward) {
+                headerBg.className = "bg-amber-500 text-white p-4 flex justify-between items-center";
+            } else {
+                headerBg.className = "bg-emerald-700 text-white p-4 flex justify-between items-center";
+            }
+
+            document.getElementById('modal-order-id').innerText = order.order_id;
+            document.getElementById('modal-member-name').innerHTML = `${order.member_name} <span class="text-xs font-normal opacity-80">(${order.member_wa})</span>`;
+            
+            const itemsListContainer = document.getElementById('modal-items-list');
+            itemsListContainer.innerHTML = order.detail_items.map(item => `
+                <div class="flex justify-between items-center py-2">
+                    <div>
+                        <p class="font-bold text-gray-800">${item.nama}</p>
+                        <p class="text-[10px] text-gray-400">Harga Satuan: Rp ${(item.harga || 0).toLocaleString('id-ID')}</p>
+                    </div>
+                    <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded font-bold text-[11px]">x${item.qty} Pcs</span>
+                </div>
+            `).join('');
+
+            document.getElementById('modal-total-price').innerText = isReward ? 'Rp 0 (Potong Poin)' : `Rp ${order.total_harga.toLocaleString('id-ID')}`;
+
+            const waBtn = document.getElementById('modal-btn-whatsapp');
+            waBtn.onclick = async () => {
+                let cleanWa = order.member_wa.replace(/[^0-9]/g, '');
+                if (cleanWa.startsWith('0')) {
+                    cleanWa = '62' + cleanWa.slice(1);
+                }
+
+                let memberPoints = 0;
+                const { data: memberData } = await _supabase.from('members').select('poin').eq('id', order.member_id).single();
+                if (memberData) {
+                    memberPoints = memberData.poin;
+                }
+
+                const menuListText = order.detail_items.map(item => `- ${item.nama} (x${item.qty})`).join('\n');
+                const infoTotalHarga = isReward ? 'FREE (Klaim Reward Poin)' : `Rp ${order.total_harga.toLocaleString('id-ID')}`;
+
+                const waMessage = `Halo kak *${order.member_name}*,\n\nKami dari *Warunk Arsi* ingin mengonfirmasi pesanan kakak dengan rincian berikut:\n\n*ID Pesanan:* ${order.order_id}\n*Rincian Menu:*\n${menuListText}\n\n*Total Nota:* ${infoTotalHarga}\n*Poin Anda Saat Ini:* ${memberPoints} Poin\n\n*Metode Pembayaran:*\nSilakan pilih metode pembayaran saat mengambil pesanan:\n1. 💵 *Cash saat ambil*\n2. 📱 *QRIS*\n\nMohon kabari kami jika rincian di atas sudah sesuai ya kak. Terima kasih! 🙏✨`;
+
+                window.open(`https://api.whatsapp.com/send?phone=${cleanWa}&text=${encodeURIComponent(waMessage)}`, '_blank');
+            };
+
+            const actionBtn = document.getElementById('modal-btn-action');
+            actionBtn.className = isReward ? 'bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm cursor-pointer' : 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm cursor-pointer';
+            actionBtn.innerText = isReward ? 'Selesai & Berikan' : 'Selesai & Beri Poin';
+            
+            actionBtn.onclick = async () => {
+                await selesaikanOrder(order.id, order.member_id, order.total_harga, isReward);
+                closeOrderModal();
+            };
+
+            const modal = document.getElementById('modal-detail-pesanan');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeOrderModal() {
+            const modal = document.getElementById('modal-detail-pesanan');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        async function fetchMembers() {
+            const { data: members } = await _supabase.from('members').select('*').order('poin', { ascending: false });
+            document.getElementById('kasir-members-list').innerHTML = (members || []).map(m => `
+                <div class="p-2 bg-gray-50 rounded border flex justify-between items-center">
+                    <div><p class="font-bold text-gray-700">${m.nama}</p><p class="text-[10px] text-gray-400">${m.wa}</p></div>
+                    <span class="bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">${m.poin} Poin</span>
+                </div>
+            `).join('');
+        }
+
+        async function selesaikanOrder(dbId, memberId, totalHarga, isReward) {
+            await _supabase.from('orders').update({ status: 'Selesai' }).eq('id', dbId);
+            
+            if (!isReward) {
+                const poinTambahan = Math.floor(totalHarga / 10000);
+                if (poinTambahan > 0) {
+                    const { data: m } = await _supabase.from('members').select('poin').eq('id', memberId).single();
+                    if(m) { 
+                        await _supabase.from('members').update({ poin: m.poin + poinTambahan }).eq('id', memberId); 
+                    }
+                }
+                alert('Order Berhasil! Poin belanja berhasil ditambahkan ke member.');
+            } else {
+                alert('Klaim Reward Sukses Berubah Status Jadi Selesai!');
+            }
+            
+            loadData();
+        }
+
+        function loadData() { fetchOrders(); fetchMembers(); fetchMenuManagement(); }
+        window.onload = () => { loadData(); loadTokoSettings(); setInterval(fetchOrders, 5000); };
+    </script>
+</body>
+</html>
