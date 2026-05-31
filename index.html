@@ -46,7 +46,7 @@
       
       <!-- Logo Ambil Dinamis via Supabase (ID: app-logo) -->
       <a href="#" class="flex items-center gap-2.5 flex-shrink-0 group">
-        <img id="app-logo" src="https://img.icons8.com/color/96/store-front.png" alt="Warunk Arsi Logo" class="h-10 w-10 object-cover rounded-full border border-gray-100 shadow-sm transition-transform group-hover:scale-105" />
+        <img id="app-logo" src="https://img.icons8.com/color/96/store-front.png" alt="Warunk Arsi Logo" class="h-10 w-10 object-cover rounded-full border border-gray-200 shadow-sm transition-transform group-hover:scale-105" />
         <span class="text-xl font-black text-arsi-hijau tracking-tight">warunk arsi</span>
       </a>
 
@@ -55,7 +55,7 @@
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </span>
-        <input type="text" id="desktopSearchInput" oninput="liveSearchMenu(this.value)" placeholder="Mau sarapan apa hari ini?" class="w-full bg-gray-50 border border-gray-200 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:border-arsi-hijau focus:bg-white transition-all" />
+        <input type="text" id="desktopSearchInput" oninput="liveSearchMenu(this.value, 'desktop')" placeholder="Mau sarapan apa hari ini?" class="w-full bg-gray-50 border border-gray-200 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:border-arsi-hijau focus:bg-white transition-all text-gray-800 placeholder-gray-400" />
       </div>
 
       <!-- Right Menu & Mobile Search -->
@@ -70,12 +70,12 @@
     </div>
 
     <!-- Dropdown Search Mobile -->
-    <div id="mobileSearchWrapper" class="hidden border-t border-gray-100 bg-gray-50 px-4 py-2.5 md:hidden">
+    <div id="mobileSearchWrapper" class="hidden border-t border-gray-100 bg-white px-4 py-2.5 md:hidden">
       <div class="relative">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </span>
-        <input type="text" id="mobileSearchInput" oninput="liveSearchMenu(this.value)" placeholder="Cari masakan atau jamu..." class="w-full bg-white border border-gray-200 text-xs rounded-full pl-9 pr-8 py-2 focus:outline-none focus:border-arsi-hijau transition-all" />
+        <input type="text" id="mobileSearchInput" oninput="liveSearchMenu(this.value, 'mobile')" placeholder="Mau sarapan apa hari ini?" class="w-full bg-gray-50 border border-gray-200 text-xs rounded-full pl-9 pr-8 py-2 focus:outline-none focus:border-arsi-hijau focus:bg-white transition-all text-gray-800 placeholder-gray-400" />
       </div>
     </div>
   </nav>
@@ -184,7 +184,6 @@
     </div>
     
     <div class="flex flex-col lg:grid lg:grid-cols-3 gap-4 md:gap-6">
-      <!-- Card 1 -->
       <div class="bg-[#7A22B3] text-white rounded-[1.8rem] p-5 md:p-6 flex flex-row lg:flex-col items-center lg:justify-between min-h-[140px] lg:min-h-[360px] gap-4 shadow-sm">
         <div class="w-1/3 lg:w-full aspect-[4/3] bg-purple-900/30 rounded-2xl flex items-center justify-center relative overflow-hidden p-2 flex-shrink-0">
           <div class="absolute w-16 h-16 bg-yellow-400 rounded-full opacity-20 -top-4 -left-4"></div>
@@ -199,7 +198,6 @@
         </div>
       </div>
 
-      <!-- Card 2 -->
       <div class="bg-[#009BB9] text-white rounded-[1.8rem] p-5 md:p-6 flex flex-row lg:flex-col items-center lg:justify-between min-h-[140px] lg:min-h-[360px] gap-4 shadow-sm">
         <div class="w-1/3 lg:w-full aspect-[4/3] bg-teal-900/30 rounded-2xl flex items-center justify-center relative overflow-hidden p-2 flex-shrink-0">
           <div class="absolute w-14 h-14 bg-green-400 rounded-full opacity-20 -bottom-4 -left-4"></div>
@@ -214,7 +212,6 @@
         </div>
       </div>
 
-      <!-- Card 3 -->
       <div class="bg-[#D12B88] text-white rounded-[1.8rem] p-5 md:p-6 flex flex-row lg:flex-col items-center lg:justify-between min-h-[140px] lg:min-h-[360px] gap-4 shadow-sm">
         <div class="w-1/3 lg:w-full aspect-[4/3] bg-pink-900/30 rounded-2xl flex items-center justify-center relative overflow-hidden p-2 flex-shrink-0">
           <div class="absolute w-16 h-16 bg-amber-400 rounded-full opacity-10 -top-8 -right-8"></div>
@@ -248,16 +245,16 @@
 
   <!-- FOOTER -->
   <footer class="bg-gray-50 border-t border-gray-100 py-12">
-    <div class="max-w-6xl mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm text-gray-600">
+    <!-- Grid Atas Menjadi 2 Kolom Seimbang -->
+    <div class="max-w-6xl mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-600">
       <div>
         <div class="flex items-center gap-2.5 mb-4">
-          <!-- Logo Footer Dinamis Mengikuti Bulat Supabase -->
           <img id="footer-logo" src="https://img.icons8.com/color/96/store-front.png" alt="Warunk Arsi Logo" class="h-8 w-8 object-cover rounded-full border border-gray-200 shadow-sm" />
           <span class="text-base font-black text-arsi-hijau tracking-tight">warunk arsi</span>
         </div>
         <p class="font-medium leading-relaxed">Penyedia sarapan praktis berkualitas wilayah Rawa Bambu, Kalibaru - Bekasi. Buka setiap Selasa s/d Minggu (Senin Tutup).</p>
       </div>
-      <div>
+      <div class="md:text-right">
         <h4 class="font-bold text-gray-900 mb-3">Tautan Cepat</h4>
         <ul class="space-y-2 font-medium">
           <li><a href="#" class="hover:text-arsi-hijau">Halaman Utama</a></li>
@@ -265,13 +262,17 @@
           <li><a href="https://wa.me/6285175150408" target="_blank" class="hover:text-arsi-hijau">Hubungi WhatsApp Kami</a></li>
         </ul>
       </div>
-      <div>
-        <h4 class="font-bold text-gray-900 mb-3">Sistem Terintegrasi</h4>
-        <p class="font-medium mb-3 text-xs bg-gray-200/60 p-2.5 rounded-lg text-gray-500 border border-gray-200/80">Sistem menu, POS kasir, dan akun VVIP disinkronkan secara aman melalui real-time DB engine Supabase.</p>
-        <p class="text-xs text-gray-400 font-semibold">&copy; 2026 Warunk Arsi. All rights reserved.</p>
-      </div>
     </div>
-  </nav>
+
+    <!-- Posisi Baru di Paling Bawah Center Tengah-Tengah -->
+    <div class="max-w-xl mx-auto px-4 mt-12 pt-8 border-t border-gray-200/60 text-center">
+      <h4 class="font-bold text-gray-900 mb-2">Program Loyalitas Member</h4>
+      <p class="font-medium text-xs bg-gray-200/60 p-3 rounded-xl text-gray-500 border border-gray-200/80 mx-auto max-w-md">
+        Kumpulkan poin loyalitas dari setiap transaksi Anda melalui aplikasi web VVIP member, lalu tukarkan dengan sarapan gratis melimpah!
+      </p>
+      <p class="text-xs text-gray-400 font-semibold mt-6">&copy; 2026 Warunk Arsi. All rights reserved.</p>
+    </div>
+  </footer>
 
   <!-- SCRIPT ENGINE -->
   <script>
@@ -283,15 +284,11 @@
     let currentSelectedCategory = 'Rekomendasi';
     let currentSearchKeyword = '';
 
-    // ─── AMBIL LOGO DAN SETTING SECARA DINAMIS DARI SUPABASE ───
     async function streamTokoSettings() {
       const { data } = await _supabase.from('toko_settings').select('*').eq('id', 1).single();
-      if(data) {
-        // Tembak langsung URL logo asli dari cloud Supabase ke kedua posisi gambar logo
-        if(data.logo_url) {
-          document.getElementById('app-logo').src = data.logo_url;
-          document.getElementById('footer-logo').src = data.logo_url;
-        }
+      if(data && data.logo_url) {
+        document.getElementById('app-logo').src = data.logo_url;
+        document.getElementById('footer-logo').src = data.logo_url;
       }
     }
 
@@ -308,20 +305,15 @@
     function renderTestimoniCarousel() {
       const container = document.getElementById('carouselContent');
       const dotsContainer = document.getElementById('carouselDots');
+      if(!container || !dotsContainer) return;
+      
       const item = listTestimoni[indexTestiAktif];
-
       container.innerHTML = `
         <div class="testi-fade testi-active space-y-4">
           <div class="flex items-center gap-1 text-amber-400 text-sm">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461/a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            ${'<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>'.repeat(5)}
           </div>
-          <p class="text-sm md:text-base font-semibold leading-relaxed tracking-wide text-white/95">
-            "${item.text}"
-          </p>
+          <p class="text-sm md:text-base font-semibold leading-relaxed tracking-wide text-white/95">"${item.text}"</p>
           <div class="pt-2">
             <h4 class="text-sm font-black text-arsi-accent">${item.name}</h4>
             <p class="text-[10px] text-white/50 font-bold tracking-wider mt-0.5 uppercase">${item.loc}</p>
@@ -351,8 +343,7 @@
 
     async function syncMenuFromCloud() {
       renderSkeletons(8);
-      const { data, error } = await _supabase.from('menu').select('*').order('id', { ascending: true });
-      
+      const { data } = await _supabase.from('menu').select('*').order('id', { ascending: true });
       if(data) { 
         cloudMenu = data; 
         renderMainGrid(); 
@@ -360,16 +351,29 @@
       }
     }
 
-    function liveSearchMenu(keyword) {
+    function liveSearchMenu(keyword, origin) {
       currentSearchKeyword = keyword.toLowerCase().trim();
-      document.getElementById('desktopSearchInput').value = keyword;
-      document.getElementById('mobileSearchInput').value = keyword;
+      
+      if (origin === 'desktop') {
+        const mbInput = document.getElementById('mobileSearchInput');
+        if (mbInput) mbInput.value = keyword;
+      } else if (origin === 'mobile') {
+        const dkInput = document.getElementById('desktopSearchInput');
+        if (dkInput) dkInput.value = keyword;
+      }
+      
       renderMainGrid();
     }
 
     function toggleMobileSearch() {
       const wrapper = document.getElementById('mobileSearchWrapper');
-      wrapper.classList.toggle('hidden');
+      if(wrapper) {
+        wrapper.classList.toggle('hidden');
+        if (!wrapper.classList.contains('hidden')) {
+          const mbInput = document.getElementById('mobileSearchInput');
+          if(mbInput) mbInput.focus();
+        }
+      }
     }
 
     function renderFlashSaleSection() {
@@ -378,6 +382,7 @@
       
       const fsSection = document.getElementById('flash-sale-section');
       const fsContainer = document.getElementById('flash-sale-container');
+      if(!fsSection || !fsContainer) return;
       
       if (flashSaleItems.length === 0) {
         fsSection.classList.add('hidden');
@@ -412,6 +417,8 @@
 
     function renderMainGrid() {
       const container = document.getElementById('menuGrid');
+      if(!container) return;
+      
       let filteredMenu = cloudMenu.filter(item => item.is_tersedia === true && item.is_flash_sale !== 1);
 
       if (currentSelectedCategory === 'Rekomendasi') {
@@ -492,11 +499,14 @@
     }
 
     function scrollFlashSale(val) {
-      document.getElementById('flash-sale-container').scrollLeft += val;
+      const fsWrap = document.getElementById('flash-sale-container');
+      if(fsWrap) fsWrap.scrollLeft += val;
     }
 
     function renderSkeletons(n = 8) {
-      document.getElementById('menuGrid').innerHTML = Array.from({ length: n }, () => `
+      const grid = document.getElementById('menuGrid');
+      if(!grid) return;
+      grid.innerHTML = Array.from({ length: n }, () => `
         <div class="bg-white rounded-2xl border border-gray-100 p-3 flex flex-col gap-3">
           <div class="skeleton aspect-square rounded-xl w-full"></div>
           <div class="skeleton h-3.5 w-1/3 rounded"></div>
@@ -514,6 +524,7 @@
       const currentDay = now.getDay(); 
       const dot = document.getElementById('statusDot');
       const text = document.getElementById('statusText');
+      if(!dot || !text) return;
       
       if (currentDay === 1) { 
         dot.className = "w-2 h-2 rounded-full bg-red-500";
@@ -527,7 +538,7 @@
     }
 
     window.onload = () => {
-      streamTokoSettings(); // Tarik asset logo riil real-time dari Supabase
+      streamTokoSettings();
       syncMenuFromCloud();
       checkLiveTokoStatus();
       renderTestimoniCarousel();
