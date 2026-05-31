@@ -44,9 +44,9 @@
   <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-4">
       
-      <!-- Logo Asli Warunk Arsi Berbentuk Bulat -->
-      <a href="https://member.warunkarsi.com" class="flex items-center gap-2.5 flex-shrink-0 group">
-        <img src="https://i.ibb.co/QFhwxVRM/logo-warunk-3.png" alt="Warunk Arsi Logo" class="h-10 w-10 object-cover rounded-full border border-gray-100 shadow-sm transition-transform group-hover:scale-105" />
+      <!-- Logo Ambil Dinamis via Supabase (ID: app-logo) -->
+      <a href="#" class="flex items-center gap-2.5 flex-shrink-0 group">
+        <img id="app-logo" src="https://img.icons8.com/color/96/store-front.png" alt="Warunk Arsi Logo" class="h-10 w-10 object-cover rounded-full border border-gray-100 shadow-sm transition-transform group-hover:scale-105" />
         <span class="text-xl font-black text-arsi-hijau tracking-tight">warunk arsi</span>
       </a>
 
@@ -179,48 +179,54 @@
 
   <!-- KENAPA WAJIB SARAPAN DI WARUNK ARSI? -->
   <section class="max-w-6xl mx-auto px-4 md:px-6 pt-8 pb-10 border-t border-gray-100">
-    <div class="text-center mb-12">
+    <div class="text-center mb-8 md:mb-12">
       <h2 class="text-xl md:text-2xl font-black text-gray-900 tracking-tight">Kenapa wajib sarapan di Warunk Arsi?</h2>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="bg-[#7A22B3] text-white rounded-[2rem] p-6 flex flex-col justify-between min-h-[360px] shadow-sm hover:shadow-md transition-all">
-        <div class="w-full aspect-[4/3] bg-purple-900/30 rounded-2xl flex items-center justify-center relative overflow-hidden p-4">
-          <div class="absolute w-24 h-24 bg-yellow-400 rounded-full opacity-20 -top-4 -left-4"></div>
-          <div class="absolute w-16 h-16 bg-pink-500 rounded-full opacity-20 -bottom-2 -right-2"></div>
-          <div class="flex flex-col items-center gap-2 relative z-10 animate-pulse">
-            <span class="text-5xl">⭐🥰</span>
-            <div class="flex gap-1 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-yellow-300">500+ Sahabat Puas</div>
+    
+    <div class="flex flex-col lg:grid lg:grid-cols-3 gap-4 md:gap-6">
+      <!-- Card 1 -->
+      <div class="bg-[#7A22B3] text-white rounded-[1.8rem] p-5 md:p-6 flex flex-row lg:flex-col items-center lg:justify-between min-h-[140px] lg:min-h-[360px] gap-4 shadow-sm">
+        <div class="w-1/3 lg:w-full aspect-[4/3] bg-purple-900/30 rounded-2xl flex items-center justify-center relative overflow-hidden p-2 flex-shrink-0">
+          <div class="absolute w-16 h-16 bg-yellow-400 rounded-full opacity-20 -top-4 -left-4"></div>
+          <div class="flex flex-col items-center relative z-10">
+            <span class="text-3xl lg:text-5xl">⭐🥰</span>
           </div>
         </div>
-        <p class="text-lg md:text-xl font-extrabold leading-snug tracking-tight mt-6">
-          500+ Sahabat komuter Bekasi sudah membuktikan kelezatannya beneran!
-        </p>
+        <div class="w-2/3 lg:w-full text-left lg:mt-6">
+          <p class="text-sm md:text-base lg:text-xl font-extrabold leading-snug tracking-tight">
+            500+ Sahabat komuter Bekasi sudah membuktikan kelezatannya beneran!
+          </p>
+        </div>
       </div>
 
-      <div class="bg-[#009BB9] text-white rounded-[2rem] p-6 flex flex-col justify-between min-h-[360px] shadow-sm hover:shadow-md transition-all">
-        <div class="w-full aspect-[4/3] bg-teal-900/30 rounded-2xl flex items-center justify-center relative overflow-hidden p-4">
-          <div class="absolute w-20 h-20 bg-green-400 rounded-full opacity-20 -bottom-4 -left-4"></div>
-          <div class="flex flex-col items-center gap-1.5 relative z-10">
-            <span class="text-5xl">⚡🛵</span>
-            <div class="flex gap-1 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-cyan-200">Ambil Bebas Antre</div>
+      <!-- Card 2 -->
+      <div class="bg-[#009BB9] text-white rounded-[1.8rem] p-5 md:p-6 flex flex-row lg:flex-col items-center lg:justify-between min-h-[140px] lg:min-h-[360px] gap-4 shadow-sm">
+        <div class="w-1/3 lg:w-full aspect-[4/3] bg-teal-900/30 rounded-2xl flex items-center justify-center relative overflow-hidden p-2 flex-shrink-0">
+          <div class="absolute w-14 h-14 bg-green-400 rounded-full opacity-20 -bottom-4 -left-4"></div>
+          <div class="flex flex-col items-center relative z-10">
+            <span class="text-3xl lg:text-5xl">⚡🛵</span>
           </div>
         </div>
-        <p class="text-lg md:text-xl font-extrabold leading-snug tracking-tight mt-6">
-          Ambil pesanan tanpa antre, praktis untuk kejar kereta atau bus pagi!
-        </p>
+        <div class="w-2/3 lg:w-full text-left lg:mt-6">
+          <p class="text-sm md:text-base lg:text-xl font-extrabold leading-snug tracking-tight">
+            Ambil pesanan tanpa antre, praktis untuk kejar kereta atau bus pagi!
+          </p>
+        </div>
       </div>
 
-      <div class="bg-[#D12B88] text-white rounded-[2rem] p-6 flex flex-col justify-between min-h-[360px] shadow-sm hover:shadow-md transition-all sm:col-span-2 lg:col-span-1">
-        <div class="w-full aspect-[4/3] bg-pink-900/30 rounded-2xl flex items-center justify-center relative overflow-hidden p-4">
-          <div class="absolute w-28 h-28 bg-amber-400 rounded-full opacity-10 -top-8 -right-8"></div>
-          <div class="flex flex-col items-center gap-1.5 relative z-10">
-            <span class="text-5xl">🍳🌾</span>
-            <div class="flex gap-1 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-amber-200">Siap Jam 6 Pagi</div>
+      <!-- Card 3 -->
+      <div class="bg-[#D12B88] text-white rounded-[1.8rem] p-5 md:p-6 flex flex-row lg:flex-col items-center lg:justify-between min-h-[140px] lg:min-h-[360px] gap-4 shadow-sm">
+        <div class="w-1/3 lg:w-full aspect-[4/3] bg-pink-900/30 rounded-2xl flex items-center justify-center relative overflow-hidden p-2 flex-shrink-0">
+          <div class="absolute w-16 h-16 bg-amber-400 rounded-full opacity-10 -top-8 -right-8"></div>
+          <div class="flex flex-col items-center relative z-10">
+            <span class="text-3xl lg:text-5xl">🍳🌾</span>
           </div>
         </div>
-        <p class="text-lg md:text-xl font-extrabold leading-snug tracking-tight mt-6">
-          Masakan fresh matang subuh, siap disajikan hangat mulai jam 06:00 pagi!
-        </p>
+        <div class="w-2/3 lg:w-full text-left lg:mt-6">
+          <p class="text-sm md:text-base lg:text-xl font-extrabold leading-snug tracking-tight">
+            Masakan fresh matang subuh, siap disajikan hangat mulai jam 06:00 pagi!
+          </p>
+        </div>
       </div>
     </div>
   </section>
@@ -245,8 +251,8 @@
     <div class="max-w-6xl mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm text-gray-600">
       <div>
         <div class="flex items-center gap-2.5 mb-4">
-          <!-- Logo Footer Diperbaiki Menjadi Bulat & Mulus -->
-          <img src="https://i.ibb.co/QFhwxVRM/logo-warunk-3.png" alt="Warunk Arsi Logo" class="h-8 w-8 object-cover rounded-full border border-gray-200 shadow-sm" />
+          <!-- Logo Footer Dinamis Mengikuti Bulat Supabase -->
+          <img id="footer-logo" src="https://img.icons8.com/color/96/store-front.png" alt="Warunk Arsi Logo" class="h-8 w-8 object-cover rounded-full border border-gray-200 shadow-sm" />
           <span class="text-base font-black text-arsi-hijau tracking-tight">warunk arsi</span>
         </div>
         <p class="font-medium leading-relaxed">Penyedia sarapan praktis berkualitas wilayah Rawa Bambu, Kalibaru - Bekasi. Buka setiap Selasa s/d Minggu (Senin Tutup).</p>
@@ -254,7 +260,7 @@
       <div>
         <h4 class="font-bold text-gray-900 mb-3">Tautan Cepat</h4>
         <ul class="space-y-2 font-medium">
-          <li><a href="https://www.warunkarsi.com" class="hover:text-arsi-hijau">Halaman Utama</a></li>
+          <li><a href="#" class="hover:text-arsi-hijau">Halaman Utama</a></li>
           <li><a href="https://member.warunkarsi.com" class="hover:text-arsi-hijau">Aplikasi Member (Cek Poin)</a></li>
           <li><a href="https://wa.me/628123456789" target="_blank" class="hover:text-arsi-hijau">Hubungi WhatsApp Kami</a></li>
         </ul>
@@ -265,7 +271,7 @@
         <p class="text-xs text-gray-400 font-semibold">&copy; 2026 Warunk Arsi. All rights reserved.</p>
       </div>
     </div>
-  </footer>
+  </nav>
 
   <!-- SCRIPT ENGINE -->
   <script>
@@ -276,6 +282,18 @@
     let cloudMenu = [];
     let currentSelectedCategory = 'Rekomendasi';
     let currentSearchKeyword = '';
+
+    // ─── AMBIL LOGO DAN SETTING SECARA DINAMIS DARI SUPABASE ───
+    async function streamTokoSettings() {
+      const { data } = await _supabase.from('toko_settings').select('*').eq('id', 1).single();
+      if(data) {
+        // Tembak langsung URL logo asli dari cloud Supabase ke kedua posisi gambar logo
+        if(data.logo_url) {
+          document.getElementById('app-logo').src = data.logo_url;
+          document.getElementById('footer-logo').src = data.logo_url;
+        }
+      }
+    }
 
     const listTestimoni = [
       { text: "Makanannya enak-enak semua, bumbunya berasa pas banget di lidah buat sarapan pagi warga Bekasi!", name: "Bagas Saputra", loc: "Pejuang Jaya, Bekasi" },
@@ -297,7 +315,7 @@
           <div class="flex items-center gap-1 text-amber-400 text-sm">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461/a1 1 0 00.951-.69l1.07-3.292z"/></svg>
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
           </div>
@@ -440,7 +458,7 @@
               <img src="${imgFix}" alt="${item.nama}" class="w-full h-full object-cover" loading="lazy" />
               <div class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white font-bold text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
                 <svg class="w-2.5 h-2.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                ${item.rating || '4.8'}
+                4.8
               </div>
             </div>
             <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
@@ -509,6 +527,7 @@
     }
 
     window.onload = () => {
+      streamTokoSettings(); // Tarik asset logo riil real-time dari Supabase
       syncMenuFromCloud();
       checkLiveTokoStatus();
       renderTestimoniCarousel();
