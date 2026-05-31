@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator HPP — Warunk Arsi</title>
+<title>Kalkulator HPP — Warunk Arsi (Free Version)</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -184,16 +184,33 @@
     box-shadow: 0 0 0 3px rgba(106,171,155,0.18);
     background: #fff;
   }
-  input[readonly] {
-    background: var(--sage-faint);
-    color: var(--teal);
-    font-weight: 600;
-    border-color: var(--sage-pale);
-    cursor: default;
+  
+  /* Input Terkunci Premium */
+  input.locked-input {
+    background: #fffbf0;
+    border-color: var(--gold-light);
+    cursor: pointer;
   }
-  .input-prefix {
-    position: relative;
+  input.locked-input:focus {
+    border-color: var(--red-soft);
+    box-shadow: 0 0 0 3px rgba(214,76,76,0.15);
   }
+  .label-premium-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.65rem;
+    background: var(--gold);
+    color: white;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 6px;
+    text-transform: none;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+
+  .input-prefix { position: relative; }
   .input-prefix span {
     position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);
     font-size: 0.78rem;
@@ -202,9 +219,7 @@
     pointer-events: none;
   }
   .input-prefix input { padding-left: 2.2rem; }
-  .input-suffix {
-    position: relative;
-  }
+  .input-suffix { position: relative; }
   .input-suffix span {
     position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
     font-size: 0.78rem;
@@ -288,7 +303,6 @@
     letter-spacing: 0.01em;
   }
   .btn-add:hover { background: linear-gradient(135deg, #d4ede7, #c8e8e1); transform: translateY(-1px); }
-  .btn-add:active { transform: translateY(0); }
 
   /* ── PLATFORM PILLS ── */
   .platform-grid {
@@ -315,18 +329,29 @@
     background: var(--sage-pale);
     box-shadow: 0 0 0 3px rgba(74,124,111,0.12);
   }
+  
+  .platform-locked { position: relative; opacity: 0.65; }
+  .platform-locked::after {
+    content: '🔒 Premium';
+    position: absolute;
+    top: 4px; right: 8px;
+    font-size: 0.62rem;
+    background: var(--gold);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
   .platform-emoji { font-size: 1.2rem; }
   .platform-info { flex: 1; }
   .platform-name { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); }
   .platform-cut { font-size: 0.7rem; color: var(--stone); }
-  .platform-option:checked + .platform-label .platform-name { color: var(--teal); }
-  .platform-option:checked + .platform-label .platform-cut { color: var(--sage); }
   .platform-check {
     width: 18px; height: 18px;
     border: 2px solid var(--stone-light);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    transition: all 0.18s;
     flex-shrink: 0;
   }
   .platform-option:checked + .platform-label .platform-check {
@@ -334,44 +359,23 @@
     border-color: var(--sage);
   }
   .platform-check::after {
-    content: '';
-    width: 6px; height: 6px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.15s;
+    content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; opacity: 0;
   }
   .platform-option:checked + .platform-label .platform-check::after { opacity: 1; }
 
   /* ── MARGIN INPUT ── */
-  .margin-row {
-    display: flex; align-items: center; gap: 1rem;
-  }
+  .margin-row { display: flex; align-items: center; gap: 1rem; }
   .margin-slider-wrap { flex: 1; }
-  input[type="range"] {
-    width: 100%;
-    accent-color: var(--sage);
-    height: 4px;
-    cursor: pointer;
-  }
+  input[type="range"] { width: 100%; accent-color: var(--sage); height: 4px; cursor: pointer; }
   .margin-display {
     background: linear-gradient(135deg, var(--sage), var(--teal));
-    color: white;
-    font-weight: 800;
-    font-size: 1.1rem;
-    padding: 0.45rem 1rem;
-    border-radius: var(--radius-xs);
-    min-width: 70px;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
+    color: white; font-weight: 800; font-size: 1.1rem;
+    padding: 0.45rem 1rem; border-radius: var(--radius-xs);
+    min-width: 70px; text-align: center;
   }
-  .margin-input-num {
-    width: 80px;
-    text-align: center;
-    font-weight: 700;
-  }
+  .margin-input-num { width: 80px; text-align: center; font-weight: 700; }
 
-  /* ── RESULTS ── */
+  /* ── RESULTS & EXPORT BUTTONS ── */
   .results-card {
     background: linear-gradient(135deg, var(--teal) 0%, var(--sage) 100%);
     border-radius: var(--radius);
@@ -381,27 +385,17 @@
     overflow: hidden;
     margin-bottom: 1.25rem;
   }
-  .results-card::before {
-    content: '₊';
-    position: absolute;
-    right: -10px; top: -20px;
-    font-size: 8rem;
-    color: rgba(255,255,255,0.04);
-    font-weight: 900;
-    line-height: 1;
-  }
   .results-title {
     font-family: 'Instrument Serif', serif;
     font-size: 1.2rem;
     color: rgba(255,255,255,0.9);
     margin-bottom: 1.25rem;
-    display: flex; align-items: center; gap: 0.5rem;
   }
   .results-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
   }
   @media (max-width: 480px) { .results-grid { grid-template-columns: 1fr; } }
 
@@ -411,130 +405,124 @@
     border: 1px solid rgba(255,255,255,0.18);
     border-radius: var(--radius-sm);
     padding: 1rem 1.1rem;
-    transition: background 0.2s;
   }
-  .result-item:hover { background: rgba(255,255,255,0.18); }
   .result-item.highlight {
     background: rgba(255,255,255,0.22);
     border-color: rgba(255,255,255,0.35);
     grid-column: 1 / -1;
   }
   .result-label {
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: rgba(255,255,255,0.65);
-    margin-bottom: 0.35rem;
+    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: rgba(255,255,255,0.65); margin-bottom: 0.35rem;
   }
-  .result-value {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #fff;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
-  }
+  .result-value { font-size: 1.4rem; font-weight: 800; color: #fff; }
   .result-item.highlight .result-value { font-size: 1.8rem; color: var(--gold-light); }
-  .result-note {
-    font-size: 0.72rem;
-    color: rgba(255,255,255,0.55);
-    margin-top: 0.2rem;
-  }
+  .result-note { font-size: 0.72rem; color: rgba(255,255,255,0.55); margin-top: 0.2rem; }
 
-  .profit-item {
-    background: rgba(200, 168, 75, 0.2);
-    border: 1px solid rgba(200, 168, 75, 0.4);
-  }
+  .profit-item { background: rgba(200, 168, 75, 0.2); border: 1px solid rgba(200, 168, 75, 0.4); }
   .profit-item .result-value { color: var(--gold-light); }
 
-  /* ── FORMULA INFO ── */
-  .formula-box {
-    background: var(--stone-faint);
-    border-left: 3px solid var(--sage-light);
-    border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
-    padding: 0.75rem 1rem;
-    margin-top: 1rem;
-    font-size: 0.78rem;
-    color: var(--ink-soft);
-    line-height: 1.6;
+  /* FITUR TERBARU: GRUP TOMBOL EKSPOR PREMIUM */
+  .export-actions-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
   }
-  .formula-box strong { color: var(--teal); }
-
-  /* ── FOOTER ── */
-  footer {
-    text-align: center;
-    padding: 2rem 1.5rem;
-    border-top: 1px solid var(--stone-faint);
-    margin-top: 1rem;
-  }
-  .footer-brand {
-    font-family: 'Instrument Serif', serif;
-    font-size: 1.4rem;
-    color: var(--teal);
-    margin-bottom: 0.5rem;
-  }
-  .footer-msg {
-    font-size: 0.85rem;
-    color: var(--stone);
-    line-height: 1.6;
-  }
-  .footer-heart {
-    color: var(--red-soft);
-    animation: heartbeat 1.4s ease-in-out infinite;
-  }
-  @keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-  }
-  .footer-divider {
-    display: flex; align-items: center; gap: 0.75rem;
-    margin: 1rem 0;
-    color: var(--stone-light);
-    font-size: 0.75rem;
-  }
-  .footer-divider::before, .footer-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--stone-faint);
-  }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    text-align: center;
-    padding: 1.5rem;
-    color: var(--stone);
-    font-size: 0.82rem;
-  }
-  .empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-
-  /* ── TOOLTIP / BADGE ── */
-  .info-badge {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 16px; height: 16px;
-    background: var(--stone-light);
+  @media (max-width: 500px) { .export-actions-group { grid-template-columns: 1fr; } }
+  
+  .btn-export {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px dashed var(--gold-light);
+    border-radius: var(--radius-sm);
     color: white;
-    border-radius: 50%;
-    font-size: 0.6rem;
+    padding: 0.75rem 1rem;
+    font-family: inherit;
+    font-size: 0.85rem;
     font-weight: 700;
-    cursor: help;
-    margin-left: 0.25rem;
-    vertical-align: middle;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    transition: all 0.2s;
+  }
+  .btn-export:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-style: solid;
+    transform: translateY(-1px);
+  }
+  .btn-export .lock-badge {
+    background: var(--gold);
+    color: white;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 800;
   }
 
-  /* ── SCROLL ANIMATION ── */
-  .fade-in {
-    opacity: 0;
-    transform: translateY(16px);
-    animation: fadeUp 0.5s ease forwards;
+  .formula-box {
+    background: rgba(255,255,255,0.06);
+    border-left: 3px solid var(--gold-light);
+    padding: 0.75rem 1rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
   }
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
+
+  /* ── MODAL PREMIUM OVERLAY ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(30, 43, 40, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease; padding: 1rem;
   }
-  .card:nth-child(1) { animation-delay: 0.05s; }
-  .card:nth-child(2) { animation-delay: 0.1s; }
-  .card:nth-child(3) { animation-delay: 0.15s; }
-  .card:nth-child(4) { animation-delay: 0.2s; }
+  .modal-overlay.active { opacity: 1; pointer-events: auto; }
+  .modal-content {
+    background: white; max-width: 440px; width: 100%;
+    border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow-lg);
+    text-align: center; position: relative;
+    transform: translateY(20px); transition: transform 0.3s ease;
+  }
+  .modal-overlay.active .modal-content { transform: translateY(0); }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; font-size: 1.2rem; color: var(--stone); cursor: pointer;
+  }
+  .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .modal-title { font-family: 'Instrument Serif', serif; font-size: 2rem; color: var(--teal); margin-bottom: 0.5rem; }
+  .modal-text { font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 1.5rem; line-height: 1.5; }
+  
+  .btn-premium {
+    display: block; width: 100%; padding: 0.85rem;
+    background: linear-gradient(135deg, var(--gold), #b3933b);
+    color: white; border: none; border-radius: var(--radius-sm);
+    font-size: 0.95rem; font-weight: 700; cursor: pointer;
+    text-decoration: none; box-shadow: 0 4px 12px rgba(200,168,75,0.3);
+  }
+  .btn-premium:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(200,168,75,0.4); }
+
+  footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--stone-faint); margin-top: 1rem; }
+  .footer-brand { font-family: 'Instrument Serif', serif; font-size: 1.4rem; color: var(--teal); }
+  .footer-msg { font-size: 0.85rem; color: var(--stone); line-height: 1.6; }
+  .footer-heart { color: var(--red-soft); animation: heartbeat 1.4s ease-in-out infinite; }
+  @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+  .footer-divider { display: flex; align-items: center; gap: 0.75rem; margin: 1rem 0; color: var(--stone-light); }
+  .footer-divider::before, .footer-divider::after { content: ''; flex: 1; height: 1px; background: var(--stone-faint); }
+  .empty-state { text-align: center; padding: 1.5rem; color: var(--stone); font-size: 0.82rem; }
 </style>
 </head>
 <body>
+
+<!-- POPUP MODAL PREMIUM -->
+<div id="premiumModal" class="modal-overlay">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closePremiumModal()">✕</button>
+    <div class="modal-icon">🔒</div>
+    <h3 class="modal-title">Buka Akses Premium</h3>
+    <p class="modal-text" id="modalMessage">Fitur khusus versi premium.</p>
+    <a href="https://lynk.id/username_lo/produk_premium" target="_blank" class="btn-premium">Buka Fitur Premium Sekarang</a>
+  </div>
+</div>
 
 <!-- HEADER -->
 <header>
@@ -546,7 +534,7 @@
 <div class="container">
 
   <!-- CARD 1: BAHAN BAKU -->
-  <div class="card fade-in">
+  <div class="card">
     <div class="card-header">
       <div class="card-icon">🧂</div>
       <div>
@@ -555,21 +543,17 @@
       </div>
     </div>
     <div class="card-body">
-      <div class="ingredient-list" id="ingredientList">
-        <!-- rows injected here -->
-      </div>
+      <div class="ingredient-list" id="ingredientList"></div>
       <div id="emptyState" class="empty-state">
         <div class="empty-icon">🫙</div>
         <div>Belum ada bahan. Klik tombol di bawah untuk mulai!</div>
       </div>
-      <button class="btn-add" onclick="addIngredient()">
-        ＋ Tambah Bahan
-      </button>
+      <button class="btn-add" onclick="addIngredient()">＋ Tambah Bahan</button>
     </div>
   </div>
 
   <!-- CARD 2: BIAYA TAMBAHAN -->
-  <div class="card fade-in">
+  <div class="card">
     <div class="card-header">
       <div class="card-icon">📦</div>
       <div>
@@ -580,10 +564,10 @@
     <div class="card-body">
       <div class="field-group">
         <div class="field">
-          <label>Biaya Kemasan / Packaging</label>
+          <label>Biaya Kemasan / Packaging <span class="label-premium-tag">🔒 Premium</span></label>
           <div class="input-prefix">
             <span>Rp</span>
-            <input type="number" id="biayaKemasan" min="0" placeholder="0" oninput="calculate()">
+            <input type="number" id="biayaKemasan" class="locked-input" min="0" placeholder="0" oninput="lockPackaging(this)" onclick="lockPackaging(this)">
           </div>
         </div>
         <div class="field">
@@ -598,7 +582,7 @@
   </div>
 
   <!-- CARD 3: MARGIN & PLATFORM -->
-  <div class="card fade-in">
+  <div class="card">
     <div class="card-header">
       <div class="card-icon">🎯</div>
       <div>
@@ -614,8 +598,7 @@
             <input type="range" id="marginSlider" min="0" max="200" value="30" oninput="syncMargin('slider')">
           </div>
           <div class="margin-display" id="marginDisplay">30%</div>
-          <input type="number" id="marginInput" class="margin-input-num" min="0" max="500" value="30"
-            oninput="syncMargin('input')" style="width:70px">
+          <input type="number" id="marginInput" class="margin-input-num" min="0" max="500" value="30" oninput="syncMargin('input')">
         </div>
       </div>
 
@@ -634,8 +617,8 @@
             </label>
           </div>
           <div>
-            <input type="radio" name="platform" id="p35" class="platform-option" value="35" onchange="calculate()">
-            <label for="p35" class="platform-label">
+            <input type="radio" name="platform" id="p35" class="platform-option" value="35" onchange="lockPlatform(this)">
+            <label for="p35" class="platform-label platform-locked">
               <span class="platform-emoji">🟢</span>
               <div class="platform-info">
                 <div class="platform-name">GoFood</div>
@@ -645,8 +628,8 @@
             </label>
           </div>
           <div>
-            <input type="radio" name="platform" id="p45" class="platform-option" value="45" onchange="calculate()">
-            <label for="p45" class="platform-label">
+            <input type="radio" name="platform" id="p45" class="platform-option" value="45" onchange="lockPlatform(this)">
+            <label for="p45" class="platform-label platform-locked">
               <span class="platform-emoji">🟢</span>
               <div class="platform-info">
                 <div class="platform-name">GrabFood</div>
@@ -656,8 +639,8 @@
             </label>
           </div>
           <div>
-            <input type="radio" name="platform" id="p50" class="platform-option" value="50" onchange="calculate()">
-            <label for="p50" class="platform-label">
+            <input type="radio" name="platform" id="p50" class="platform-option" value="50" onchange="lockPlatform(this)">
+            <label for="p50" class="platform-label platform-locked">
               <span class="platform-emoji">🟠</span>
               <div class="platform-info">
                 <div class="platform-name">ShopeeFood</div>
@@ -671,8 +654,8 @@
     </div>
   </div>
 
-  <!-- RESULTS -->
-  <div class="results-card fade-in" id="resultsCard">
+  <!-- RESULTS CARD -->
+  <div class="results-card" id="resultsCard">
     <div class="results-title">📊 Hasil Perhitungan Real-Time</div>
     <div class="results-grid">
       <div class="result-item">
@@ -688,24 +671,28 @@
       <div class="result-item highlight">
         <div class="result-label">🏷️ Harga Jual Minimum (Rekomendasi)</div>
         <div class="result-value" id="rHargaJual">Rp 0</div>
-        <div class="result-note" id="rHargaNote">Untuk Dine-In / Kasir dengan margin 30%</div>
+        <div class="result-note" id="rHargaNote">Untuk Dine-In / Kasir</div>
       </div>
       <div class="result-item profit-item">
         <div class="result-label">💰 Estimasi Profit Bersih</div>
         <div class="result-value" id="rProfit">Rp 0</div>
-        <div class="result-note">Setelah dipotong komisi platform</div>
-      </div>
-      <div class="result-item">
-        <div class="result-label">Margin Aktual</div>
-        <div class="result-value" id="rMarginAktual">0%</div>
-        <div class="result-note">Dari harga jual rekomendasi</div>
+        <div class="result-note">Setelah komisi platform</div>
       </div>
     </div>
 
-    <div class="formula-box" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.8)">
-      <strong style="color:var(--gold-light)">📐 Rumus:</strong>
-      Harga Jual = (HPP Total + (HPP Total × Margin)) ÷ (1 − Potongan Platform)<br>
-      Profit Bersih = Harga Jual × (1 − Potongan) − HPP Total
+    <!-- UTILITY: TOMBOL DOWNLOAD PDF & EXCEL PREMIUM -->
+    <div class="export-actions-group">
+      <button class="btn-export" onclick="triggerExport('PDF')">
+        📄 Download PDF Rekomendasi <span class="lock-badge">🔒 Premium</span>
+      </button>
+      <button class="btn-export" onclick="triggerExport('Excel')">
+         Excel Ekspor ke Excel <span class="lock-badge">🔒 Premium</span>
+      </button>
+    </div>
+
+    <div class="formula-box">
+      <strong>📐 Rumus Bisnis:</strong><br>
+      Harga Jual = (HPP Total + (HPP Total × Margin)) ÷ (1 − Potongan Platform)
     </div>
   </div>
 
@@ -713,11 +700,10 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-brand">🍜 Warunk Arsi</div>
+  <div class="footer-brand">Warunk Arsi</div>
   <div class="footer-divider">———</div>
   <div class="footer-msg">
-    Terimakasih udah mampir dan dukung terus <strong>Warunk Arsi</strong> yaa <span class="footer-heart">❤️</span><br>
-    <span style="font-size:0.78rem; color: var(--stone-light)">Semoga bisnis makin lancar & makin cuan!</span>
+    Terimakasih udah mampir dan dukung terus <strong>Warunk Arsi</strong> yaa <span class="footer-heart">❤️</span>
   </div>
 </footer>
 
@@ -729,7 +715,43 @@
     return 'Rp ' + Math.ceil(val).toLocaleString('id-ID');
   }
 
+  function openPremiumModal(msg) {
+    document.getElementById('modalMessage').textContent = msg;
+    document.getElementById('premiumModal').classList.add('active');
+  }
+
+  function closePremiumModal() {
+    document.getElementById('premiumModal').classList.remove('active');
+  }
+
+  function lockPackaging(el) {
+    el.value = 0;
+    calculate();
+    openPremiumModal("Fitur alokasi Biaya Kemasan/Packaging otomatis per porsi ini hanya terbuka di versi Premium. Upgrade sekarang untuk mendapatkan akurasi HPP take-away yang presisi!");
+  }
+
+  function lockPlatform(el) {
+    document.getElementById('p0').checked = true;
+    calculate();
+    openPremiumModal("Fitur kalkulasi otomatis potongan komisi marketplace (GoFood, GrabFood, ShopeeFood) hanya tersedia di versi Premium. Amankan margin keuntunganmu sekarang!");
+  }
+
+  // TRIGER POPUP UNTUK TOMBOL DOWNLOAD BARU
+  function triggerExport(type) {
+    if (type === 'PDF') {
+      openPremiumModal("Gagal mengekstrak dokumen! Fitur cetak 'PDF Rekomendasi Harga' rapi siap cetak/share ke tim dapur ini hanya tersedia untuk pengguna Premium.");
+    } else if (type === 'Excel') {
+      openPremiumModal("Gagal memproses file xlsx! Fitur 'Ekspor ke Excel' untuk rekap data bahan baku dan kalkulasi laba-rugi massal ini khusus untuk akun Premium.");
+    }
+  }
+
   function addIngredient() {
+    const currentRows = document.querySelectorAll('.ingredient-row').length;
+    if (currentRows >= 3) {
+      openPremiumModal("Versi gratis dibatasi maksimal 3 bahan baku. Buka versi Premium untuk memasukkan resep kompleks dengan jumlah bahan tak terbatas (Unlimited)!");
+      return;
+    }
+
     ingredientCount++;
     const id = Date.now();
     const list = document.getElementById('ingredientList');
@@ -741,7 +763,7 @@
     row.innerHTML = `
       <div class="ingredient-row-header">
         <span class="ingredient-index">Bahan #${ingredientCount}</span>
-        <button class="btn-remove" onclick="removeIngredient('row-${id}')" title="Hapus bahan">✕</button>
+        <button class="btn-remove" onclick="removeIngredient('row-${id}')">✕</button>
       </div>
       <div class="field-group four-col">
         <div class="field" style="grid-column: span 2">
@@ -750,26 +772,17 @@
         </div>
         <div class="field">
           <label>Harga Beli</label>
-          <div class="input-prefix">
-            <span>Rp</span>
-            <input type="number" class="harga" min="0" placeholder="0" oninput="calcRow(this); calculate()">
-          </div>
+          <div class="input-prefix"><span>Rp</span><input type="number" class="harga" min="0" placeholder="0" oninput="calcRow(this); calculate()"></div>
         </div>
         <div class="field">
           <label>Isi Kemasan</label>
-          <div class="input-suffix">
-            <span>gr/ml</span>
-            <input type="number" class="kapasitas" min="0" placeholder="0" oninput="calcRow(this); calculate()">
-          </div>
+          <div class="input-suffix"><span>gr/ml</span><input type="number" class="kapasitas" min="0" placeholder="0" oninput="calcRow(this); calculate()"></div>
         </div>
       </div>
       <div class="field-group" style="grid-template-columns: 1fr 1fr;">
         <div class="field">
-          <label>Jumlah Digunakan/Porsi</label>
-          <div class="input-suffix">
-            <span>gr/ml</span>
-            <input type="number" class="digunakan" min="0" placeholder="0" oninput="calcRow(this); calculate()">
-          </div>
+          <label>Jumlah Digunakan</label>
+          <div class="input-suffix"><span>gr/ml</span><input type="number" class="digunakan" min="0" placeholder="0" oninput="calcRow(this); calculate()"></div>
         </div>
         <div class="field">
           <label>Harga per Satuan</label>
@@ -790,10 +803,8 @@
     const harga = parseFloat(row.querySelector('.harga').value) || 0;
     const kapasitas = parseFloat(row.querySelector('.kapasitas').value) || 0;
     const digunakan = parseFloat(row.querySelector('.digunakan').value) || 0;
-
     const perSatuan = kapasitas > 0 ? harga / kapasitas : 0;
     const biaya = perSatuan * digunakan;
-
     row.querySelector('.per-satuan').value = perSatuan > 0 ? 'Rp ' + perSatuan.toFixed(2) : '';
     row.querySelector('.biaya-porsi').textContent = formatRp(biaya);
   }
@@ -801,15 +812,11 @@
   function removeIngredient(rowId) {
     const row = document.getElementById(rowId);
     if (row) {
-      row.style.animation = 'none';
-      row.style.opacity = '0';
-      row.style.transform = 'translateX(20px)';
-      row.style.transition = 'all 0.2s ease';
-      setTimeout(() => {
-        row.remove();
-        checkEmpty();
-        calculate();
-      }, 200);
+      row.remove();
+      checkEmpty();
+      let idx = 1;
+      document.querySelectorAll('.ingredient-index').forEach(span => { span.textContent = 'Bahan #' + idx++; });
+      calculate();
     }
   }
 
@@ -822,65 +829,39 @@
     const slider = document.getElementById('marginSlider');
     const input = document.getElementById('marginInput');
     const display = document.getElementById('marginDisplay');
-
-    if (source === 'slider') {
-      input.value = slider.value;
-    } else {
-      let v = Math.min(500, Math.max(0, parseFloat(input.value) || 0));
-      input.value = v;
-      slider.value = Math.min(200, v);
-    }
+    if (source === 'slider') { input.value = slider.value; } 
+    else { let v = Math.min(500, Math.max(0, parseFloat(input.value) || 0)); input.value = v; slider.value = Math.min(200, v); }
     display.textContent = (parseFloat(input.value) || 0) + '%';
     calculate();
   }
 
   function calculate() {
-    // HPP Bahan
     let hppBahan = 0;
     document.querySelectorAll('.ingredient-row').forEach(row => {
       const harga = parseFloat(row.querySelector('.harga').value) || 0;
       const kapasitas = parseFloat(row.querySelector('.kapasitas').value) || 0;
       const digunakan = parseFloat(row.querySelector('.digunakan').value) || 0;
-      if (kapasitas > 0) {
-        hppBahan += (harga / kapasitas) * digunakan;
-      }
+      if (kapasitas > 0) hppBahan += (harga / kapasitas) * digunakan;
     });
 
     const kemasan = parseFloat(document.getElementById('biayaKemasan').value) || 0;
     const operasional = parseFloat(document.getElementById('biayaOperasional').value) || 0;
     const hppTotal = hppBahan + kemasan + operasional;
-
     const margin = (parseFloat(document.getElementById('marginInput').value) || 0) / 100;
     const platform = document.querySelector('input[name="platform"]:checked');
     const potongan = platform ? parseFloat(platform.value) / 100 : 0;
 
-    // Harga Jual = (HPP Total + HPP Total × Margin) / (1 - Potongan)
     const divisor = 1 - potongan;
     const hargaJual = divisor > 0 ? (hppTotal * (1 + margin)) / divisor : 0;
-
-    // Profit = Harga Jual × (1 - Potongan) - HPP Total
     const profitBersih = hargaJual * divisor - hppTotal;
 
-    // Margin Aktual
-    const marginAktual = hppTotal > 0 ? ((profitBersih) / hppTotal) * 100 : 0;
-
-    // Platform name
-    const platformNames = { '0': 'Dine-In / Kasir', '35': 'GoFood', '45': 'GrabFood', '50': 'ShopeeFood' };
-    const platformKey = platform ? platform.value : '0';
-    const platformName = platformNames[platformKey] || 'Dine-In';
-
-    // Update UI
     document.getElementById('rHppBahan').textContent = formatRp(hppBahan);
     document.getElementById('rHppTotal').textContent = formatRp(hppTotal);
     document.getElementById('rHargaJual').textContent = formatRp(hargaJual);
-    document.getElementById('rHargaNote').textContent =
-      `Untuk ${platformName} dengan margin ${Math.round(margin * 100)}%`;
     document.getElementById('rProfit').textContent = formatRp(profitBersih);
-    document.getElementById('rMarginAktual').textContent =
-      hppTotal > 0 ? marginAktual.toFixed(1) + '%' : '0%';
   }
 
-  // Init: add 2 rows
+  // Init awal dengan 2 bahan baku
   addIngredient();
   addIngredient();
   calculate();
