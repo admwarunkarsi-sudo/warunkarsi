@@ -422,39 +422,26 @@
   .profit-item { background: rgba(200, 168, 75, 0.2); border: 1px solid rgba(200, 168, 75, 0.4); }
   .profit-item .result-value { color: var(--gold-light); }
 
-  /* GRUP TOMBOL EKSPOR PREMIUM */
-  .export-actions-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-  }
-  @media (max-width: 500px) { .export-actions-group { grid-template-columns: 1fr; } }
-  
-  .btn-export {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px dashed var(--gold-light);
+  /* TOMBOL CETAK PREMIUM JADI FULL WIDTH EMAS */
+  .btn-export-premium {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold), #b3933b);
+    border: none;
     border-radius: var(--radius-sm);
     color: white;
-    padding: 0.75rem 1rem;
+    padding: 0.9rem 1rem;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(200,168,75,0.2);
   }
-  .btn-export:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-style: solid;
+  .btn-export-premium:hover {
     transform: translateY(-1px);
-  }
-  .btn-export .lock-badge {
-    background: var(--gold);
-    color: white;
-    font-size: 0.6rem;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 800;
+    box-shadow: 0 6px 16px rgba(200,168,75,0.35);
+    background: linear-gradient(135deg, #d4b354, #bc9b3f);
   }
 
   /* ── MODAL PREMIUM OVERLAY ── */
@@ -662,14 +649,10 @@
       </div>
     </div>
 
-    <div class="export-actions-group">
-      <button class="btn-export" onclick="triggerExport('PDF')">
-        📄 Download PDF Rekomendasi <span class="lock-badge">🔒 Premium</span>
-      </button>
-      <button class="btn-export" onclick="triggerExport('Excel')">
-        📊 Ekspor ke Excel <span class="lock-badge">🔒 Premium</span>
-      </button>
-    </div>
+    <!-- TAMPILAN PREMIUM: SATU TOMBOL EMAS FULL-WIDTH -->
+    <button class="btn-export-premium" onclick="triggerCetakPremium()">
+      🖨️ Cetak & Simpan Laporan HPP Resmi
+    </button>
   </div>
 
 </div>
@@ -712,12 +695,9 @@
     openPremiumModal("Fitur kalkulasi otomatis potongan komisi marketplace (GoFood, GrabFood, ShopeeFood) hanya tersedia di versi Premium. Amankan margin keuntunganmu sekarang!");
   }
 
-  function triggerExport(type) {
-    if (type === 'PDF') {
-      openPremiumModal("Gagal mengekstrak dokumen! Fitur cetak 'PDF Rekomendasi Harga' rapi siap cetak/share ke tim dapur ini hanya tersedia untuk pengguna Premium.");
-    } else if (type === 'Excel') {
-      openPremiumModal("Gagal memproses file xlsx! Fitur 'Ekspor ke Excel' untuk rekap data bahan baku dan kalkulasi laba-rugi massal ini khusus untuk akun Premium.");
-    }
+  /* FUNGSI TRIGGER UNTUK TOMBOL PREMIUM BARU */
+  function triggerCetakPremium() {
+    openPremiumModal("Gagal memproses dokumen! Fitur ekspor berkas, cetak laporan HPP resmi, serta rekap data bahan baku siap pakai ini khusus untuk akun Premium.");
   }
 
   function addIngredient() {
