@@ -422,12 +422,11 @@
   .profit-item { background: rgba(200, 168, 75, 0.2); border: 1px solid rgba(200, 168, 75, 0.4); }
   .profit-item .result-value { color: var(--gold-light); }
 
-  /* FITUR TERBARU: GRUP TOMBOL EKSPOR PREMIUM */
+  /* GRUP TOMBOL EKSPOR PREMIUM */
   .export-actions-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
-    margin-bottom: 1rem;
   }
   @media (max-width: 500px) { .export-actions-group { grid-template-columns: 1fr; } }
   
@@ -456,15 +455,6 @@
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: 800;
-  }
-
-  .formula-box {
-    background: rgba(255,255,255,0.06);
-    border-left: 3px solid var(--gold-light);
-    padding: 0.75rem 1rem;
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.8);
-    line-height: 1.6;
   }
 
   /* ── MODAL PREMIUM OVERLAY ── */
@@ -501,11 +491,9 @@
   }
   .btn-premium:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(200,168,75,0.4); }
 
-  footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--stone-faint); margin-top: 1rem; }
-  .footer-brand { font-family: 'Instrument Serif', serif; font-size: 1.4rem; color: var(--teal); }
-  .footer-msg { font-size: 0.85rem; color: var(--stone); line-height: 1.6; }
-  .footer-heart { color: var(--red-soft); animation: heartbeat 1.4s ease-in-out infinite; }
-  @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+  footer { text-align: center; padding: 2.5rem 1.5rem; border-top: 1px solid var(--stone-faint); margin-top: 2rem; }
+  .footer-brand { font-family: 'Instrument Serif', serif; font-size: 1.4rem; color: var(--teal); margin-bottom: 0.35rem; }
+  .footer-msg { font-size: 0.82rem; color: var(--stone); line-height: 1.6; }
   .footer-divider { display: flex; align-items: center; gap: 0.75rem; margin: 1rem 0; color: var(--stone-light); }
   .footer-divider::before, .footer-divider::after { content: ''; flex: 1; height: 1px; background: var(--stone-faint); }
   .empty-state { text-align: center; padding: 1.5rem; color: var(--stone); font-size: 0.82rem; }
@@ -513,7 +501,6 @@
 </head>
 <body>
 
-<!-- POPUP MODAL PREMIUM -->
 <div id="premiumModal" class="modal-overlay">
   <div class="modal-content">
     <button class="modal-close" onclick="closePremiumModal()">✕</button>
@@ -524,7 +511,6 @@
   </div>
 </div>
 
-<!-- HEADER -->
 <header>
   <div class="header-badge">🍽️ Warunk Arsi · Business Tools</div>
   <h1>Kalkulator <em>HPP</em> &<br>Harga Jual Otomatis</h1>
@@ -533,7 +519,6 @@
 
 <div class="container">
 
-  <!-- CARD 1: BAHAN BAKU -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon">🧂</div>
@@ -545,14 +530,13 @@
     <div class="card-body">
       <div class="ingredient-list" id="ingredientList"></div>
       <div id="emptyState" class="empty-state">
-        <div class="empty-icon">🫙</div>
+        <div class="empty-icon">𫫙</div>
         <div>Belum ada bahan. Klik tombol di bawah untuk mulai!</div>
       </div>
       <button class="btn-add" onclick="addIngredient()">＋ Tambah Bahan</button>
     </div>
   </div>
 
-  <!-- CARD 2: BIAYA TAMBAHAN -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon">📦</div>
@@ -581,7 +565,6 @@
     </div>
   </div>
 
-  <!-- CARD 3: MARGIN & PLATFORM -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon">🎯</div>
@@ -654,7 +637,6 @@
     </div>
   </div>
 
-  <!-- RESULTS CARD -->
   <div class="results-card" id="resultsCard">
     <div class="results-title">📊 Hasil Perhitungan Real-Time</div>
     <div class="results-grid">
@@ -680,38 +662,32 @@
       </div>
     </div>
 
-    <!-- UTILITY: TOMBOL DOWNLOAD PDF & EXCEL PREMIUM -->
     <div class="export-actions-group">
       <button class="btn-export" onclick="triggerExport('PDF')">
         📄 Download PDF Rekomendasi <span class="lock-badge">🔒 Premium</span>
       </button>
       <button class="btn-export" onclick="triggerExport('Excel')">
-         Excel Ekspor ke Excel <span class="lock-badge">🔒 Premium</span>
+        📊 Ekspor ke Excel <span class="lock-badge">🔒 Premium</span>
       </button>
-    </div>
-
-    <div class="formula-box">
-      <strong>📐 Rumus Bisnis:</strong><br>
-      Harga Jual = (HPP Total + (HPP Total × Margin)) ÷ (1 − Potongan Platform)
     </div>
   </div>
 
 </div>
 
-<!-- FOOTER -->
 <footer>
-  <div class="footer-brand">Warunk Arsi</div>
+  <div class="footer-brand">Warunk Arsi Business Tools</div>
   <div class="footer-divider">———</div>
   <div class="footer-msg">
-    Terimakasih udah mampir dan dukung terus <strong>Warunk Arsi</strong> yaa <span class="footer-heart">❤️</span>
+    Laporan ini dibuat secara otomatis melalui sistem Kalkulator HPP Warunk Arsi.<br>
+    Data yang dihasilkan bersifat valid berdasarkan kalkulasi input pengguna.
   </div>
 </footer>
 
 <script>
-  let ingredientCount = 0;
+  let rowCounter = 0;
 
   function formatRp(val) {
-    if (!val || isNaN(val)) return 'Rp 0';
+    if (!val || isNaN(val) || val < 0) return 'Rp 0';
     return 'Rp ' + Math.ceil(val).toLocaleString('id-ID');
   }
 
@@ -736,7 +712,6 @@
     openPremiumModal("Fitur kalkulasi otomatis potongan komisi marketplace (GoFood, GrabFood, ShopeeFood) hanya tersedia di versi Premium. Amankan margin keuntunganmu sekarang!");
   }
 
-  // TRIGER POPUP UNTUK TOMBOL DOWNLOAD BARU
   function triggerExport(type) {
     if (type === 'PDF') {
       openPremiumModal("Gagal mengekstrak dokumen! Fitur cetak 'PDF Rekomendasi Harga' rapi siap cetak/share ke tim dapur ini hanya tersedia untuk pengguna Premium.");
@@ -752,37 +727,37 @@
       return;
     }
 
-    ingredientCount++;
-    const id = Date.now();
+    rowCounter++;
+    const id = 'row-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
     const list = document.getElementById('ingredientList');
     document.getElementById('emptyState').style.display = 'none';
 
     const row = document.createElement('div');
     row.className = 'ingredient-row';
-    row.id = 'row-' + id;
+    row.id = id;
     row.innerHTML = `
       <div class="ingredient-row-header">
-        <span class="ingredient-index">Bahan #${ingredientCount}</span>
-        <button class="btn-remove" onclick="removeIngredient('row-${id}')">✕</button>
+        <span class="ingredient-index">Bahan</span>
+        <button class="btn-remove" onclick="removeIngredient('${id}')">✕</button>
       </div>
       <div class="field-group four-col">
         <div class="field" style="grid-column: span 2">
           <label>Nama Bahan</label>
-          <input type="text" placeholder="Cth: Daging Ayam" oninput="calculate()">
+          <input type="text" placeholder="Cth: Daging Ayam">
         </div>
         <div class="field">
           <label>Harga Beli</label>
-          <div class="input-prefix"><span>Rp</span><input type="number" class="harga" min="0" placeholder="0" oninput="calcRow(this); calculate()"></div>
+          <div class="input-prefix"><span>Rp</span><input type="number" class="harga" min="0" placeholder="0" oninput="calcRow('${id}'); calculate()"></div>
         </div>
         <div class="field">
           <label>Isi Kemasan</label>
-          <div class="input-suffix"><span>gr/ml</span><input type="number" class="kapasitas" min="0" placeholder="0" oninput="calcRow(this); calculate()"></div>
+          <div class="input-suffix"><span>gr/ml</span><input type="number" class="kapasitas" min="0" placeholder="0" oninput="calcRow('${id}'); calculate()"></div>
         </div>
       </div>
       <div class="field-group" style="grid-template-columns: 1fr 1fr;">
         <div class="field">
           <label>Jumlah Digunakan</label>
-          <div class="input-suffix"><span>gr/ml</span><input type="number" class="digunakan" min="0" placeholder="0" oninput="calcRow(this); calculate()"></div>
+          <div class="input-suffix"><span>gr/ml</span><input type="number" class="digunakan" min="0" placeholder="0" oninput="calcRow('${id}'); calculate()"></div>
         </div>
         <div class="field">
           <label>Harga per Satuan</label>
@@ -795,16 +770,20 @@
       </div>
     `;
     list.appendChild(row);
+    updateIndexes();
     calculate();
   }
 
-  function calcRow(el) {
-    const row = el.closest('.ingredient-row');
+  function calcRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (!row) return;
     const harga = parseFloat(row.querySelector('.harga').value) || 0;
     const kapasitas = parseFloat(row.querySelector('.kapasitas').value) || 0;
     const digunakan = parseFloat(row.querySelector('.digunakan').value) || 0;
+    
     const perSatuan = kapasitas > 0 ? harga / kapasitas : 0;
     const biaya = perSatuan * digunakan;
+    
     row.querySelector('.per-satuan').value = perSatuan > 0 ? 'Rp ' + perSatuan.toFixed(2) : '';
     row.querySelector('.biaya-porsi').textContent = formatRp(biaya);
   }
@@ -813,11 +792,17 @@
     const row = document.getElementById(rowId);
     if (row) {
       row.remove();
+      updateIndexes();
       checkEmpty();
-      let idx = 1;
-      document.querySelectorAll('.ingredient-index').forEach(span => { span.textContent = 'Bahan #' + idx++; });
       calculate();
     }
+  }
+
+  function updateIndexes() {
+    let idx = 1;
+    document.querySelectorAll('.ingredient-row').forEach(row => {
+      row.querySelector('.ingredient-index').textContent = 'Bahan #' + idx++;
+    });
   }
 
   function checkEmpty() {
@@ -829,8 +814,13 @@
     const slider = document.getElementById('marginSlider');
     const input = document.getElementById('marginInput');
     const display = document.getElementById('marginDisplay');
-    if (source === 'slider') { input.value = slider.value; } 
-    else { let v = Math.min(500, Math.max(0, parseFloat(input.value) || 0)); input.value = v; slider.value = Math.min(200, v); }
+    if (source === 'slider') { 
+      input.value = slider.value; 
+    } else { 
+      let v = Math.min(500, Math.max(0, parseFloat(input.value) || 0)); 
+      input.value = v; 
+      slider.value = Math.min(200, v); 
+    }
     display.textContent = (parseFloat(input.value) || 0) + '%';
     calculate();
   }
@@ -841,7 +831,9 @@
       const harga = parseFloat(row.querySelector('.harga').value) || 0;
       const kapasitas = parseFloat(row.querySelector('.kapasitas').value) || 0;
       const digunakan = parseFloat(row.querySelector('.digunakan').value) || 0;
-      if (kapasitas > 0) hppBahan += (harga / kapasitas) * digunakan;
+      if (kapasitas > 0) {
+        hppBahan += (harga / kapasitas) * digunakan;
+      }
     });
 
     const kemasan = parseFloat(document.getElementById('biayaKemasan').value) || 0;
@@ -853,7 +845,7 @@
 
     const divisor = 1 - potongan;
     const hargaJual = divisor > 0 ? (hppTotal * (1 + margin)) / divisor : 0;
-    const profitBersih = hargaJual * divisor - hppTotal;
+    const profitBersih = (hargaJual * divisor) - hppTotal;
 
     document.getElementById('rHppBahan').textContent = formatRp(hppBahan);
     document.getElementById('rHppTotal').textContent = formatRp(hppTotal);
@@ -861,10 +853,9 @@
     document.getElementById('rProfit').textContent = formatRp(profitBersih);
   }
 
-  // Init awal dengan 2 bahan baku
+  // Inisialisasi default 2 bahan saat aplikasi pertama dibuka
   addIngredient();
   addIngredient();
-  calculate();
 </script>
 </body>
 </html>
