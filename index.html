@@ -65,7 +65,7 @@
                 </div>
                 <div>
                     <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Operasional Warung</p>
-                    <p class="text-xs font-black text-gray-700">Selasa - Minggu </p>
+                    <p class="text-xs font-black text-gray-700">Selasa - Minggu | 06:00 - 11:30</p>
                 </div>
             </div>
             <div id="badge-status-toko" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black shadow-sm transition-all duration-300">
@@ -74,7 +74,7 @@
             </div>
         </div>
 
-        <div class="relative overflow-hidden rounded-2xl shadow-sm bg-gray-200 aspect-[21/9]">
+        <div id="slider-banner-container" class="relative overflow-hidden rounded-2xl shadow-sm bg-gray-200 aspect-[21/9]">
             <div id="slider-wrapper" class="flex transition-transform duration-500 ease-in-out h-full w-full">
                 <div class="w-full h-full flex-shrink-0">
                     <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Promo">
@@ -87,6 +87,8 @@
             <button onclick="filterCategory('Semua')" class="category-tab bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow-sm flex-shrink-0 transition">Semua</button>
             <button onclick="filterCategory('pernasian')" class="category-tab bg-white text-gray-500 border border-gray-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow-sm flex-shrink-0 transition">🍚 PERNASIAN</button>
             <button onclick="filterCategory('RAMUAN ARSI')" class="category-tab bg-white text-gray-500 border border-gray-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow-sm flex-shrink-0 transition">🍹 RAMUAN ARSI</button>
+            <button onclick="filterCategory('KUE')" class="category-tab bg-white text-gray-500 border border-gray-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow-sm flex-shrink-0 transition">🍰 KUE</button>
+            <button onclick="filterCategory('GORENGAN')" class="category-tab bg-white text-gray-500 border border-gray-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow-sm flex-shrink-0 transition">🍤 GORENGAN</button>
             <button onclick="filterCategory('LAINNYA')" class="category-tab bg-white text-gray-500 border border-gray-200 text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow-sm flex-shrink-0 transition">✨ LAINNYA</button>
         </div>
 
@@ -184,10 +186,9 @@
         let totalSlides = 0;
         let keranjangBelanja = [];
 
-        // ID Simulasi Login Member Aktif (Disesuaikan dengan public.members milikmu)
         const USER_MEMBER_ID = "M001"; 
 
-        // 1. AMBIL SETTING TOKO & BANNER SLIDER
+        // 1. SETTING BANNER SLIDER
         async function fetchTokoSettings() {
             try {
                 const { data, error } = await _supabase.from('toko_settings').select('*').limit(1).maybeSingle();
@@ -237,10 +238,10 @@
 
         setInterval(() => { if (totalSlides > 1) { currentSlide = (currentSlide + 1) % totalSlides; updateSlider(); } }, 4000);
 
-        // 2. JAM OPERASIONAL TOKO
+        // 2. JAM OPERASIONAL
         function checkStoreStatus() {
             const sekarang = new Date();
-            const hari = sekarang.getDay();
+            const hari = Clinical = sekarang.getDay();
             const waktuMenit = (sekarang.getHours() * 60) + sekarang.getMinutes();
             const batasBuka = (6 * 60); 
             const batasTutup = (11 * 60) + 30; 
@@ -264,12 +265,10 @@
             }
         }
 
-        // 3. TARIK DATA DARI SUPABASE (Perbaikan Filter Case Insensitive)
+        // 3. TARIK DATA SUPABASE
         async function fetchMenuData() {
             try {
-                // DIHAPUS .eq('is_tersedia') karena kolomnya belum tentu ada di struktur DB milikmu
                 const { data, error } = await _supabase.from('menu').select('*').order('id', { ascending: true });
-                
                 if (!error && data) {
                     menusDataCache = data;
                     renderApplicationUi();
@@ -277,13 +276,33 @@
             } catch (e) { console.error("Gagal sinkron data menu:", e); }
         }
 
+        function handleSearchMenu() {
+            const searchKeyword = document.getElementById('search-menu').value.toLowerCase().trim();
+            
+            const statusOperasional = document.getElementById('status-operasional-container');
+            const sliderBanner = document.getElementById('slider-banner-container');
+            const sectionFlashSale = document.getElementById('section-flash-sale');
+
+            if (searchKeyword.length > 0) {
+                if (statusOperasional) statusOperasional.classList.add('hidden');
+                if (sliderBanner) sliderBanner.classList.add('hidden');
+                if (sectionFlashSale) sectionFlashSale.classList.add('hidden');
+            } else {
+                if (statusOperasional) statusOperasional.classList.remove('hidden');
+                if (sliderBanner) sliderBanner.classList.remove('hidden');
+            }
+
+            renderApplicationUi();
+        }
+
         function renderApplicationUi() {
             const searchKeyword = document.getElementById('search-menu').value.toLowerCase().trim();
             
-            // Render Flash Sale (Membaca data jika harga_flash_sale > 0)
-            const flashSaleContainer = document.getElementById('flash-sale-container');
             const sectionFlashSale = document.getElementById('section-flash-sale');
-            const flashSaleItems = menusDataCache.filter(m => Number(m.harga_flash_sale) > 0);
+            const flashSaleContainer = document.getElementById('flash-sale-container');
+            
+            // FIX LOGIKA: Filter flash sale hanya yang berharga flash sale DAN statusnya bukan "Kosong/Habis"
+            const flashSaleItems = menusDataCache.filter(m => Number(m.harga_flash_sale) > 0 && m.status !== "Kosong/Habis");
             
             if(flashSaleItems.length > 0 && !searchKeyword && selectedCategory === "Semua") {
                 sectionFlashSale.classList.remove('hidden');
@@ -301,14 +320,14 @@
                     </div>
                 `).join('');
             } else {
+                // Otomatis tersembunyi total jika semua produk flash sale statusnya "Kosong/Habis"
                 sectionFlashSale.classList.add('hidden');
             }
 
-            // Render Regular Menu Grid
+            // Render Produk Utama Grid
             const regularContainer = document.getElementById('regular-menu-container');
             let filteredItems = menusDataCache;
             
-            // Perbaikan pencocokan kategori (Huruf Besar / Kecil disamakan semua ke lowercase)
             if (selectedCategory !== "Semua") {
                 filteredItems = filteredItems.filter(m => m.kategori.toLowerCase().trim().includes(selectedCategory.toLowerCase().trim()));
             }
@@ -325,10 +344,16 @@
                 const isFsActive = Number(item.harga_flash_sale) > 0;
                 const hargaTampil = isFsActive ? item.harga_flash_sale : item.harga_normal;
                 
+                // FIX LOGIKA: Cek apakah status item "Kosong/Habis"
+                const isHabis = item.status === "Kosong/Habis";
+                
                 return `
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-2.5 flex flex-col justify-between relative">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-2.5 flex flex-col justify-between relative ${isHabis ? 'opacity-60' : ''}">
                         <div>
-                            <img src="${item.gambar_url || 'https://placehold.co/150?text=Warunk+Arsi'}" alt="${item.nama}" class="w-full h-28 object-cover rounded-xl bg-gray-50 border">
+                            <div class="relative">
+                                <img src="${item.gambar_url || 'https://placehold.co/150?text=Warunk+Arsi'}" alt="${item.nama}" class="w-full h-28 object-cover rounded-xl bg-gray-50 border">
+                                ${isHabis ? `<div class="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center"><span class="bg-black text-white text-[10px] font-black px-2 py-1 rounded uppercase">Habis</span></div>` : ''}
+                            </div>
                             <div class="mt-2 space-y-0.5">
                                 <span class="text-[9px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-extrabold uppercase">${item.kategori}</span>
                                 <h3 class="text-xs font-bold text-gray-800 line-clamp-2 pt-0.5">${item.nama}</h3>
@@ -336,8 +361,10 @@
                         </div>
                         <div class="mt-3">
                             <span class="text-xs font-black text-emerald-700">Rp ${Number(hargaTampil).toLocaleString('id-ID')}</span>
-                            <button onclick="tambahKeKeranjangLokal('${item.id}', ${isFsActive})" class="w-full bg-emerald-700 text-white text-[11px] font-black py-1.5 rounded-xl mt-2 flex items-center justify-center gap-1 active:scale-95 transition">
-                                <i class="fa-solid fa-cart-plus text-[10px]"></i> PESAN
+                            <button 
+                                onclick="${isHabis ? "alert('Stok produk ini sedang habis!')" : `tambahKeKeranjangLokal('${item.id}', ${isFsActive})`}" 
+                                class="w-full ${isHabis ? 'bg-gray-400 cursor-not-allowed' : 'bg-emerald-700 active:scale-95'} text-white text-[11px] font-black py-1.5 rounded-xl mt-2 flex items-center justify-center gap-1 transition">
+                                <i class="fa-solid ${isHabis ? 'fa-boxes-empty' : 'fa-cart-plus'} text-[10px]"></i> ${isHabis ? 'HABIS' : 'PESAN'}
                             </button>
                         </div>
                     </div>
@@ -345,10 +372,10 @@
             }).join('');
         }
 
-        // 4. LOGIKA MANAJEMEN KERANJANG BELANJA MULTI-ITEM
+        // 4. KERANJANG BELANJA
         function tambahKeKeranjangLokal(menuId, isFlashSale) {
             const item = menusDataCache.find(m => m.id == menuId);
-            if (!item) return;
+            if (!item || item.status === "Kosong/Habis") return; // Proteksi ganda agar tidak bisa dibeli jika habis
 
             const hargaFinal = isFlashSale ? item.harga_flash_sale : item.harga_normal;
             const indeksEksis = keranjangBelanja.findIndex(k => k.id == item.id);
@@ -446,7 +473,6 @@
             document.getElementById('modal-body').innerHTML = html;
         }
 
-        // 5. KIRIM PESANAN MULTI ITEM KE ANTRIAN KASIR (public.orders)
         async function prosesCheckoutKeCloud() {
             if (keranjangBelanja.length === 0) return;
 
@@ -457,7 +483,6 @@
             if (!konfirmasi) return;
 
             try {
-                // Tarik info nama pelanggan dari tabel members
                 const { data: member } = await _supabase.from('members').select('nama, wa').eq('id', USER_MEMBER_ID).maybeSingle();
                 
                 const dataOrder = {
@@ -481,7 +506,7 @@
             }
         }
 
-        // 6. WINDOW MODAL & NAVBAR UTILITY
+        // 5. UTILITY WINDOW & NAVIGATION
         function setNavAktif(idTombol) {
             ['nav-beranda', 'nav-promo', 'nav-pesanan', 'nav-akun'].forEach(id => {
                 document.getElementById(id).className = (id === idTombol) 
@@ -511,7 +536,7 @@
 
         function filterCategory(categoryName) {
             selectedCategory = categoryName;
-            document.getElementById('active-category-label').innerText = categoryName === 'pernasian' ? 'PERNASIAN' : categoryName;
+            document.getElementById('active-category-label').innerText = categoryName;
             document.querySelectorAll('.category-tab').forEach(tab => {
                 tab.className = tab.innerText.toUpperCase().includes(categoryName.toUpperCase())
                     ? "category-tab bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-full whitespace-nowrap shadow-sm flex-shrink-0 transition"
@@ -519,8 +544,6 @@
             });
             renderApplicationUi();
         }
-
-        function handleSearchMenu() { renderApplicationUi(); }
 
         function bukaModalAlamat() {
             bukaModal("<i class='fa-solid fa-map-location-dot text-emerald-700'></i> Alamat Toko", `
