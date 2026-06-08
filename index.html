@@ -838,12 +838,19 @@
                 const dotsContainer = document.getElementById('slider-dots');
                 if(!sliderWrapper || !dotsContainer) return;
 
-                let linkGambarRaw = (data && data.banner_slides) ? data.banner_slides : "";
-                if (!linkGambarRaw.trim()) {
-                    linkGambarRaw = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop, https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop";
+                // Baca dari kolom "slides" (JSON array {url,caption}), fallback ke banner_slides
+                let linkGambarArray = [];
+                if (data && Array.isArray(data.slides) && data.slides.length > 0) {
+                    linkGambarArray = data.slides.map(s => (typeof s === "object" ? s.url : s)).filter(Boolean);
+                } else if (data && data.banner_slides && data.banner_slides.trim()) {
+                    linkGambarArray = data.banner_slides.split(",").map(l => l.trim()).filter(Boolean);
                 }
-
-                const linkGambarArray = linkGambarRaw.split(',').map(link => link.trim()).filter(link => link !== "");
+                if (!linkGambarArray.length) {
+                    linkGambarArray = [
+                        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop"
+                    ];
+                }
                 sliderWrapper.innerHTML = "";
                 dotsContainer.innerHTML = "";
                 totalSlides = linkGambarArray.length;
