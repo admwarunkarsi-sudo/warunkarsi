@@ -96,7 +96,7 @@
         </div>
 
         <!-- Flash Sale Section -->
-        <div id="section-flash-sale" class="space-y-3 hidden bg-gradient-to-r from-red-50 to-orange-50 p-3 rounded-2xl border border-red-100 shadow-sm">
+        <div id="section-flash-sale" class="space-y-3 bg-gradient-to-r from-red-50 to-orange-50 p-3 rounded-2xl border border-red-100 shadow-sm" style="display: none;">
             <div class="flex justify-between items-center px-1">
                 <div class="flex items-center gap-1.5 text-red-600 font-black text-xs uppercase tracking-wider">
                     <i class="fa-solid fa-bolt text-sm animate-pulse"></i>
@@ -126,14 +126,14 @@
 
     </div>
 
-    <!-- Floating Basket Bar (Tambah Catatan / Qty Real-time) -->
-    <div id="floating-cart-bar" class="fixed bottom-20 inset-x-0 mx-auto max-w-md px-3 z-50 hidden flex-col gap-2 pointer-events-none">
+    <!-- Floating Basket Bar -->
+    <div id="floating-cart-bar" class="fixed bottom-20 inset-x-0 mx-auto max-w-md px-3 z-50 flex-col gap-2 pointer-events-none" style="display: none;">
         <div class="w-full bg-white px-4 py-2.5 rounded-2xl shadow-md border border-gray-200 flex items-center gap-2 pointer-events-auto">
             <i class="fa-solid fa-pen-to-square text-[#1E4D3A] text-sm"></i>
             <input type="text" id="order-note-input" placeholder="Tambah catatan (Cth: Nasi Kebuli Gak Pake Sambal)..." class="w-full text-xs text-gray-700 bg-transparent outline-none placeholder-gray-400 font-medium">
         </div>
 
-        <div onclick="bukaModalKeranjang()" class="bg-[#1E4D3A] text-white p-4 rounded-3xl shadow-xl flex justify-between items-center cursor-pointer active:scale-[0.98] transition-all duration-150 pointer-events-auto">
+        <div onclick="pemicuProsesCheckoutMP()" class="bg-[#1E4D3A] text-white p-4 rounded-3xl shadow-xl flex justify-between items-center cursor-pointer active:scale-[0.98] transition-all duration-150 pointer-events-auto">
             <div class="flex items-center gap-3.5">
                 <div class="relative bg-emerald-800 w-10 h-10 rounded-2xl flex items-center justify-center">
                     <i class="fa-solid fa-basket-shopping text-base text-white"></i>
@@ -150,16 +150,16 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- UPDATE: Perubahan nama menu 'Promo' menjadi 'Daftar Member' sesuai Gambar 1 -->
     <div class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-100 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] py-2 px-6 z-50">
         <div class="max-w-md mx-auto flex justify-between items-center text-center">
             <button onclick="berandaAction()" id="nav-beranda" class="flex flex-col items-center gap-1 text-[#1E4D3A] font-bold transition">
                 <i class="fa-solid fa-house text-lg"></i>
                 <span class="text-[10px] tracking-wide">Beranda</span>
             </button>
-            <button onclick="bukaModalPromo()" id="nav-promo" class="flex flex-col items-center gap-1 text-gray-400 font-medium transition">
-                <i class="fa-solid fa-percent text-lg"></i>
-                <span class="text-[10px] tracking-wide">Promo</span>
+            <button onclick="bukaModalDaftarMember()" id="nav-promo" class="flex flex-col items-center gap-1 text-gray-400 font-medium transition">
+                <i class="fa-solid fa-crown text-lg"></i>
+                <span class="text-[10px] tracking-wide">Daftar Member</span>
             </button>
             <button onclick="bukaModalPesanan()" id="nav-pesanan" class="flex flex-col items-center gap-1 text-gray-400 font-medium transition">
                 <i class="fa-solid fa-clipboard-list text-lg"></i>
@@ -200,7 +200,7 @@
                         <p class="text-xs text-gray-400 font-bold uppercase">Total Pembayaran</p>
                         <p id="checkout-total-label" class="text-xl font-black text-[#1E4D3A] mt-0.5">Rp 0</p>
                     </div>
-                    <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">Metode Aman</span>
+                    <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Metode Aman</span>
                 </div>
 
                 <!-- Input Identitas Pemesan Manual (Bisa Autodetek Status Member) -->
@@ -297,46 +297,124 @@
         let currentSlide = 0;
         let totalSlides = 0;
         let keranjangBelanja = [];
-        let detectedMemberCache = null; // Menyimpan info member hasil deteksi live nomor WA
+        let sessionUserCache = null; 
 
-        // REAL-TIME AUTO DETEKSI STATUS MEMBER VIA INPUT CHECKOUT (SINKRON PORTAL & POS KASIR)[cite: 1]
-        async function liveCheckMemberStatus() {
-            const inputWa = document.getElementById('checkout-wa-guest').value.trim();
-            const badge = document.getElementById('live-member-badge');
-            const inputNama = document.getElementById('checkout-nama-guest');
+        function loadMarketplaceUserSession() {
+            const savedSession = localStorage.getItem('warunkarsi_user_session');
+            if (savedSession) {
+                sessionUserCache = JSON.parse(savedSession);
+            }
+        }
 
-            if (inputWa.length < 9) {
-                badge.classList.add('hidden');
-                detectedMemberCache = null;
+        function pemicuPencegatanLoginMP(fungsiCallbackPenerus) {
+            if (sessionUserCache) {
+                fungsiCallbackPenerus();
                 return;
             }
 
-            try {
-                // Tarik data profil member dari Cloud
-                const { data, error } = await _supabase.from('members').select('*').eq('wa', inputWa).maybeSingle();
-                
-                if (data && !error) {
-                    detectedMemberCache = data;
-                    // Kunci Nama secara otomatis & ganti status badge jadi VVIP Member
-                    inputNama.value = data.nama;
-                    inputNama.setAttribute('disabled', 'true');
-                    inputNama.className = "w-full border rounded-xl p-3 text-xs bg-emerald-50 text-emerald-800 font-bold border-emerald-200";
-                    
-                    badge.innerText = "⭐ VVIP MEMBER";
-                    badge.className = "absolute right-3 top-3 block text-[9px] font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 animate-pulse";
-                } else {
-                    // Reset ke mode umum jika nomor tidak terdaftar
-                    detectedMemberCache = null;
-                    inputNama.removeAttribute('disabled');
-                    inputNama.className = "w-full border rounded-xl p-3 text-xs focus:outline-[#1E4D3A] bg-white";
-                    
-                    badge.innerText = "UMUM";
-                    badge.className = "absolute right-3 top-3 block text-[9px] font-black px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 border border-gray-200";
-                }
-            } catch (e) { console.error(e); }
+            bukaModal("<i class='fa-solid fa-id-card-clip text-[#E6A15C]'></i> Masuk / Cek Member", `
+                <div class='space-y-3.5 p-1 text-center'>
+                    <p class='text-xs text-gray-500 leading-relaxed font-medium'>Untuk melanjutkan transaksi, cek poin reward, atau melihat antrean nota, silakan masukkan nomor WhatsApp Anda terlebih dahulu[cite: 2]:</p>
+                    <div class='space-y-2 text-left'>
+                        <input type='text' id='mp-wa-input' placeholder='Masukkan Nomor WhatsApp (Cth: 0812...)' class='w-full border rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A] font-bold tracking-wide'>
+                        <input type='text' id='mp-nama-input' placeholder='Tulis Nama Lengkap Anda...' class='w-full border rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A]'>
+                    </div>
+                    <button id='mp-btn-login' class='w-full bg-[#1E4D3A] text-white font-black py-3 rounded-xl text-xs shadow-md active:scale-95 transition mt-1'>MASUK KE SISTEM ANTREAN</button>
+                </div>
+            `);
+
+            document.getElementById('mp-btn-login').onclick = async () => {
+                const wa = document.getElementById('mp-wa-input').value.trim();
+                const nama = document.getElementById('mp-nama-input').value.trim();
+
+                if (!wa || !nama) return alert('Mohon lengkapi Nama dan Nomor WhatsApp Kakak!');
+                if (wa.length < 9) return alert('Nomor WhatsApp tidak valid!');
+
+                document.getElementById('mp-btn-login').innerText = "Memproses berkas cloud...";
+
+                try {
+                    const { data: member } = await _supabase.from('members').select('*').eq('wa', wa).maybeSingle();
+                    let dataUserFinal = { wa: wa, nama: nama, isMember: false, id: null, poin: 0 };
+
+                    if (member) {
+                        dataUserFinal = { wa: member.wa, nama: member.nama, isMember: true, id: member.id, poin: member.poin };
+                    }
+
+                    localStorage.setItem('warunkarsi_user_session', JSON.stringify(dataUserFinal));
+                    sessionUserCache = dataUserFinal;
+
+                    alert(`Selamat Datang, ${dataUserFinal.nama}! 🎉\nStatus: ${dataUserFinal.isMember ? 'VIP Member' : 'Pelanggan Umum'}`);
+                    tutupModal();
+                    fungsiCallbackPenerus(); 
+                } catch (err) { alert('Gagal sinkronisasi data.'); }
+            };
         }
 
-        // SETTING BANNER SLIDER[cite: 1]
+        // UPDATE: FUNGSI BARU UNTUK RENEDER POPUP FORMULIR PENDAFTARAN MEMBER VVIP (SINKRON GAMBAR `image_2068c4.png`)
+        function bukaModalDaftarMember() {
+            setNavAktif('nav-promo');
+            bukaModal("<i class='fa-solid fa-crown text-[#E6A15C]'></i> Pendaftaran Member VVIP", `
+                <div class="space-y-4 p-1 text-xs">
+                    <p class="text-gray-500 text-center text-[11px] leading-relaxed">Gabung menjadi VVIP Member Warunk Arsi untuk mengumpulkan poin loyalitas dan menukarkannya dengan menu sarapan gratis kami!</p>
+                    <div class="space-y-3 text-left text-sm">
+                        <div>
+                            <label class="block text-gray-600 font-bold mb-1">Nama Lengkap</label>
+                            <input type="text" id="reg-name-main" placeholder="Tulis nama lengkap Anda..." class="w-full border rounded-xl px-3.5 py-3 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A] bg-white" />
+                        </div>
+                        <div>
+                            <label class="block text-gray-600 font-bold mb-1">No. WhatsApp</label>
+                            <input type="text" id="reg-wa-main" placeholder="Contoh: 08xxxxxxxx" class="w-full border rounded-xl px-3.5 py-3 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A] bg-white" />
+                        </div>
+                        <button onclick="prosesSimpanDaftarMemberMain()" class="w-full bg-[#1E4D3A] text-white font-black py-3.5 rounded-xl text-xs shadow-md active:scale-95 transition mt-2 flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-user-plus"></i> Simpan & Daftar
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+
+        // UPDATE: LOGIKA EKSEKUSI PENDAFTARAN MEMBER BARU KE CLOUD SUPABASE (SINKRON `member.html`)
+        async function prosesSimpanDaftarMemberMain() {
+            const nama = document.getElementById('reg-name-main').value.trim();
+            const wa = document.getElementById('reg-wa-main').value.trim();
+
+            if (!nama || !wa) return alert('Mohon lengkapi Nama Lengkap dan Nomor WhatsApp Anda!');
+            if (wa.length < 9) return alert('Nomor WhatsApp yang Anda masukkan tidak valid!');
+
+            try {
+                // Proteksi: Cek apakah nomor tersebut sudah terdaftar sebelumnya
+                const { data: eksis } = await _supabase.from('members').select('id').eq('wa', wa).maybeSingle();
+                if (eksis) {
+                    alert('Nomor WhatsApp ini sudah terdaftar sebagai Member VVIP Warunk Arsi! Silakan gunakan menu Akun untuk mengecek saldo poin.');
+                    return;
+                }
+
+                // Generate ID Member unik, contoh: WA-7492
+                const newMemberId = 'WA-' + Math.floor(1000 + Math.random() * 9000);
+
+                // Insert baris baru ke tabel members Supabase[cite: 3]
+                const { error } = await _supabase.from('members').insert([{
+                    id: newMemberId,
+                    nama: nama,
+                    wa: wa,
+                    poin: 0
+                }]);
+
+                if (error) throw error;
+
+                // Set session agar otomatis terdeteksi login sebagai member[cite: 3]
+                const dataUserFinal = { wa: wa, nama: nama, isMember: true, id: newMemberId, poin: 0 };
+                localStorage.setItem('warunkarsi_user_session', JSON.stringify(dataUserFinal));
+                sessionUserCache = dataUserFinal;
+
+                alert(`Pendaftaran Berhasil! 🎉\n\nSelamat Kak ${nama}, Anda resmi menjadi VVIP Member Warunk Arsi.\nID Anda: ${newMemberId}\n\nSilakan bertransaksi untuk mengumpulkan poin pertamamu.`);
+                tutupModal();
+            } catch (err) {
+                alert('Gagal melakukan pendaftaran, periksa kembali koneksi internet Anda.');
+            }
+        }
+
+        // SETTING BANNER SLIDER
         async function fetchTokoSettings() {
             try {
                 const { data } = await _supabase.from('toko_settings').select('*').limit(1).maybeSingle();
@@ -386,7 +464,7 @@
 
         setInterval(() => { if (totalSlides > 1) { currentSlide = (currentSlide + 1) % totalSlides; updateSlider(); } }, 4000);
 
-        // JAM OPERASIONAL[cite: 1]
+        // JAM OPERASIONAL
         function checkStoreStatus() {
             const brass = new Date();
             const hari = brass.getDay();
@@ -413,7 +491,7 @@
             }
         }
 
-        // TARIK DATA DARI DATABASE CLOUD SUPABASE[cite: 1]
+        // TARIK DATA DARI DATABASE CLOUD SUPABASE
         async function fetchMenuData() {
             try {
                 const { data, error } = await _supabase.from('menu').select('*').order('id', { ascending: true });
@@ -431,17 +509,17 @@
             const sectionFlashSale = document.getElementById('section-flash-sale');
 
             if (searchKeyword.length > 0) {
-                if (statusOperasional) statusOperasional.classList.add('hidden');
-                if (sliderBanner) sliderBanner.classList.add('hidden');
-                if (sectionFlashSale) sectionFlashSale.classList.add('hidden');
+                if (statusOperasional) statusOperasional.style.display = 'none';
+                if (sliderBanner) sliderBanner.style.display = 'none';
+                if (sectionFlashSale) sectionFlashSale.style.display = 'none';
             } else {
-                if (statusOperasional) statusOperasional.classList.remove('hidden');
-                if (sliderBanner) sliderBanner.classList.remove('hidden');
+                if (statusOperasional) statusOperasional.style.display = 'flex';
+                if (sliderBanner) sliderBanner.style.display = 'block';
             }
             renderApplicationUi();
         }
 
-        // GENERATOR COMPONENT TOMBOL QUANTITY DIRECT-SELECT[cite: 1]
+        // GENERATOR COMPONENT TOMBOL QUANTITY DIRECT-SELECT
         function dapatkanTombolAksiHtml(item, isFlashSale) {
             const isHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
             if (isHabis) {
@@ -466,13 +544,12 @@
             } else {
                 return `
                     <button onclick="tambahKeKeranjangLokal('${item.id}', ${isFlashSale})" class="w-full ${warnaBaseBtn} active:scale-95 text-white text-[11px] font-black py-2 rounded-xl mt-2 flex items-center justify-center gap-1 transition-all duration-150 shadow-sm">
-                        <i class="fa-solid ${isFlashSale ? 'fa-bolt' : 'fa-cart-plus'} text-[10px]"></i> ${isFlashSale ? 'BELI' : 'PESAN'}
+                        <i class="fa-solid ${isFlashSale ? 'fa-bolt' : 'fa-cart-plus'} text-[10px]"></i> PESAN
                     </button>
                 `;
             }
         }
 
-        // RENDER APPLICATION TAMPILAN UTAMA (FIXED TOTAL DARI SEGALA TYPO HANDLER)[cite: 1]
         function renderApplicationUi() {
             const searchKeyword = document.getElementById('search-menu').value.toLowerCase().trim();
             const sectionFlashSale = document.getElementById('section-flash-sale');
@@ -481,7 +558,7 @@
             const flashSaleItems = menusDataCache.filter(m => Number(m.harga_flash_sale) > 0);
             
             if(flashSaleItems.length > 0 && !searchKeyword && selectedCategory === "Semua") {
-                sectionFlashSale.classList.remove('hidden');
+                sectionFlashSale.style.display = 'block';
                 flashSaleContainer.innerHTML = flashSaleItems.map(item => {
                     const isHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
                     return `
@@ -500,7 +577,7 @@
                     `;
                 }).join('');
             } else {
-                sectionFlashSale.classList.add('hidden');
+                sectionFlashSale.style.display = 'none';
             }
 
             const regularContainer = document.getElementById('regular-menu-container');
@@ -544,8 +621,8 @@
             }).join('');
         }
 
-        // LOGIKA ENGINE QUANTITY SELECTOR BERANDA[cite: 1]
-        function tambahKuantitasLokal(menuId, isFlashSale) {
+        // LOGIKA SELECTOR QUANTITY
+        function kuantitasMajuLokal(menuId, isFlashSale) {
             tambahKeKeranjangLokal(menuId, isFlashSale);
         }
 
@@ -599,36 +676,86 @@
                 
                 badgeCount.innerText = totalItem;
                 totalPreview.innerText = `Rp ${totalHarga.toLocaleString('id-ID')}`;
-                bar.classList.remove('hidden');
-                bar.classList.add('flex');
+                bar.style.display = 'flex';
             } else {
-                bar.classList.add('hidden');
-                bar.classList.remove('flex');
+                bar.style.display = 'none';
             }
         }
 
-        function bukaModalKeranjang() {
+        // PEMICU CHECKOUT JALUR UTAMA MARKETPLACE
+        function pemicuProsesCheckoutMP() {
+            pemicuPencegatanLoginMP(() => {
+                bukaModalCheckoutFormMP();
+            });
+        }
+
+        function bukaModalCheckoutFormMP() {
             if (keranjangBelanja.length === 0) return;
             let totalHarga = keranjangBelanja.reduce((acc, c) => acc + (c.harga * c.qty), 0);
             
-            document.getElementById('checkout-total-label').innerText = `Rp ${totalHarga.toLocaleString('id-ID')}`;
-            handleDeliveryChoice('ambil_langsung');
-            
-            document.getElementById('checkout-wa-guest').value = '';
-            document.getElementById('checkout-nama-guest').value = '';
-            document.getElementById('checkout-nama-guest').removeAttribute('disabled');
-            document.getElementById('checkout-nama-guest').className = "w-full border rounded-xl p-3 text-xs focus:outline-[#1E4D3A] bg-white";
-            document.getElementById('live-member-badge').classList.add('hidden');
-            detectedMemberCache = null;
+            bukaModal("<i class='fa-solid fa-receipt text-[#E6A15C]'></i> Formulir Penyelesaian Order", `
+                <div class="space-y-4 text-xs">
+                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase">Total Pembayaran</p>
+                            <p class="text-base font-black text-[#1E4D3A] mt-0.5">Rp ${totalHarga.toLocaleString('id-ID')}</p>
+                        </div>
+                        <span class="text-[9px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">${sessionUserCache.isMember ? '⭐ VVIP Member' : 'Pelanggan'}</span>
+                    </div>
 
-            document.getElementById('checkout-modal').classList.remove('hidden');
+                    <div class="bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/50">
+                        <p class="font-bold text-amber-900"><i class="fa-solid fa-user-check mr-0.5"></i> Identitas Nota Pemesan:</p>
+                        <p class="mt-0.5 font-medium text-gray-700">${sessionUserCache.nama} (${sessionUserCache.wa})</p>
+                        <button onclick='localStorage.removeItem("warunkarsi_user_session"); location.reload();' class='text-[10px] text-red-500 font-bold hover:underline mt-1 block'>(Bukan Saya, Logout)</button>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block font-bold text-gray-700"><i class="fa-solid fa-truck-ramp-box text-[#1E4D3A]"></i> Opsi Pengambilan Pesanan</label>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div onclick="handleDeliveryChoice('ambil_langsung')" class="border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none shadow-xs" id="label-opsi-ambil">
+                                <i class="fa-solid fa-shop text-[#1E4D3A] text-base mb-0.5"></i>
+                                <span class="font-bold text-[11px] text-gray-800">Ambil Mandiri</span>
+                                <input type="radio" name="opsi_ambil" id="r-ambil" value="Ambil Sendiri" checked class="hidden" />
+                            </div>
+                            <div onclick="handleDeliveryChoice('gosend')" class="border-2 border-gray-200 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-[#1E4D3A] select-none" id="label-opsi-gosend">
+                                <i class="fa-solid fa-motorcycle text-gray-500 text-base mb-0.5" id="icon-gosend"></i>
+                                <span class="font-bold text-[11px] text-gray-800">Kirim GoSend</span>
+                                <input type="radio" name="opsi_ambil" id="r-gosend" value="GoSend" class="hidden" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="kolom-alamat-checkout" class="space-y-1 hidden">
+                        <label class="block font-bold text-gray-700"><i class="fa-solid fa-map-location-dot text-red-500"></i> Alamat Lengkap Armada GoSend</label>
+                        <textarea id="checkout-alamat-input" placeholder="Tuliskan alamat lengkap pengiriman serta patokan lokasi..." class="w-full border rounded-xl p-2.5 text-xs focus:outline-[#1E4D3A] bg-white min-h-[50px] resize-none"></textarea>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block font-bold text-gray-700"><i class="fa-solid fa-wallet text-[#1E4D3A]"></i> Metode Pembayaran</label>
+                        <div class="space-y-1.5">
+                            <div onclick="handlePaymentChoice('cod')" class="border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold" id="container-pay-cod">
+                                <span><i class="fa-solid fa-money-bill-wave text-[#1E4D3A] mr-1"></i> Bayar di Tempat (COD)</span>
+                                <input type="radio" name="metode_bayar" id="r-pay-cod" value="Bayar di Tempat (COD)" checked class="accent-[#1E4D3A]" />
+                            </div>
+                            <div onclick="handlePaymentChoice('qris')" class="border-2 border-gray-200 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold" id="container-pay-qris">
+                                <span><i class="fa-solid fa-qrcode text-gray-600 mr-1" id="icon-qris"></i> Transfer QRIS Otomatis</span>
+                                <input type="radio" name="metode_bayar" id="r-pay-qris" value="Transfer QRIS" class="accent-[#1E4D3A]" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="qris-display-container" class="hidden flex-col items-center justify-center p-3 border border-amber-200 bg-amber-50/40 rounded-2xl space-y-2">
+                        <div class="bg-white p-2 rounded-xl border"><img id="qris-image" src="qris-arsi.jpg" class="w-36 h-auto object-contain mx-auto" onerror="this.src='https://placehold.co/150?text=QRIS+Arsi'"></div>
+                        <button type="button" onclick="downloadQrisImage()" class="bg-[#1E4D3A] text-white font-bold px-3 py-1.5 rounded-xl text-[10px] shadow-xs">Simpan QRIS ke HP</button>
+                    </div>
+
+                    <button onclick="finalizedCheckoutProcess()" class="w-full bg-[#E6A15C] text-white font-black py-3 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-xs tracking-wider">
+                        KONFIRMASI & PROSES ORDER <i class="fa-solid fa-circle-check"></i>
+                    </button>
+                </div>
+            `);
         }
 
-        function closeCheckoutModal() {
-            document.getElementById('checkout-modal').classList.add('hidden');
-        }
-
-        // PANEL INTERAKSI CHECKOUT FORM SHEET[cite: 1]
         function handleDeliveryChoice(type) {
             const lblAmbil = document.getElementById('label-opsi-ambil');
             const lblGosend = document.getElementById('label-opsi-gosend');
@@ -637,17 +764,17 @@
             
             if(type === 'ambil_langsung') {
                 document.getElementById('r-ambil').checked = true;
-                lblAmbil.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none shadow-xs";
-                lblGosend.className = "border-2 border-gray-200 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-[#1E4D3A] select-none";
-                iconGosend.className = "fa-solid fa-motorcycle text-gray-400 text-lg mb-1";
-                areaAlamat.classList.add('hidden');
+                lblAmbil.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none shadow-xs";
+                lblGosend.className = "border-2 border-gray-200 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-[#1E4D3A] select-none";
+                iconGosend.className = "fa-solid fa-motorcycle text-gray-400 text-base mb-0.5";
+                areaAlamat.style.display = 'none';
                 document.getElementById('container-pay-cod').style.display = 'flex';
             } else if(type === 'gosend') {
                 document.getElementById('r-gosend').checked = true;
-                lblGosend.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none shadow-xs";
-                lblAmbil.className = "border-2 border-gray-200 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-[#1E4D3A] select-none";
-                iconGosend.className = "fa-solid fa-motorcycle text-[#1E4D3A] text-lg mb-1";
-                areaAlamat.classList.remove('hidden');
+                lblGosend.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none shadow-xs";
+                lblAmbil.className = "border-2 border-gray-200 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-[#1E4D3A] select-none";
+                iconGosend.className = "fa-solid fa-motorcycle text-[#1E4D3A] text-base mb-0.5";
+                areaAlamat.style.display = 'block';
                 document.getElementById('checkout-alamat-input').focus();
                 
                 document.getElementById('container-pay-cod').style.display = 'none';
@@ -663,16 +790,16 @@
             
             if(payType === 'cod') {
                 document.getElementById('r-pay-cod').checked = true;
-                containerCod.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex items-center justify-between cursor-pointer transition select-none";
-                containerQris.className = "border-2 border-gray-200 p-3 rounded-xl flex items-center justify-between cursor-pointer transition select-none";
-                iconQris.className = "fa-solid fa-qrcode text-gray-600 text-base";
-                qrisDisplay.classList.add('hidden');
+                containerCod.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold";
+                containerQris.className = "border-2 border-gray-200 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold";
+                iconQris.className = "fa-solid fa-qrcode text-gray-600";
+                qrisDisplay.style.display = 'none';
             } else if(payType === 'qris') {
                 document.getElementById('r-pay-qris').checked = true;
-                containerQris.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex items-center justify-between cursor-pointer transition select-none";
-                containerCod.className = "border-2 border-gray-200 p-3 rounded-xl flex items-center justify-between cursor-pointer transition select-none";
-                iconQris.className = "fa-solid fa-qrcode text-[#1E4D3A] text-base";
-                qrisDisplay.classList.remove('hidden');
+                containerQris.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold";
+                containerCod.className = "border-2 border-gray-200 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold";
+                iconQris.className = "fa-solid fa-qrcode text-[#1E4D3A]";
+                qrisDisplay.style.display = 'flex';
             }
         }
 
@@ -690,12 +817,10 @@
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
                 window.URL.revokeObjectURL(blobUrl);
-            } catch (err) {
-                window.open(qrisImgElement.src, '_blank');
-            }
+            } catch (err) { window.open(qrisImgElement.src, '_blank'); }
         }
 
-        // PROSES SUBMIT DATABASE ANTRIAN POS KASIR[cite: 1]
+        // PROSES SUBMIT DATABASE ANTRIAN POS KASIR
         async function finalizedCheckoutProcess() {
             if (keranjangBelanja.length === 0) return;
 
@@ -704,19 +829,10 @@
             const noteText = document.getElementById('order-note-input').value.trim();
             const opsiAmbil = document.querySelector('input[name="opsi_ambil"]:checked').value;
             const metodeBayar = document.querySelector('input[name="metode_bayar"]:checked').value;
-            const alamatTeks = document.getElementById('checkout-alamat-input').value.trim();
-
-            const inputNama = document.getElementById('checkout-nama-guest').value.trim();
-            const inputWa = document.getElementById('checkout-wa-guest').value.trim();
-            
-            if(!inputNama || !inputWa) {
-                alert('Mohon lengkapi Nama dan Nomor WhatsApp Anda untuk pendataan antrean Kasir!');
-                return;
-            }
+            const alamatTeks = document.getElementById('checkout-alamat-input') ? document.getElementById('checkout-alamat-input').value.trim() : '';
 
             if(opsiAmbil === 'GoSend' && !alamatTeks) {
                 alert('Mohon isi alamat pengiriman lengkap rute armada kurir GoSend!');
-                document.getElementById('checkout-alamat-input').focus();
                 return;
             }
 
@@ -725,12 +841,11 @@
             if(noteText) catatanGabungan += ` Catatan Tambahan: ${noteText}`;
 
             try {
-                // DATA PACKING MATRIX SINKRONISASI RELATIVE IDENTITY
                 const { error } = await _supabase.from('orders').insert([{
                     order_id: orderId, 
-                    member_id: detectedMemberCache ? detectedMemberCache.id : null, 
-                    member_name: inputNama, 
-                    member_wa: inputWa,     
+                    member_id: sessionUserCache.isMember ? sessionUserCache.id : null, 
+                    member_name: sessionUserCache.nama, 
+                    member_wa: sessionUserCache.wa,     
                     detail_items: keranjangBelanja, 
                     total_harga: total,
                     status: "Antrean", 
@@ -739,178 +854,124 @@
 
                 if (error) throw error;
 
-                alert(`Siap, Kak! Pesanan (${orderId}) sukses dikirim ke Kasir Warunk Arsi! 🎉\n\nNama: ${inputNama}\nStatus: ${detectedMemberCache ? 'VVIP Member (Poin Sinkron)' : 'Pelanggan Umum'}\nTotal: Rp ${total.toLocaleString('id-ID')}`);
+                alert(`Siap, Kak! Pesanan (${orderId}) sukses dikirim ke Kasir Warunk Arsi! 🎉`);
                 
-                // Reset State
                 keranjangBelanja = [];
                 document.getElementById('order-note-input').value = '';
-                document.getElementById('checkout-alamat-input').value = '';
                 
-                closeCheckoutModal();
+                tutupModal();
                 updateFloatingCartBar();
                 renderApplicationUi();
-            } catch (err) {
-                console.error(err);
-                alert("Gagal memproses orderan ke Cloud Kasir POS. Periksa koneksi internet Anda.");
-            }
+            } catch (err) { alert("Gagal memproses orderan ke Cloud Kasir POS."); }
         }
 
-        // SINKRONISASI BOTTOM NAVIGATION MENU BAR (GAMBAR 1)[cite: 1]
-        async function bukaModalPromo() {
-            setNavAktif('nav-promo');
-            bukaModal("<i class='fa-solid fa-tags text-[#E6A15C]'></i> Kupon Reward VVIP", "<p class='text-center py-4'>Memuat katalog kupon...</p>");
+        // SINKRONISASI MENU BAR BAWAH INTERACTIVE
+        function bukaModalPesanan() {
+            setNavAktif('nav-pesanan');
+            pemicuPencegatanLoginMP(async () => {
+                bukaModal("<i class='fa-solid fa-clock-rotate-left text-[#1E4D3A]'></i> Antrean Pesanan: " + sessionUserCache.nama, "<p class='text-center py-4'>Menghubungkan ke server kasir POS...</p>");
+                try {
+                    const query = _supabase.from('orders').select('*').order('id', { ascending: false }).limit(5);
+                    if (sessionUserCache.isMember) {
+                        query.eq('member_id', sessionUserCache.id);
+                    } else {
+                        query.eq('member_wa', sessionUserCache.wa);
+                    }
+                    const { data: orders } = await query;
+
+                    if(!orders || orders.length === 0) {
+                        document.getElementById('modal-body').innerHTML = "<p class='text-center py-4 text-gray-400 font-bold'>Belum ada riwayat antrean pesanan.</p>";
+                        return;
+                    }
+                    let html = "<div class='space-y-2.5'>";
+                    orders.forEach(o => {
+                        let badgeColor = "bg-amber-100 text-amber-800 border-amber-200 animate-pulse";
+                        if(o.status === 'Selesai') badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
+                        if(o.status === 'Batal') badgeColor = "bg-red-100 text-red-800 border-red-200";
+
+                        html += `<div class='bg-white border border-gray-100 p-3.5 rounded-xl flex justify-between items-center shadow-sm'>
+                            <div>
+                                <p class='font-bold text-gray-800 text-xs'>ORDER #${o.order_id || o.id}</p>
+                                <p class='text-[11px] text-gray-400 mt-0.5'>Total Nota: Rp ${Number(o.total_harga).toLocaleString('id-ID')}</p>
+                            </div>
+                            <span class='px-2.5 py-1 rounded-full font-black text-[10px] border ${badgeColor}'>${o.status}</span>
+                        </div>`;
+                    });
+                    document.getElementById('modal-body').innerHTML = html + "</div>";
+                } catch(e) { document.getElementById('modal-body').innerHTML = "<p class='text-center py-2'>Gagal memuat antrean.</p>"; }
+            });
+        }
+
+        function bukaModalAkun() {
+            setNavAktif('nav-akun');
+            pemicuPencegatanLoginMP(() => {
+                // Tampilan Halaman Akun, bisa akses katalog hadiah kupon jika dia VVIP Member[cite: 3]
+                let tombolRewardHtml = sessionUserCache.isMember ? 
+                    `<button onclick="bukaKatalogKuponDalamAkun()" class="w-full bg-[#E6A15C] hover:bg-amber-600 text-white font-black py-3.5 rounded-xl text-xs shadow-sm transition mt-3 flex items-center justify-center gap-1"><i class="fa-solid fa-gift"></i> Lihat Katalog Tukar Poin</button>` : '';
+
+                bukaModal("<i class='fa-solid fa-id-card text-[#1E4D3A]'></i> Akun Penjelajah", `
+                    <div class='bg-gradient-to-br from-[#1E4D3A] to-[#2d6b52] rounded-2xl p-5 text-white shadow-lg relative overflow-hidden'>
+                        <p class='text-[10px] uppercase tracking-wider text-emerald-200 font-bold'>Warunk Arsi Card Session</p>
+                        <h4 class='text-base font-black tracking-wide mt-1 uppercase'>${sessionUserCache.nama}</h4>
+                        <div class='mt-7 flex justify-between items-end text-[11px]'>
+                            <div><p class='text-[8px] text-emerald-200'>ID REGISTRASI / WA</p><p class='font-mono font-bold text-xs'>${sessionUserCache.isMember ? sessionUserCache.id : sessionUserCache.wa}</p></div>
+                            <div class='text-right'><p class='text-[8px] text-emerald-200'>TABUNGAN REWARD</p><p class='font-black text-amber-300 text-base'><i class='fa-solid fa-star'></i> ${sessionUserCache.poin} Poin</p></div>
+                        </div>
+                    </div>
+                    ${tombolRewardHtml}
+                    <button onclick='localStorage.removeItem("warunkarsi_user_session"); location.reload();' class='w-full border border-red-200 hover:bg-red-50 text-red-600 font-bold py-3 rounded-xl text-xs mt-2 transition text-center block'>KELUAR / LOGOUT AKUN</button>
+                `);
+            });
+        }
+
+        // FUNGSI KHUSUS UNTUK MELIHAT REWARD DARI DALAM DASHBOARD AKUN VIP MEMBER
+        async function bukaKatalogKuponDalamAkun() {
+            bukaModal("<i class='fa-solid fa-gift text-[#E6A15C]'></i> Katalog Reward Poin", "<p class='text-center py-4'>Memuat data reward cloud...</p>");
             try {
                 const { data: rewards } = await _supabase.from('rewards').select('*').order('poin_butuh', { ascending: true });
                 if(!rewards || rewards.length === 0) {
-                    document.getElementById('modal-body').innerHTML = "<p class='text-center py-4 text-gray-400'>Belum ada kupon reward aktif saat ini.</p>";
+                    document.getElementById('modal-body').innerHTML = "<p class='text-center py-4 text-gray-400'>Belum ada katalog reward aktif saat ini.</p>";
                     return;
                 }
-                
                 let html = "<div class='space-y-2.5'>";
-                const poinTersedia = detectedMemberCache ? detectedMemberCache.poin : 0;
-                
                 rewards.forEach(r => {
-                    const cukupPoin = poinTersedia >= r.poin_butuh;
                     html += `
                         <div class='border border-dashed border-[#1E4D3A]/30 bg-[#1E4D3A]/5 p-3.5 rounded-xl flex justify-between items-center'>
-                            <div>
-                                <p class='font-bold text-gray-800 text-xs'>${r.nama_reward}</p>
-                                ${detectedMemberCache ? `<p class='text-[10px] ${cukupPoin ? 'text-emerald-600 font-bold' : 'text-red-500'}'>> ${cukupPoin ? 'Poin Cukup untuk Klaim' : 'Poin Anda Belum Cukup'}</p>` : ''}
-                            </div>
+                            <div><p class='font-bold text-gray-800 text-xs'>${r.nama_reward}</p></div>
                             <span class='bg-[#E6A15C] text-white font-black text-[10px] px-2.5 py-1 rounded-full shadow-sm'>⭐ ${r.poin_butuh} Poin</span>
                         </div>`;
                 });
-                document.getElementById('modal-body').innerHTML = html + "</div>";
-            } catch(e) { document.getElementById('modal-body').innerHTML = "<p class='text-center py-2'>Gagal memuat data reward cloud.</p>"; }
-        }
-
-        async function bukaModalPesanan() {
-            setNavAktif('nav-pesanan');
-            
-            if (!detectedMemberCache) {
-                bukaModal("<i class='fa-solid fa-clock-rotate-left text-[#1E4D3A]'></i> Cek Antrean Transaksi", `
-                    <div class='space-y-3 p-1 text-center'>
-                        <p class='text-xs text-gray-500 leading-relaxed'>Kakak belum memasukkan nomor WhatsApp pada formulir pemesanan keranjang. Silakan masukkan nomor WhatsApp Anda untuk melihat riwayat antrean:</p>
-                        <div class='flex gap-2 mt-2'>
-                            <input type='text' id='nav-search-wa' placeholder='Contoh: 0812345...' class='w-full border rounded-xl p-2.5 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A]'>
-                            <button onclick='prosesCekPesananNav()' class='bg-[#1E4D3A] text-white px-4 py-2 rounded-xl text-xs font-bold flex-shrink-0 active:scale-95 transition'>Cari</button>
-                        </div>
-                        <div id='nav-pesanan-result' class='pt-2 text-left space-y-2 max-h-[200px] overflow-y-auto'></div>
-                    </div>
-                `);
-                return;
-            }
-
-            tampilkanRiwayatPesananCloud(detectedMemberCache.id, detectedMemberCache.nama);
-        }
-
-        async function tampilkanRiwayatPesananCloud(memberId, namaUser) {
-            bukaModal("<i class='fa-solid fa-clock-rotate-left text-[#1E4D3A]'></i> Antrean Pesanan: " + namaUser, "<p class='text-center py-4'>Menghubungkan ke antrean kasir POS...</p>");
-            try {
-                const { data: orders } = await _supabase.from('orders').select('*').eq('member_id', memberId).order('id', { ascending: false }).limit(5);
-                if(!orders || orders.length === 0) {
-                    document.getElementById('modal-body').innerHTML = "<p class='text-center py-4 text-gray-400 font-bold'>Belum ada riwayat antrean pesanan untuk akun ini.</p>";
-                    return;
-                }
-                let html = "<div class='space-y-2.5'>";
-                orders.forEach(o => {
-                    let c = o.status === "Selesai" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800";
-                    html += `<div class='bg-white border border-gray-100 p-3.5 rounded-xl flex justify-between items-center shadow-sm'>
-                        <div>
-                            <p class='font-bold text-gray-800 text-xs'>ORDER #${o.order_id || o.id}</p>
-                            <p class='text-[11px] text-gray-400 mt-0.5'>Total Nota: Rp ${Number(o.total_harga).toLocaleString('id-ID')}</p>
-                        </div>
-                        <span class='px-2.5 py-1 rounded-full font-black text-[10px] ${c}'>${o.status}</span>
-                    </div>`;
-                });
-                document.getElementById('modal-body').innerHTML = html + "</div>";
-            } catch(e) { document.getElementById('modal-body').innerHTML = "<p class='text-center py-2'>Gagal memuat antrean dari cloud POS.</p>"; }
-        }
-
-        async function prosesCekPesananNav() {
-            const waInput = document.getElementById('nav-search-wa').value.trim();
-            const resultDiv = document.getElementById('nav-pesanan-result');
-            if(!waInput) return alert('Masukkan nomor WhatsApp Anda!');
-            
-            resultDiv.innerHTML = "<p class='text-center py-2 text-gray-400 animate-pulse text-[11px]'>Mencari data nota...</p>";
-            try {
-                const { data: orders } = await _supabase.from('orders').select('*').eq('member_wa', waInput).order('id', { ascending: false }).limit(3);
-                if(!orders || orders.length === 0) {
-                    resultDiv.innerHTML = "<p class='text-center py-2 text-red-500 font-bold text-[11px]'>Riwayat pesanan tidak ditemukan.</p>";
-                    return;
-                }
-                resultDiv.innerHTML = orders.map(o => {
-                    let c = o.status === "Selesai" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800";
-                    return `<div class='bg-gray-50 border border-gray-100 p-3 rounded-xl flex justify-between items-center shadow-xs'>
-                        <div><p class='font-bold text-gray-700 text-[11px]'>ORDER #${o.order_id || o.id}</p><p class='text-[10px] text-gray-400'>Rp ${Number(o.total_harga).toLocaleString('id-ID')}</p></div>
-                        <span class='px-2 py-0.5 rounded-full font-black text-[9px] ${c}'>${o.status}</span>
-                    </div>`;
-                }).join('');
-            } catch(e) { resultDiv.innerHTML = "<p class='text-center py-2 text-gray-400'>Gagal sinkronisasi jaringan POS.</p>"; }
-        }
-
-        async function bukaModalAkun() {
-            setNavAktif('nav-akun');
-            
-            if (!detectedMemberCache) {
-                bukaModal("<i class='fa-solid fa-id-card text-[#1E4D3A]'></i> Profil Digital Member", `
-                    <div class='space-y-3.5 p-1 text-center'>
-                        <div class='w-12 h-12 bg-amber-50 text-[#E6A15C] text-lg rounded-full flex items-center justify-center mx-auto'><i class='fa-solid fa-crown'></i></div>
-                        <p class='text-xs text-gray-500 leading-relaxed'>Kakak belum terhubung ke sistem member VVIP. Silakan masukkan nomor WhatsApp untuk melihat Kartu Tabungan Poin Loyalitas Kakak:</p>
-                        <div class='flex gap-2 mt-1'>
-                            <input type='text' id='nav-login-wa-member' placeholder='Masukkan No. WhatsApp Member...' class='w-full border rounded-xl p-2.5 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A]'>
-                            <button onclick='prosesLoginMemberNav()' class='bg-[#1E4D3A] text-white px-4 py-2 rounded-xl text-xs font-bold flex-shrink-0 active:scale-95 transition'>Buka</button>
-                        </div>
-                    </div>
-                `);
-                return;
-            }
-
-            tampilkanKartuMemberDigital(detectedMemberCache);
-        }
-
-        function tampilkanKartuMemberDigital(memberObj) {
-            bukaModal("<i class='fa-solid fa-id-card text-[#1E4D3A]'></i> Profil VVIP Member", `
-                <div class='bg-gradient-to-br from-[#1E4D3A] to-[#2d6b52] rounded-2xl p-4.5 text-white shadow-lg relative overflow-hidden'>
-                    <div class='absolute -right-6 -bottom-6 w-24 h-24 bg-white/5 rounded-full pointer-events-none'></div>
-                    <p class='text-[10px] uppercase tracking-wider text-emerald-200 font-bold'>Warunk Arsi Member Card</p>
-                    <h4 class='text-sm font-black tracking-wide mt-1 uppercase'>${memberObj.nama}</h4>
-                    <div class='mt-7 flex justify-between items-end text-[11px]'>
-                        <div><p class='text-[8px] text-emerald-200'>ID MEMBER / WA</p><p class='font-mono font-bold text-xs tracking-wider'>${memberObj.id}</p></div>
-                        <div class='text-right'><p class='text-[8px] text-emerald-200'>TABUNGAN REWARD</p><p class='font-bold text-amber-300 text-sm'><i class='fa-solid fa-star'></i> ${memberObj.poin || 0} Poin</p></div>
-                    </div>
-                </div>
-                <div class='pt-2 text-center'><p class='text-[10px] text-gray-400 italic'>Poin otomatis bertambah saat Kasir menekan tombol "Selesai & Beri Poin" di POS pusat kendali.</p></div>
-            `);
-        }
-
-        async function prosesLoginMemberNav() {
-            const inputWa = document.getElementById('nav-login-wa-member').value.trim();
-            if(!inputWa) return alert('Masukkan nomor WhatsApp Anda!');
-            
-            try {
-                const { data, error } = await _supabase.from('members').select('*').eq('wa', inputWa).maybeSingle();
-                if(data && !error) {
-                    detectedMemberCache = data;
-                    tampilkanKartuMemberDigital(data);
-                } else {
-                    alert('Maaf, nomor WhatsApp tersebut belum terdaftar sebagai member VVIP Warunk Arsi.');
-                }
-            } catch(e) { alert('Gagal memproses data member cloud.'); }
+                document.getElementById('modal-body').innerHTML = html + `</div><button onclick="bukaModalAkun()" class="w-full text-center text-[11px] text-gray-400 font-bold mt-2 hover:underline"><i class="fa-solid fa-arrow-left"></i> Kembali ke Profil</button>`;
+            } catch(e) { document.getElementById('modal-body').innerHTML = "<p class='text-center py-2'>Gagal memuat reward.</p>"; }
         }
 
         function setNavAktif(idTombol) {
             ['nav-beranda', 'nav-promo', 'nav-pesanan', 'nav-akun'].forEach(id => {
-                document.getElementById(id).className = (id === idTombol) 
-                    ? "flex flex-col items-center gap-1 text-[#1E4D3A] font-bold transition"
-                    : "flex flex-col items-center gap-1 text-gray-400 font-medium transition";
+                const el = document.getElementById(id);
+                if(el) {
+                    el.className = (id === idTombol) 
+                        ? "flex flex-col items-center gap-1 text-[#1E4D3A] font-bold transition"
+                        : "flex flex-col items-center gap-1 text-gray-400 font-medium transition";
+                }
             });
         }
 
+        // CONTROL VIEW BASE
         function berandaAction() {
             tutupModal();
             setNavAktif('nav-beranda');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function tutupModal() {
+            document.getElementById('global-modal').style.display = 'none';
+            setNavAktif('nav-beranda');
+        }
+
+        function bukaModal(judul, htmlContent) {
+            document.getElementById('modal-title').innerHTML = judul;
+            document.getElementById('modal-body').innerHTML = htmlContent;
+            document.getElementById('global-modal').style.display = 'flex';
         }
 
         function filterCategory(categoryName) {
@@ -927,11 +988,12 @@
         function bukaModalAlamat() {
             bukaModal("<i class='fa-solid fa-map-location-dot text-[#1E4D3A]'></i> Alamat Toko", `
                 <p class='font-bold text-[#1E4D3A] text-sm'>Warunk Arsi Headquarter</p>
-                <p class='leading-relaxed mt-1'>Jalan Mawar IV No. 35, Bekasi Utara.</p>
+                <p class='leading-relaxed mt-1 text-gray-600'>Jalan Mawar IV No. 35, Rawa Bambu - Bekasi.</p>
             `);
         }
 
         window.onload = () => {
+            loadMarketplaceUserSession();
             checkStoreStatus();
             fetchTokoSettings();
             fetchMenuData();
