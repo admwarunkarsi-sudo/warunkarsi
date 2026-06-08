@@ -950,21 +950,45 @@
         async function bukaKatalogKuponDalamAkun() {
             bukaModal("<i class='fa-solid fa-gift text-[#E6A15C]'></i> Katalog Reward Poin", "<p class='text-center py-4'>Memuat data reward cloud...</p>");
             try {
-                const { data: rewards } = await _supabase.from('rewards').select('*').order('poin_butuh', { ascending: true });
+                // Mengambil data langsung dari tabel menu yang poinnya di atas 0
+                const { data: rewards, error } = await _supabase
+                    .from('menu')
+                    .select('*')
+                    .gt('butuh_poin', 0)
+                    .order('butuh_poin', { ascending: true });
+
+                if (error) throw error;
+
                 if(!rewards || rewards.length === 0) {
-                    document.getElementById('modal-body').innerHTML = "<p class='text-center py-4 text-gray-400'>Belum ada katalog reward aktif saat ini.</p>";
+                    document.getElementById('modal-body').innerHTML = "<p class='text-center py-4 text-gray-400 font-bold'>Belum ada menu reward aktif saat ini.</p>";
                     return;
                 }
+                
                 let html = "<div class='space-y-2.5'>";
                 rewards.forEach(r => {
+                    const isHabis = r.status === "Kosong/Habis" || r.is_tersedia === false || r.is_tersedia === 0;
+                    
                     html += `
-                        <div class='border border-dashed border-[#1E4D3A]/30 bg-[#1E4D3A]/5 p-3.5 rounded-xl flex justify-between items-center'>
-                            <div><p class='font-bold text-gray-800 text-xs'>${r.nama_reward}</p></div>
-                            <span class='bg-[#E6A15C] text-white font-black text-[10px] px-2.5 py-1 rounded-full shadow-sm'>⭐ ${r.poin_butuh} Poin</span>
+                        <div class='border border-dashed border-[#1E4D3A]/30 bg-white p-3.5 rounded-xl flex justify-between items-center shadow-sm ${isHabis ? 'opacity-60' : ''}'>
+                            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                <img src="${r.gambar_url || 'https://placehold.co/150?text=Warunk+Arsi'}" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 bg-gray-50 ${isHabis ? 'grayscale' : ''}">
+                                <div class="min-w-0 flex-1">
+                                    <p class='font-bold text-gray-800 text-xs truncate'>${r.nama}</p>
+                                    <p class='text-[10px] text-gray-400 mt-0.5 uppercase tracking-wide font-medium'>${r.kategori}</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex-shrink-0 ml-2">
+                                <span class='bg-[#E6A15C] text-white font-black text-[10px] px-2.5 py-1 rounded-full shadow-sm whitespace-nowrap block'>⭐ ${r.butuh_poin} Poin</span>
+                                ${isHabis ? '<span class="text-[9px] text-red-500 font-bold uppercase block mt-1">Habis</span>' : ''}
+                            </div>
                         </div>`;
                 });
-                document.getElementById('modal-body').innerHTML = html + `</div><button onclick="bukaModalAkun()" class="w-full text-center text-[11px] text-gray-400 font-bold mt-2 hover:underline"><i class="fa-solid fa-arrow-left"></i> Kembali ke Profil</button>`;
-            } catch(e) { document.getElementById('modal-body').innerHTML = "<p class='text-center py-2'>Gagal memuat reward.</p>"; }
+                
+                document.getElementById('modal-body').innerHTML = html + `</div><button onclick="bukaModalAkun()" class="w-full text-center text-[11px] text-gray-400 font-bold mt-3 hover:underline"><i class="fa-solid fa-arrow-left"></i> Kembali ke Profil</button>`;
+            } catch(e) { 
+                console.error("Gagal memuat katalog poin:", e);
+                document.getElementById('modal-body').innerHTML = "<p class='text-center py-2 text-red-500 font-bold text-xs'>Gagal memuat data kupon dari server.</p>"; 
+            }
         }
 
         function setNavAktif(idTombol) {
