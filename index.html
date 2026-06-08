@@ -32,7 +32,6 @@
 </head>
 <body class="text-gray-800 font-sans pb-36 select-none">
 
-    <!-- Header / Top Bar (Tema Hijau Premium) -->
     <div class="bg-[#1E4D3A] text-white px-4 pt-5 pb-4 rounded-b-[2rem] shadow-lg sticky top-0 z-40">
         <div class="max-w-md mx-auto">
             <div class="flex items-center gap-1.5 text-[11px] opacity-85 tracking-wide uppercase font-bold">
@@ -46,7 +45,6 @@
                 <i class="fa-solid fa-chevron-right text-xs opacity-70"></i>
             </div>
 
-            <!-- Search Bar -->
             <div class="mt-4 relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
                     <i class="fa-solid fa-magnifying-glass text-sm"></i>
@@ -58,7 +56,6 @@
 
     <div class="max-w-md mx-auto px-4 mt-4 space-y-5">
         
-        <!-- Status Operasional (FIXED MOBILE RESPONSIVE LAYOUT - TIDAK BERTUMPUK) -->
         <div id="status-operasional-container" class="bg-white border border-gray-100 rounded-2xl p-3.5 flex items-center justify-between shadow-sm gap-2">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
                 <div class="w-9 h-9 bg-[#1E4D3A]/10 rounded-xl flex items-center justify-center text-[#1E4D3A] text-sm flex-shrink-0">
@@ -66,18 +63,15 @@
                 </div>
                 <div class="min-w-0 flex-1">
                     <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider truncate">Operasional Warung</p>
-                    <!-- Hari & Tanggal Berjalan Real-time Dinamis -->
                     <p id="realtime-date-text" class="text-xs font-black truncate mt-0.5">-</p>
                 </div>
             </div>
-            <!-- Badge Status Buka / Tutup -->
             <div id="badge-status-toko" class="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black shadow-sm transition-all duration-300 flex-shrink-0 whitespace-nowrap">
                 <span class="w-1.5 h-1.5 rounded-full block animate-pulse"></span>
                 <span id="text-status-toko">-</span>
             </div>
         </div>
 
-        <!-- Slider Banner -->
         <div id="slider-banner-container" class="relative overflow-hidden rounded-2xl shadow-md bg-gray-200 aspect-[16/9]">
             <div id="slider-wrapper" class="flex transition-transform duration-500 ease-in-out h-full w-full">
                 <div class="w-full h-full flex-shrink-0">
@@ -87,7 +81,6 @@
             <div id="slider-dots" class="absolute bottom-3 inset-x-0 flex justify-center gap-1.5"></div>
         </div>
 
-        <!-- Kategori Pilihan -->
         <div class="kategori-scroll-lancar py-1">
             <button onclick="filterCategory('Semua')" class="category-tab bg-[#1E4D3A] text-white text-xs font-bold px-4 py-2.5 rounded-xl whitespace-nowrap shadow-sm flex-shrink-0 transition">Semua</button>
             <button onclick="filterCategory('pernasian')" class="category-tab bg-white text-gray-500 border border-gray-200 text-xs font-bold px-4 py-2.5 rounded-xl whitespace-nowrap shadow-sm flex-shrink-0 transition">🍚 PERNASIAN</button>
@@ -97,7 +90,6 @@
             <button onclick="filterCategory('LAINNYA')" class="category-tab bg-white text-gray-500 border border-gray-200 text-xs font-bold px-4 py-2.5 rounded-xl whitespace-nowrap shadow-sm flex-shrink-0 transition">✨ LAINNYA</button>
         </div>
 
-        <!-- Flash Sale Section -->
         <div id="section-flash-sale" class="space-y-3 bg-gradient-to-r from-red-50 to-orange-50 p-3 rounded-2xl border border-red-100 shadow-sm" style="display: none;">
             <div class="flex justify-between items-center px-1">
                 <div class="flex items-center gap-1.5 text-red-600 font-black text-xs uppercase tracking-wider">
@@ -108,7 +100,6 @@
             <div id="flash-sale-container" class="flex gap-3 overflow-x-auto pb-1 no-scrollbar"></div>
         </div>
 
-        <!-- Bagian Menu Utama Grid -->
         <div class="space-y-3.5">
             <div class="flex justify-between items-center border-b border-gray-200/60 pb-2">
                 <h2 class="font-black text-gray-700 text-xs uppercase tracking-wider flex items-center gap-1.5">
@@ -128,7 +119,6 @@
 
     </div>
 
-    <!-- Floating Basket Bar -->
     <div id="floating-cart-bar" class="fixed bottom-20 inset-x-0 mx-auto max-w-md px-3 z-50 flex-col gap-2 pointer-events-none" style="display: none;">
         <div class="w-full bg-white px-4 py-2.5 rounded-2xl shadow-md border border-gray-200 flex items-center gap-2 pointer-events-auto">
             <i class="fa-solid fa-pen-to-square text-[#1E4D3A] text-sm"></i>
@@ -152,7 +142,6 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
     <div class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-100 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] py-2 px-6 z-50">
         <div class="max-w-md mx-auto flex justify-between items-center text-center">
             <button onclick="berandaAction()" id="nav-beranda" class="flex flex-col items-center gap-1 text-[#1E4D3A] font-bold transition">
@@ -174,7 +163,6 @@
         </div>
     </div>
 
-    <!-- Global Bottom Modal Sheet -->
     <div id="global-modal" class="fixed inset-0 bg-black/60 hidden items-end justify-center z-50 p-0 transition-all duration-300">
         <div class="bg-white w-full max-w-md rounded-t-[2.5rem] p-6 space-y-4 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-gray-100 pb-3.5">
@@ -196,6 +184,7 @@
         let totalSlides = 0;
         let keranjangBelanja = [];
         let sessionUserCache = null; 
+        let cacheOrdersPelanggan = []; // Tempat menyimpan temporer list orderan buat ditarik detailnya nanti
 
         function loadMarketplaceUserSession() {
             const savedSession = localStorage.getItem('warunkarsi_user_session');
@@ -214,28 +203,91 @@
                 <div class='space-y-3.5 p-1 text-center'>
                     <p class='text-xs text-gray-500 leading-relaxed font-medium'>Untuk melanjutkan transaksi, cek poin reward, atau melihat antrean nota, silakan masukkan nomor WhatsApp Anda terlebih dahulu:</p>
                     <div class='space-y-2 text-left'>
-                        <input type='text' id='mp-wa-input' placeholder='Masukkan Nomor WhatsApp (Cth: 0812...)' class='w-full border rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A] font-bold tracking-wide'>
-                        <input type='text' id='mp-nama-input' placeholder='Tulis Nama Lengkap Anda...' class='w-full border rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A]'>
+                        <div class="relative">
+                            <input type='text' id='mp-wa-input' placeholder='Masukkan Nomor WhatsApp (Cth: 0812...)' class='w-full border rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A] font-bold tracking-wide pr-10'>
+                            <div id="mp-wa-loader" class="absolute right-3 top-3.5 hidden">
+                                <i class="fa-solid fa-circle-notch animate-spin text-gray-400 text-xs"></i>
+                            </div>
+                            <div id="mp-wa-check" class="absolute right-3 top-3.5 hidden">
+                                <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
+                            </div>
+                        </div>
+                        <div id="container-mp-nama-input">
+                            <input type='text' id='mp-nama-input' placeholder='Tulis Nama Lengkap Anda...' class='w-full border rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-[#1E4D3A]'>
+                        </div>
                     </div>
                     <button id='mp-btn-login' class='w-full bg-[#1E4D3A] text-white font-black py-3 rounded-xl text-xs shadow-md active:scale-95 transition mt-1'>MASUK KE SISTEM ANTREAN</button>
                 </div>
             `);
 
-            document.getElementById('mp-btn-login').onclick = async () => {
-                const wa = document.getElementById('mp-wa-input').value.trim();
-                const nama = document.getElementById('mp-nama-input').value.trim();
+            let memberTerdeteksiCache = null;
+            const waInput = document.getElementById('mp-wa-input');
+            const namaContainer = document.getElementById('container-mp-nama-input');
+            const namaInput = document.getElementById('mp-nama-input');
+            const loaderIcon = document.getElementById('mp-wa-loader');
+            const checkIcon = document.getElementById('mp-wa-check');
 
-                if (!wa || !nama) return alert('Mohon lengkapi Nama dan Nomor WhatsApp Kakak!');
+            waInput.addEventListener('input', async () => {
+                const waVal = waInput.value.trim();
+                
+                if (waVal.length >= 9) {
+                    loaderIcon.classList.remove('hidden');
+                    checkIcon.classList.add('hidden');
+                    
+                    try {
+                        const { data: member } = await _supabase.from('members').select('*').eq('wa', waVal).maybeSingle();
+                        
+                        if (member) {
+                            memberTerdeteksiCache = member;
+                            namaInput.value = member.nama; 
+                            namaContainer.style.display = 'none'; 
+                            checkIcon.classList.remove('hidden');
+                        } else {
+                            memberTerdeteksiCache = null;
+                            namaContainer.style.display = 'block'; 
+                            if(namaInput.value === (member && member.nama ? member.nama : "")) namaInput.value = "";
+                        }
+                    } catch (e) {
+                        console.error("Gagal verifikasi nomor otomatis:", e);
+                    } finally {
+                        loaderIcon.classList.add('hidden');
+                    }
+                } else {
+                    memberTerdeteksiCache = null;
+                    namaContainer.style.display = 'block';
+                    loaderIcon.classList.add('hidden');
+                    checkIcon.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('mp-btn-login').onclick = async () => {
+                const wa = waInput.value.trim();
+                const nama = namaInput.value.trim();
+
+                if (!wa) return alert('Mohon lengkapi Nomor WhatsApp Kakak!');
                 if (wa.length < 9) return alert('Nomor WhatsApp tidak valid!');
+                if (namaContainer.style.display !== 'none' && !nama) {
+                    return alert('Mohon lengkapi Nama Lengkap Kakak!');
+                }
 
                 document.getElementById('mp-btn-login').innerText = "Memproses berkas cloud...";
 
                 try {
-                    const { data: member } = await _supabase.from('members').select('*').eq('wa', wa).maybeSingle();
                     let dataUserFinal = { wa: wa, nama: nama, isMember: false, id: null, poin: 0 };
 
-                    if (member) {
-                        dataUserFinal = { wa: member.wa, nama: member.nama, isMember: true, id: member.id, poin: member.poin };
+                    if (memberTerdeteksiCache) {
+                        dataUserFinal = { 
+                            wa: memberTerdeteksiCache.wa, 
+                            nama: memberTerdeteksiCache.nama, 
+                            isMember: true, 
+                            id: memberTerdeteksiCache.id, 
+                            poin: memberTerdeteksiCache.poin 
+                        };
+                    } else {
+                        const { data: member } = await _supabase.from('members').select('*').eq('wa', wa).maybeSingle();
+                        if (member) {
+                            dataUserFinal = { wa: member.wa, nama: member.nama, isMember: true, id: member.id, poin: member.poin };
+                        }
                     }
 
                     localStorage.setItem('warunkarsi_user_session', JSON.stringify(dataUserFinal));
@@ -244,7 +296,11 @@
                     alert(`Selamat Datang, ${dataUserFinal.nama}! 🎉\nStatus: ${dataUserFinal.isMember ? 'VIP Member' : 'Pelanggan Umum'}`);
                     tutupModal();
                     fungsiCallbackPenerus(); 
-                } catch (err) { alert('Gagal sinkronisasi data.'); }
+                } catch (err) { 
+                    alert('Gagal sinkronisasi data.'); 
+                } finally {
+                    document.getElementById('mp-btn-login').innerText = "MASUK KE SISTEM ANTREAN";
+                }
             };
         }
 
@@ -306,7 +362,6 @@
             }
         }
 
-        // SETTING BANNER SLIDER
         async function fetchTokoSettings() {
             try {
                 const { data } = await _supabase.from('toko_settings').select('*').limit(1).maybeSingle();
@@ -356,11 +411,10 @@
 
         setInterval(() => { if (totalSlides > 1) { currentSlide = (currentSlide + 1) % totalSlides; updateSlider(); } }, 4000);
 
-        // 🌟 UPDATE UTAMA: ENGINE JAM & KALENDER DINAMIS REAL-TIME (TIDAK BERTUMPUK DI HP)
         function checkStoreStatus() {
             const sekarang = new Date();
-            const hariMasehi = sekarang.getDay(); // 0: Minggu, 1: Senin, ..., 6: Sabtu
-            const tanggal = sekarang.getDate();
+            const hariMasehi = sekarang.getDay(); 
+            const tanggal = Clinical = sekarang.getDate();
             const tahun = sekarang.getFullYear();
 
             const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -378,19 +432,16 @@
             const dot = badge.querySelector('span:first-child');
             const textStatus = document.getElementById('text-status-toko');
 
-            // Syarat Kondisi Warna: Senin Tutup (Merah) | Selasa - Minggu Buka (Hijau)
             if (hariMasehi === 1) {
-                // HARI SENIN: Status Tutup (Warna Merah)
                 dateLabel.innerText = `${namaHari}, ${formatTanggalBiasa}`;
-                dateLabel.className = "text-xs font-black truncate mt-0.5 text-red-600"; // Teks tanggal jadi merah
+                dateLabel.className = "text-xs font-black truncate mt-0.5 text-red-600"; 
 
                 badge.className = "flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-red-50 text-red-600 border border-red-100 flex-shrink-0 whitespace-nowrap";
                 dot.className = "w-1.5 h-1.5 rounded-full block bg-red-600";
                 textStatus.innerText = "Tutup (Libur)";
             } else {
-                // HARI SELASA - MINGGU: Status Buka (Warna Hijau)
                 dateLabel.innerText = `${namaHari}, ${formatTanggalBiasa}`;
-                dateLabel.className = "text-xs font-black truncate mt-0.5 text-emerald-700"; // Teks tanggal jadi hijau
+                dateLabel.className = "text-xs font-black truncate mt-0.5 text-emerald-700"; 
 
                 badge.className = "flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-100 flex-shrink-0 whitespace-nowrap";
                 dot.className = "w-1.5 h-1.5 rounded-full block bg-emerald-600 animate-pulse";
@@ -398,7 +449,6 @@
             }
         }
 
-        // TARIK DATA DARI DATABASE CLOUD SUPABASE
         async function fetchMenuData() {
             try {
                 const { data, error } = await _supabase.from('menu').select('*').order('id', { ascending: true });
@@ -406,7 +456,7 @@
                     menusDataCache = data;
                     renderApplicationUi();
                 }
-            } catch (e) { console.error("Gagal sinkron data menu:", e); }
+            } catch (e) { console.error("Gagal sink data menu:", e); }
         }
 
         function handleSearchMenu() {
@@ -527,7 +577,7 @@
             }).join('');
         }
 
-        function kuantitasMajuLokal(menuId, isFlashSale) {
+        function tambahKuantitasLokal(menuId, isFlashSale) {
             tambahKeKeranjangLokal(menuId, isFlashSale);
         }
 
@@ -785,16 +835,24 @@
                         document.getElementById('modal-body').innerHTML = "<p class='text-center py-4 text-gray-400 font-bold'>Belum ada riwayat antrean pesanan.</p>";
                         return;
                     }
+                    
+                    // Simpan data orderan yang ditarik ke dalam cache lokal agar bisa dibuka detailnya sewaktu-waktu tanpa nembak database lagi
+                    cacheOrdersPelanggan = orders;
+
                     let html = "<div class='space-y-2.5'>";
+                    html += "<p class='text-[10px] text-gray-400 px-1 font-semibold'><i class='fa-solid fa-circle-info'></i> Klik pada kotak pesanan untuk melihat rincian item belanjaan.</p>";
+                    
                     orders.forEach(o => {
                         let badgeColor = "bg-amber-100 text-amber-800 border-amber-200 animate-pulse";
                         if(o.status === 'Selesai') badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
                         if(o.status === 'Batal') badgeColor = "bg-red-100 text-red-800 border-red-200";
 
-                        html += `<div class='bg-white border border-gray-100 p-3.5 rounded-xl flex justify-between items-center shadow-sm'>
+                        // Di sini kita tambahkan event onclick="bukaDetailAntreanSpesifik" supaya bisa diklik interaktif
+                        html += `
+                        <div onclick="bukaDetailAntreanSpesifik('${o.order_id || o.id}')" class='bg-white border border-gray-200/80 p-3.5 rounded-xl flex justify-between items-center shadow-xs cursor-pointer active:bg-gray-50 transition duration-100'>
                             <div>
-                                <p class='font-bold text-gray-800 text-xs'>ORDER #${o.order_id || o.id}</p>
-                                <p class='text-[11px] text-gray-400 mt-0.5'>Total Nota: Rp ${Number(o.total_harga).toLocaleString('id-ID')}</p>
+                                <p class='font-black text-gray-800 text-xs tracking-wide flex items-center gap-1'>ORDER #${o.order_id || o.id} <i class="fa-solid fa-chevron-right text-[9px] text-gray-400"></i></p>
+                                <p class='text-[11px] text-gray-500 mt-0.5 font-medium'>Total Nota: <span class="font-bold text-gray-800">Rp ${Number(o.total_harga).toLocaleString('id-ID')}</span></p>
                             </div>
                             <span class='px-2.5 py-1 rounded-full font-black text-[10px] border ${badgeColor}'>${o.status}</span>
                         </div>`;
@@ -802,6 +860,70 @@
                     document.getElementById('modal-body').innerHTML = html + "</div>";
                 } catch(e) { document.getElementById('modal-body').innerHTML = "<p class='text-center py-2'>Gagal memuat antrean.</p>"; }
             });
+        }
+
+        // 🌟 PERUBAHAN UTAMA: Fungsi baru untuk menampilkan detail menu hidangan dalam nota pesanan
+        function bukaDetailAntreanSpesifik(idOrderDipilih) {
+            const dataOrder = cacheOrdersPelanggan.find(o => (o.order_id == idOrderDipilih || o.id == idOrderDipilih));
+            if(!dataOrder) return alert("Berkas data detail orderan tidak ditemukan.");
+
+            let itemsHtml = "";
+            let susunanItems = [];
+            
+            // Lakukan parsing aman terhadap format detail_items (baik bertipe array objek atau string json biasa)
+            if (typeof dataOrder.detail_items === 'string') {
+                try { susunanItems = JSON.parse(dataOrder.detail_items); } catch(e) { susunanItems = []; }
+            } else if (Array.isArray(dataOrder.detail_items)) {
+                susunanItems = dataOrder.detail_items;
+            }
+
+            if(susunanItems.length > 0) {
+                itemsHtml = susunanItems.map(it => `
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-none">
+                        <div>
+                            <p class="font-bold text-gray-800 text-xs">${it.nama}</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5">${it.qty} Porsi x Rp ${Number(it.harga).toLocaleString('id-ID')}</p>
+                        </div>
+                        <span class="font-black text-gray-700 text-xs">Rp ${(it.qty * it.harga).toLocaleString('id-ID')}</span>
+                    </div>
+                `).join('');
+            } else {
+                itemsHtml = "<p class='text-gray-400 italic text-center py-2'>Data rincian menu kosong.</p>";
+            }
+
+            bukaModal(`
+                <div class="flex items-center gap-1.5">
+                    <span onclick="bukaModalPesanan()" class="cursor-pointer text-gray-400 hover:text-gray-700 mr-1"><i class="fa-solid fa-arrow-left text-sm"></i></span> 
+                    <span>Rincian Nota #${dataOrder.order_id || dataOrder.id}</span>
+                </div>
+            `, `
+                <div class="space-y-4 p-0.5 text-xs">
+                    <div class="bg-gray-50/80 p-3 rounded-xl border border-gray-100 space-y-1">
+                        <p class="text-gray-500 font-medium">Pemesan: <span class="font-bold text-gray-800">${dataOrder.member_name || 'Pelanggan Umum'}</span></p>
+                        <p class="text-gray-500 font-medium">WhatsApp: <span class="font-mono font-bold text-gray-800">${dataOrder.member_wa}</span></p>
+                        <p class="text-gray-500 font-medium">Catatan / Rute: <span class="font-medium text-amber-900">${dataOrder.catatan || '-'}</span></p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="font-black text-gray-700 uppercase tracking-wider text-[10px] mb-2"><i class="fa-solid fa-utensils text-[#1E4D3A]"></i> Menu Yang Dipesan:</p>
+                        <div class="bg-white border rounded-xl px-3.5 py-1.5 shadow-xs">
+                            ${itemsHtml}
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-[#1E4D3A]/5 border border-[#1E4D3A]/10 p-3.5 rounded-xl">
+                        <div>
+                            <p class="text-[9px] text-gray-400 font-bold uppercase">Total Pembayaran</p>
+                            <p class="text-sm font-black text-[#1E4D3A] mt-0.5">Rp ${Number(dataOrder.total_harga).toLocaleString('id-ID')}</p>
+                        </div>
+                        <span class="text-[9px] bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full font-black uppercase tracking-wider">${dataOrder.status}</span>
+                    </div>
+
+                    <button onclick="bukaModalPesanan()" class="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-xs transition active:scale-98">
+                        <i class="fa-solid fa-reply-all"></i> KEMBALI KAMPUNG ANTREAN
+                    </button>
+                </div>
+            `);
         }
 
         function bukaModalAkun() {
@@ -893,10 +1015,10 @@
 
         window.onload = () => {
             loadMarketplaceUserSession();
-            checkStoreStatus(); // Eksekusi kalender real-time saat pertama kali web dibuka
+            checkStoreStatus(); 
             fetchTokoSettings();
             fetchMenuData();
-            setInterval(checkStoreStatus, 60000); // Re-check status berkala setiap 1 menit
+            setInterval(checkStoreStatus, 60000); 
             setInterval(fetchMenuData, 15000); 
         };
     </script>
