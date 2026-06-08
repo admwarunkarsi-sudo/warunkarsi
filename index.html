@@ -920,7 +920,7 @@
                     </div>
 
                     <button onclick="bukaModalPesanan()" class="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-xs transition active:scale-98">
-                        <i class="fa-solid fa-reply-all"></i> KEMBALI KAMPUNG ANTREAN
+                        <i class="fa-solid fa-reply-all"></i> KEMBALI KE HALAMAN ANTREAN
                     </button>
                 </div>
             `);
@@ -932,7 +932,7 @@
                 let tombolRewardHtml = sessionUserCache.isMember ? 
                     `<button onclick="bukaKatalogKuponDalamAkun()" class="w-full bg-[#E6A15C] hover:bg-amber-600 text-white font-black py-3.5 rounded-xl text-xs shadow-sm transition mt-3 flex items-center justify-center gap-1"><i class="fa-solid fa-gift"></i> Lihat Katalog Tukar Poin</button>` : '';
 
-                bukaModal("<i class='fa-solid fa-id-card text-[#1E4D3A]'></i> Akun Penjelajah", `
+                bukaModal("<i class='fa-solid fa-id-card text-[#1E4D3A]'></i> Info Akun", `
                     <div class='bg-gradient-to-br from-[#1E4D3A] to-[#2d6b52] rounded-2xl p-5 text-white shadow-lg relative overflow-hidden'>
                         <p class='text-[10px] uppercase tracking-wider text-emerald-200 font-bold'>Warunk Arsi Card Session</p>
                         <h4 class='text-base font-black tracking-wide mt-1 uppercase'>${sessionUserCache.nama}</h4>
@@ -1008,7 +1008,7 @@
 
         function bukaModalAlamat() {
             bukaModal("<i class='fa-solid fa-map-location-dot text-[#1E4D3A]'></i> Alamat Toko", `
-                <p class='font-bold text-[#1E4D3A] text-sm'>Warunk Arsi Headquarter</p>
+                <p class='font-bold text-[#1E4D3A] text-sm'>Warunk Arsi Bekasi</p>
                 <p class='leading-relaxed mt-1 text-gray-600'>Jalan Mawar IV No. 35, Rawa Bambu - Bekasi.</p>
             `);
         }
