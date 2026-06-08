@@ -173,6 +173,119 @@
         </div>
     </div>
 
+    <!-- REWARD CHECKOUT MODAL - Dedicated element agar tidak konflik string dengan global modal -->
+    <div id="reward-checkout-modal" class="fixed inset-0 bg-black/60 z-[200] hidden items-end justify-center p-0">
+        <div class="bg-white w-full max-w-md rounded-t-[2.5rem] shadow-2xl max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="flex justify-between items-center border-b border-gray-100 px-6 pt-5 pb-3.5 sticky top-0 bg-white z-10">
+                <h3 id="rwd-modal-title" class="font-black text-gray-800 text-sm uppercase tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-star text-[#E6A15C]"></i> Checkout Reward Poin
+                </h3>
+                <button onclick="tutupRewardCheckoutModal()" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4 text-xs">
+                <!-- STATE: Katalog -->
+                <div id="rwd-state-katalog" class="space-y-3">
+                    <!-- Saldo poin banner -->
+                    <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-amber-700 font-bold uppercase tracking-wide">Saldo Poin Kamu</p>
+                            <p id="rwd-saldo-poin" class="text-base font-black text-amber-600 mt-0.5">⭐ 0 Poin</p>
+                        </div>
+                        <span class="text-[9px] bg-[#1E4D3A] text-white font-black px-2.5 py-1 rounded-full uppercase tracking-wider">VVIP Member</span>
+                    </div>
+                    <p class="text-[10px] text-gray-400 px-1 font-semibold"><i class="fa-solid fa-circle-info"></i> Klik reward untuk melakukan checkout penukaran poin.</p>
+                    <div id="rwd-list-container" class="space-y-2.5"></div>
+                    <button onclick="tutupRewardCheckoutModal(); bukaModalAkun();" class="w-full text-center text-[11px] text-gray-400 font-bold mt-1 hover:underline block pt-1">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali ke Profil
+                    </button>
+                </div>
+
+                <!-- STATE: Form Konfirmasi -->
+                <div id="rwd-state-konfirmasi" class="hidden space-y-4">
+                    <button onclick="tampilkanKatalogReward()" class="flex items-center gap-1.5 text-gray-400 hover:text-gray-600 font-bold text-[11px] transition">
+                        <i class="fa-solid fa-arrow-left text-xs"></i> Kembali ke Katalog
+                    </button>
+
+                    <!-- Preview reward dipilih -->
+                    <div class="bg-gradient-to-br from-[#1E4D3A] to-[#2d6b52] rounded-2xl p-4 text-white">
+                        <p class="text-[9px] uppercase tracking-widest text-emerald-300 font-bold mb-2">Reward yang Dipilih</p>
+                        <div class="flex items-center gap-3">
+                            <img id="rwd-preview-img" src="" class="w-16 h-16 object-cover rounded-xl border-2 border-white/30 flex-shrink-0">
+                            <div>
+                                <p id="rwd-preview-nama" class="font-black text-sm leading-tight">-</p>
+                                <p id="rwd-preview-kategori" class="text-emerald-200 text-[10px] mt-0.5 uppercase tracking-wide">-</p>
+                                <span id="rwd-preview-poin" class="inline-block mt-1.5 bg-[#E6A15C] text-white font-black text-[10px] px-2.5 py-0.5 rounded-full">⭐ 0 Poin</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ringkasan poin -->
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-1.5">
+                        <p class="font-black text-amber-800 text-[10px] uppercase tracking-wider">⭐ Ringkasan Penukaran Poin</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-medium">Saldo Poin Saat Ini</span>
+                            <span id="rwd-info-saldo" class="font-black text-amber-700">⭐ 0 Poin</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-medium">Poin Digunakan</span>
+                            <span id="rwd-info-dipakai" class="font-black text-red-500">- ⭐ 0 Poin</span>
+                        </div>
+                        <div class="border-t border-amber-200 pt-1.5 flex justify-between items-center">
+                            <span class="font-black text-gray-800">Sisa Poin Setelah Tukar</span>
+                            <span id="rwd-info-sisa" class="font-black text-[#1E4D3A] text-sm">⭐ 0 Poin</span>
+                        </div>
+                    </div>
+
+                    <!-- Identitas penukar -->
+                    <div class="bg-gray-50 border border-gray-100 rounded-xl p-3 space-y-1">
+                        <p class="font-black text-gray-700 text-[10px] uppercase tracking-wider"><i class="fa-solid fa-id-card text-[#1E4D3A]"></i> Identitas Penukar</p>
+                        <p id="rwd-id-nama" class="text-gray-700 font-bold">-</p>
+                        <p id="rwd-id-wa" class="text-gray-500 font-mono">-</p>
+                        <p id="rwd-id-badge" class="text-[9px] text-emerald-700 font-bold uppercase tracking-wider bg-emerald-50 border border-emerald-200 inline-block px-2 py-0.5 rounded-full mt-0.5">VVIP Member</p>
+                    </div>
+
+                    <!-- Catatan -->
+                    <div class="space-y-1">
+                        <label class="block font-bold text-gray-700"><i class="fa-solid fa-pen text-[#1E4D3A]"></i> Catatan Pengambilan (Opsional)</label>
+                        <textarea id="rwd-catatan-input" placeholder="Cth: Ambil di kasir jam 08.00, atau titipan untuk nama lain..." class="w-full border rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#1E4D3A] bg-white min-h-[50px] resize-none"></textarea>
+                    </div>
+
+                    <button id="rwd-btn-konfirmasi" onclick="prosesKonfirmasiReward()" 
+                            class="w-full bg-[#1E4D3A] text-white font-black py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-xs tracking-wider active:scale-[0.98]">
+                        <i class="fa-solid fa-star"></i> KONFIRMASI TUKAR REWARD
+                    </button>
+                </div>
+
+                <!-- STATE: Sukses -->
+                <div id="rwd-state-sukses" class="hidden space-y-4 text-center">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5">
+                        <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-gift text-emerald-600 text-2xl"></i>
+                        </div>
+                        <p class="font-black text-emerald-700 text-sm">Yeay! Reward Berhasil Ditukar!</p>
+                        <p class="text-gray-500 mt-1 leading-relaxed text-[11px]">Tunjukkan kode order di bawah ini kepada kasir untuk mengambil reward kamu.</p>
+                    </div>
+                    <div class="bg-[#1E4D3A] text-white rounded-xl p-4 space-y-1">
+                        <p class="text-[9px] text-emerald-300 uppercase tracking-widest font-bold">Kode Order Reward</p>
+                        <p id="rwd-sukses-kode" class="font-black text-xl tracking-widest font-mono">-</p>
+                        <p id="rwd-sukses-nama" class="text-emerald-200 text-[10px]">-</p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex justify-between items-center">
+                        <span class="text-amber-700 font-bold">Sisa Poin Kamu</span>
+                        <span id="rwd-sukses-sisa" class="font-black text-amber-600 text-sm">⭐ 0 Poin</span>
+                    </div>
+                    <button onclick="tutupRewardCheckoutModal(); bukaModalAkun();" class="w-full bg-[#1E4D3A] text-white font-black py-3 rounded-xl text-xs shadow-md active:scale-95 transition">
+                        <i class="fa-solid fa-house"></i> Kembali ke Profil
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = "https://tcaizfemtfmfeuutgbct.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_3SBNDNn6tk9Ssl6dZOxi6Q_e2ZFFH14";
@@ -185,6 +298,7 @@
         let keranjangBelanja = [];
         let sessionUserCache = null; 
         let cacheOrdersPelanggan = []; // Tempat menyimpan temporer list orderan buat ditarik detailnya nanti
+        let _rewardSelected = null; // State reward yang sedang dipilih untuk checkout
 
         function loadMarketplaceUserSession() {
             const savedSession = localStorage.getItem('warunkarsi_user_session');
@@ -947,48 +1061,178 @@
             });
         }
 
-        async function bukaKatalogKuponDalamAkun() {
-            bukaModal("<i class='fa-solid fa-gift text-[#E6A15C]'></i> Katalog Reward Poin", "<p class='text-center py-4'>Memuat data reward cloud...</p>");
+        // ============================================================
+        // REWARD POIN CHECKOUT - Menggunakan dedicated modal #reward-checkout-modal
+        // ============================================================
+
+        function bukaKatalogKuponDalamAkun() {
+            // Tutup global modal dulu, buka reward modal
+            document.getElementById('global-modal').style.display = 'none';
+            tampilkanKatalogReward();
+        }
+
+        async function tampilkanKatalogReward() {
+            const modal = document.getElementById('reward-checkout-modal');
+            modal.style.display = 'flex';
+
+            // Reset ke state katalog
+            document.getElementById('rwd-state-katalog').classList.remove('hidden');
+            document.getElementById('rwd-state-konfirmasi').classList.add('hidden');
+            document.getElementById('rwd-state-sukses').classList.add('hidden');
+            document.getElementById('rwd-modal-title').innerHTML = "<i class='fa-solid fa-gift text-[#E6A15C]'></i> Katalog Reward Poin";
+
+            const poinSaya = sessionUserCache ? (sessionUserCache.poin || 0) : 0;
+            document.getElementById('rwd-saldo-poin').textContent = '⭐ ' + poinSaya + ' Poin';
+
+            const listEl = document.getElementById('rwd-list-container');
+            listEl.innerHTML = "<p class='text-center py-4 text-gray-400 text-xs'>Memuat data reward...</p>";
+
             try {
-                // Mengambil data langsung dari tabel menu yang poinnya di atas 0
                 const { data: rewards, error } = await _supabase
-                    .from('menu')
-                    .select('*')
-                    .gt('butuh_poin', 0)
-                    .order('butuh_poin', { ascending: true });
+                    .from('menu').select('*').gt('butuh_poin', 0).order('butuh_poin', { ascending: true });
 
                 if (error) throw error;
-
-                if(!rewards || rewards.length === 0) {
-                    document.getElementById('modal-body').innerHTML = "<p class='text-center py-4 text-gray-400 font-bold'>Belum ada menu reward aktif saat ini.</p>";
+                if (!rewards || rewards.length === 0) {
+                    listEl.innerHTML = "<p class='text-center py-4 text-gray-400 font-bold'>Belum ada menu reward aktif.</p>";
                     return;
                 }
-                
-                let html = "<div class='space-y-2.5'>";
-                rewards.forEach(r => {
+
+                window._rewardsCacheKatalog = rewards;
+                listEl.innerHTML = '';
+
+                rewards.forEach(function(r) {
                     const isHabis = r.status === "Kosong/Habis" || r.is_tersedia === false || r.is_tersedia === 0;
-                    
-                    html += `
-                        <div class='border border-dashed border-[#1E4D3A]/30 bg-white p-3.5 rounded-xl flex justify-between items-center shadow-sm ${isHabis ? 'opacity-60' : ''}'>
-                            <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                                <img src="${r.gambar_url || 'https://placehold.co/150?text=Warunk+Arsi'}" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 bg-gray-50 ${isHabis ? 'grayscale' : ''}">
-                                <div class="min-w-0 flex-1">
-                                    <p class='font-bold text-gray-800 text-xs truncate'>${r.nama}</p>
-                                    <p class='text-[10px] text-gray-400 mt-0.5 uppercase tracking-wide font-medium'>${r.kategori}</p>
-                                </div>
-                            </div>
-                            <div class="text-right flex-shrink-0 ml-2">
-                                <span class='bg-[#E6A15C] text-white font-black text-[10px] px-2.5 py-1 rounded-full shadow-sm whitespace-nowrap block'>⭐ ${r.butuh_poin} Poin</span>
-                                ${isHabis ? '<span class="text-[9px] text-red-500 font-bold uppercase block mt-1">Habis</span>' : ''}
-                            </div>
-                        </div>`;
+                    const bisaDitukar = !isHabis && poinSaya >= r.butuh_poin;
+                    const kurangPoin = !isHabis && poinSaya < r.butuh_poin ? (r.butuh_poin - poinSaya) : 0;
+
+                    const card = document.createElement('div');
+                    card.className = 'border ' + (bisaDitukar ? 'border-[#1E4D3A] cursor-pointer hover:shadow-md' : 'border-dashed border-gray-200') +
+                        ' bg-white p-3.5 rounded-xl flex justify-between items-center shadow-sm transition-all duration-150' +
+                        (isHabis ? ' opacity-60' : '');
+
+                    if (bisaDitukar) {
+                        card.addEventListener('click', function() { pilihRewardUntukCheckout(r.id); });
+                    }
+
+                    const imgSrc = r.gambar_url || 'https://placehold.co/150?text=Warunk+Arsi';
+                    const centangHtml = bisaDitukar ? '<span class="absolute -top-1 -right-1 w-4 h-4 bg-[#1E4D3A] rounded-full flex items-center justify-center"><i class="fa-solid fa-check text-white" style="font-size:7px"></i></span>' : '';
+                    const kurangHtml = kurangPoin > 0 ? '<p class="text-[9px] text-red-400 font-bold mt-0.5">&#8679; Butuh ' + kurangPoin + ' poin lagi</p>' : '';
+                    const tukarHtml = bisaDitukar ? '<span class="text-[9px] text-[#1E4D3A] font-black uppercase block text-center">&#8594; Tukar</span>' : '';
+                    const habisHtml = isHabis ? '<span class="text-[9px] text-red-500 font-bold uppercase block text-center">Habis</span>' : '';
+
+                    card.innerHTML =
+                        '<div class="flex items-center gap-2.5 min-w-0 flex-1">' +
+                            '<div class="relative flex-shrink-0">' +
+                                '<img src="' + imgSrc + '" class="w-12 h-12 object-cover rounded-xl bg-gray-50' + (isHabis ? ' grayscale' : '') + '">' +
+                                centangHtml +
+                            '</div>' +
+                            '<div class="min-w-0 flex-1">' +
+                                '<p class="font-bold text-gray-800 text-xs truncate">' + r.nama + '</p>' +
+                                '<p class="text-[10px] text-gray-400 mt-0.5 uppercase tracking-wide font-medium">' + r.kategori + '</p>' +
+                                kurangHtml +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="text-right flex-shrink-0 ml-2 space-y-1">' +
+                            '<span class="bg-[#E6A15C] text-white font-black text-[10px] px-2.5 py-1 rounded-full shadow-sm whitespace-nowrap block">&#11088; ' + r.butuh_poin + ' Poin</span>' +
+                            habisHtml +
+                            tukarHtml +
+                        '</div>';
+
+                    listEl.appendChild(card);
                 });
-                
-                document.getElementById('modal-body').innerHTML = html + `</div><button onclick="bukaModalAkun()" class="w-full text-center text-[11px] text-gray-400 font-bold mt-3 hover:underline"><i class="fa-solid fa-arrow-left"></i> Kembali ke Profil</button>`;
-            } catch(e) { 
-                console.error("Gagal memuat katalog poin:", e);
-                document.getElementById('modal-body').innerHTML = "<p class='text-center py-2 text-red-500 font-bold text-xs'>Gagal memuat data kupon dari server.</p>"; 
+
+            } catch(e) {
+                listEl.innerHTML = "<p class='text-center py-2 text-red-500 font-bold text-xs'>Gagal memuat data reward dari server.</p>";
             }
+        }
+
+        function pilihRewardUntukCheckout(rewardId) {
+            const reward = (window._rewardsCacheKatalog || []).find(function(r) { return r.id == rewardId; });
+            if (!reward) return;
+
+            const poinSaya = sessionUserCache ? (sessionUserCache.poin || 0) : 0;
+            _rewardSelected = reward;
+
+            // Isi semua elemen konfirmasi
+            document.getElementById('rwd-preview-img').src = reward.gambar_url || 'https://placehold.co/150?text=Reward';
+            document.getElementById('rwd-preview-nama').textContent = reward.nama;
+            document.getElementById('rwd-preview-kategori').textContent = reward.kategori;
+            document.getElementById('rwd-preview-poin').textContent = '⭐ ' + reward.butuh_poin + ' Poin';
+            document.getElementById('rwd-info-saldo').textContent = '⭐ ' + poinSaya + ' Poin';
+            document.getElementById('rwd-info-dipakai').textContent = '- ⭐ ' + reward.butuh_poin + ' Poin';
+            document.getElementById('rwd-info-sisa').textContent = '⭐ ' + (poinSaya - reward.butuh_poin) + ' Poin';
+            document.getElementById('rwd-id-nama').textContent = sessionUserCache.nama;
+            document.getElementById('rwd-id-wa').textContent = sessionUserCache.wa;
+            document.getElementById('rwd-id-badge').textContent = 'VVIP Member · ID: ' + sessionUserCache.id;
+            document.getElementById('rwd-catatan-input').value = '';
+            document.getElementById('rwd-modal-title').innerHTML = "<i class='fa-solid fa-star text-[#E6A15C]'></i> Konfirmasi Penukaran";
+
+            // Tampilkan state konfirmasi
+            document.getElementById('rwd-state-katalog').classList.add('hidden');
+            document.getElementById('rwd-state-konfirmasi').classList.remove('hidden');
+            document.getElementById('rwd-state-sukses').classList.add('hidden');
+        }
+
+        async function prosesKonfirmasiReward() {
+            if (!sessionUserCache || !sessionUserCache.isMember || !_rewardSelected) return;
+
+            const poinSaya = sessionUserCache.poin || 0;
+            const butuhPoin = _rewardSelected.butuh_poin;
+
+            if (poinSaya < butuhPoin) {
+                alert('Poin tidak cukup untuk melakukan penukaran ini.');
+                return;
+            }
+
+            const catatan = document.getElementById('rwd-catatan-input').value.trim();
+            const orderId = 'RWD-' + Math.floor(1000 + Math.random() * 9000);
+            const poinSetelahTukar = poinSaya - butuhPoin;
+
+            const btn = document.getElementById('rwd-btn-konfirmasi');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> Memproses...';
+
+            try {
+                const { error: orderError } = await _supabase.from('orders').insert([{
+                    order_id: orderId,
+                    member_id: sessionUserCache.id,
+                    member_name: sessionUserCache.nama,
+                    member_wa: sessionUserCache.wa,
+                    detail_items: [{ id: 'REWARD', nama: _rewardSelected.nama + ' (Free Poin)', harga: 0, qty: 1 }],
+                    total_harga: 0,
+                    status: 'Antrean',
+                    catatan: '[REWARD POIN - ' + butuhPoin + ' Poin Ditukar]' + (catatan ? ' Catatan: ' + catatan : '')
+                }]);
+                if (orderError) throw orderError;
+
+                const { error: poinError } = await _supabase
+                    .from('members').update({ poin: poinSetelahTukar }).eq('id', sessionUserCache.id);
+                if (poinError) throw poinError;
+
+                // Update sesi lokal
+                sessionUserCache.poin = poinSetelahTukar;
+                localStorage.setItem('warunkarsi_user_session', JSON.stringify(sessionUserCache));
+
+                // Tampilkan sukses
+                document.getElementById('rwd-sukses-kode').textContent = orderId;
+                document.getElementById('rwd-sukses-nama').textContent = _rewardSelected.nama;
+                document.getElementById('rwd-sukses-sisa').textContent = '⭐ ' + poinSetelahTukar + ' Poin';
+                document.getElementById('rwd-modal-title').innerHTML = "<i class='fa-solid fa-circle-check text-emerald-500'></i> Penukaran Berhasil!";
+
+                document.getElementById('rwd-state-konfirmasi').classList.add('hidden');
+                document.getElementById('rwd-state-sukses').classList.remove('hidden');
+
+            } catch(err) {
+                console.error('Gagal proses checkout reward:', err);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-star"></i> KONFIRMASI TUKAR REWARD';
+                alert('Gagal memproses penukaran reward. Silakan coba lagi.');
+            }
+        }
+
+        function tutupRewardCheckoutModal() {
+            document.getElementById('reward-checkout-modal').style.display = 'none';
+            _rewardSelected = null;
         }
 
         function setNavAktif(idTombol) {
