@@ -433,27 +433,6 @@
         </div>
     </div>
 
-    <div class="bottom-nav fixed bottom-0 inset-x-0 py-2 px-4 z-50">
-        <div class="max-w-md mx-auto flex justify-between items-center text-center">
-            <button onclick="berandaAction()" id="nav-beranda" class="flex flex-col items-center gap-1 transition" style="color:var(--hijau);font-weight:800">
-                <i class="fa-solid fa-house text-lg"></i>
-                <span style="font-size:10px;letter-spacing:0.02em">Beranda</span>
-            </button>
-            <button onclick="bukaModalDaftarMember()" id="nav-promo" class="flex flex-col items-center gap-1 text-gray-400 transition" style="font-weight:600">
-                <i class="fa-solid fa-crown text-lg"></i>
-                <span style="font-size:10px;letter-spacing:0.02em">Member</span>
-            </button>
-            <button onclick="bukaModalPesanan()" id="nav-pesanan" class="flex flex-col items-center gap-1 text-gray-400 transition" style="font-weight:600">
-                <i class="fa-solid fa-clipboard-list text-lg"></i>
-                <span style="font-size:10px;letter-spacing:0.02em">Pesanan</span>
-            </button>
-            <button onclick="bukaModalAkun()" id="nav-akun" class="flex flex-col items-center gap-1 text-gray-400 transition" style="font-weight:600">
-                <i class="fa-solid fa-user text-lg"></i>
-                <span style="font-size:10px;letter-spacing:0.02em">Akun</span>
-            </button>
-        </div>
-    </div>
-
     </div>
 
     <div class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-100 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] py-2 px-6 z-50">
@@ -1499,7 +1478,19 @@
 
         function bukaModalAkun() {
             setNavAktif('nav-akun');
-            pemicuPencegatanLoginMP(() => {
+            pemicuPencegatanLoginMP(async () => {
+                // Fetch poin terbaru dari DB setiap kali modal akun dibuka
+                if (sessionUserCache && sessionUserCache.isMember && sessionUserCache.id) {
+                    try {
+                        const { data: freshData } = await _supabase
+                            .from('members').select('poin').eq('id', sessionUserCache.id).single();
+                        if (freshData) {
+                            sessionUserCache.poin = freshData.poin;
+                            localStorage.setItem('warunkarsi_user_session', JSON.stringify(sessionUserCache));
+                        }
+                    } catch(e) { /* pakai cache jika gagal */ }
+                }
+
                 let tombolRewardHtml = sessionUserCache.isMember ? 
                     `<button onclick="bukaKatalogKuponDalamAkun()" class="w-full bg-[#E6A15C] hover:bg-amber-600 text-white font-black py-3.5 rounded-xl text-xs shadow-sm transition mt-3 flex items-center justify-center gap-1"><i class="fa-solid fa-gift"></i> Lihat Katalog Tukar Poin</button>` : '';
 
@@ -1694,18 +1685,12 @@
 
         function setNavAktif(idTombol) {
             ['nav-beranda', 'nav-promo', 'nav-pesanan', 'nav-akun'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) {
-                    if (id === idTombol) {
-                        el.className = "flex flex-col items-center gap-1 transition";
-                        el.style.color = 'var(--hijau)';
-                        el.style.fontWeight = '800';
-                    } else {
-                        el.className = "flex flex-col items-center gap-1 transition";
-                        el.style.color = '#9CA3AF';
-                        el.style.fontWeight = '600';
-                    }
-                }
+                // Gunakan querySelectorAll untuk handle kalau ada duplikat id
+                document.querySelectorAll('#' + id).forEach(el => {
+                    el.className = "flex flex-col items-center gap-1 transition";
+                    el.style.color = (id === idTombol) ? 'var(--hijau)' : '#9CA3AF';
+                    el.style.fontWeight = (id === idTombol) ? '800' : '600';
+                });
             });
         }
 
