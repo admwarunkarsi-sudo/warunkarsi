@@ -883,20 +883,36 @@
             const dot = badge.querySelector('span:first-child');
             const textStatus = document.getElementById('text-status-toko');
 
+            const jam = sekarang.getHours();
+            const menit = sekarang.getMinutes();
+            const totalMenit = jam * 60 + menit;
+            const bukaDari = 5 * 60;       // 05:00
+            const bukaSampai = 13 * 60;    // 13:00
+
             if (hariMasehi === 1) {
+                // Senin: full TUTUP
                 dateLabel.innerText = `${namaHari}, ${formatTanggalBiasa}`;
-                dateLabel.className = "text-xs font-black truncate mt-0.5 text-red-600"; 
+                dateLabel.className = "text-xs font-black truncate mt-0.5 text-red-600";
 
                 badge.className = "flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-red-50 text-red-600 border border-red-100 flex-shrink-0 whitespace-nowrap";
                 dot.className = "w-1.5 h-1.5 rounded-full block bg-red-600";
-                textStatus.innerText = "Tutup (Libur)";
-            } else {
+                textStatus.innerText = "TUTUP";
+            } else if (totalMenit >= bukaDari && totalMenit <= bukaSampai) {
+                // Selasa–Minggu jam 05:00–13:00: BUKA
                 dateLabel.innerText = `${namaHari}, ${formatTanggalBiasa}`;
-                dateLabel.className = "text-xs font-black truncate mt-0.5 text-emerald-700"; 
+                dateLabel.className = "text-xs font-black truncate mt-0.5 text-emerald-700";
 
                 badge.className = "flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-100 flex-shrink-0 whitespace-nowrap";
                 dot.className = "w-1.5 h-1.5 rounded-full block bg-emerald-600 animate-pulse";
-                textStatus.innerText = "Buka";
+                textStatus.innerText = "BUKA";
+            } else {
+                // Selasa–Minggu jam 13:01–04:59: PRE-ORDER
+                dateLabel.innerText = `${namaHari}, ${formatTanggalBiasa}`;
+                dateLabel.className = "text-xs font-black truncate mt-0.5 text-red-600";
+
+                badge.className = "flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-red-50 text-red-600 border border-red-100 flex-shrink-0 whitespace-nowrap";
+                dot.className = "w-1.5 h-1.5 rounded-full block bg-red-500";
+                textStatus.innerText = "PRE-ORDER";
             }
         }
 
