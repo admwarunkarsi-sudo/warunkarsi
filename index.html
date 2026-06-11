@@ -1373,14 +1373,48 @@
 
                 if (error) throw error;
 
-                alert(`Siap, Kak! Pesanan (${orderId}) sukses dikirim ke Kasir Warunk Arsi! 🎉`);
-                
+                // ── NOTIFIKASI WHATSAPP OTOMATIS ──
+                const namaCustomer = sessionUserCache.nama || 'Pelanggan';
+                const nomorWaUser = (sessionUserCache.wa || '').replace(/\D/g, '');
+                const nomorWarunk = '6285175150408';
+
+                const rincianItem = keranjangBelanja.map((item, i) =>
+                    `  ${i + 1}. ${item.nama} x${item.qty}  →  Rp ${Number(item.harga * item.qty).toLocaleString('id-ID')}`
+                ).join('\n');
+
+                const pesanWA = 
+`🧾 *KONFIRMASI ORDER - Warunk Arsi*
+━━━━━━━━━━━━━━━━━━━━
+📋 *No. Order :* ${orderId}
+👤 *Nama     :* ${namaCustomer}
+📦 *Opsi     :* ${opsiAmbil}
+💳 *Bayar    :* ${metodeBayar}${opsiAmbil === 'GoSend' ? '\n📍 *Alamat  :* ' + alamatTeks : ''}${noteText ? '\n📝 *Catatan :* ' + noteText : ''}
+━━━━━━━━━━━━━━━━━━━━
+🛒 *Rincian Pesanan:*
+${rincianItem}
+━━━━━━━━━━━━━━━━━━━━
+💰 *Total   :* Rp ${Number(total).toLocaleString('id-ID')}
+━━━━━━━━━━━━━━━━━━━━
+⏳ Pesananmu sedang diproses oleh kasir. Pantau status orderanmu langsung di aplikasi kami ya, Kak! 🙏
+
+_Terima kasih sudah order di Warunk Arsi ☕_`;
+
                 keranjangBelanja = [];
                 document.getElementById('order-note-input').value = '';
-                
                 tutupModal();
                 updateFloatingCartBar();
                 renderApplicationUi();
+
+                // Kirim notif ke nomor user via WhatsApp
+                if (nomorWaUser) {
+                    const urlWaUser = `https://wa.me/${nomorWaUser}?text=${encodeURIComponent(pesanWA)}`;
+                    setTimeout(() => { window.open(urlWaUser, '_blank'); }, 400);
+                } else {
+                    // Fallback: buka chat ke nomor Warunk Arsi jika nomor user tidak tersedia
+                    const urlWaWarunk = `https://wa.me/${nomorWarunk}?text=${encodeURIComponent(pesanWA)}`;
+                    setTimeout(() => { window.open(urlWaWarunk, '_blank'); }, 400);
+                }
+
             } catch (err) { alert("Gagal memproses orderan ke Cloud Kasir POS."); }
         }
 
