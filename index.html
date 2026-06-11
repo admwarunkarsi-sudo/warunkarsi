@@ -296,6 +296,46 @@
         /* ── NO SCROLLBAR UTIL ── */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* ── STOK BADGE ── */
+        .stok-badge-rendah {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 8px;
+            font-weight: 900;
+            color: #D97706;
+            background: #FEF3C7;
+            border: 1px solid #FDE68A;
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .stok-badge-habis {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 8px;
+            font-weight: 900;
+            color: #DC2626;
+            background: #FEE2E2;
+            border: 1px solid #FECACA;
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .menu-card-deskripsi {
+            font-size: 10px;
+            color: #6B7280;
+            font-weight: 500;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="text-gray-800 pb-24 select-none" style="font-family:'Plus Jakarta Sans',sans-serif;background:var(--krem)">
@@ -926,6 +966,16 @@
             } catch (e) { console.error("Gagal sink data menu:", e); }
         }
 
+        // ─── JAM OPERASIONAL ───
+        // 06:00–13:00: stok aktif (badge tampil, qty dibatasi stok)
+        // Di luar jam: Pre-Order mode — stok unlimited, badge stok disembunyikan
+        //              kecuali menu yang secara eksplisit di-set Habis (is_tersedia=false)
+        function isJamOperasional() {
+            const now = new Date();
+            const total = now.getHours() * 60 + now.getMinutes();
+            return total >= 6 * 60 && total < 13 * 60;
+        }
+
         function handleSearchMenu() {
             const searchKeyword = document.getElementById('search-menu').value.toLowerCase().trim();
             const statusOperasional = document.getElementById('status-operasional-container');
@@ -944,11 +994,37 @@
         }
 
         function dapatkanTombolAksiHtml(item, isFlashSale) {
+            // Menu yang di-set Habis (is_tersedia=false) selalu habis tanpa peduli jam
             const isHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
             if (isHabis) {
                 return `<button class="btn-pesan btn-pesan-habis" disabled><i class="fa-solid fa-circle-xmark" style="font-size:10px"></i> Habis</button>`;
             }
 
+            // Di luar jam operasional: stok unlimited (pre-order), tidak cek stok angka
+            const jamBuka = isJamOperasional();
+            if (!jamBuka) {
+                // Pre-Order mode — tampilkan tombol pesan normal tanpa batasan stok
+                const itemDiKeranjang = keranjangBelanja.find(k => k.id == item.id);
+                if (itemDiKeranjang && itemDiKeranjang.qty > 0) {
+                    return `
+                        <div class="qty-control">
+                            <button onclick="kurangiKuantitasLokal('${item.id}')" class="qty-btn qty-btn-minus">−</button>
+                            <span class="qty-num">${itemDiKeranjang.qty}</span>
+                            <button onclick="tambahKuantitasLokal('${item.id}', ${isFlashSale})" class="qty-btn qty-btn-plus">+</button>
+                        </div>
+                    `;
+                } else {
+                    const icon = isFlashSale ? 'fa-bolt' : 'fa-cart-plus';
+                    const bgColor = isFlashSale ? '#DC2626' : 'var(--hijau)';
+                    return `
+                        <button onclick="tambahKeKeranjangLokal('${item.id}', ${isFlashSale})" class="btn-pesan" style="${isFlashSale ? 'background:' + bgColor : ''}">
+                            <i class="fa-solid ${icon}" style="font-size:10px"></i> PESAN
+                        </button>
+                    `;
+                }
+            }
+
+            // Jam operasional aktif: tampilkan qty control normal
             const itemDiKeranjang = keranjangBelanja.find(k => k.id == item.id);
 
             if (itemDiKeranjang && itemDiKeranjang.qty > 0) {
@@ -975,17 +1051,27 @@
             const sectionFlashSale = document.getElementById('section-flash-sale');
             const flashSaleContainer = document.getElementById('flash-sale-container');
             
+            const jamBuka = isJamOperasional();
             const flashSaleItems = menusDataCache.filter(m => Number(m.harga_flash_sale) > 0);
             
             if(flashSaleItems.length > 0 && !searchKeyword && selectedCategory === "Semua") {
                 sectionFlashSale.style.display = 'block';
                 flashSaleContainer.innerHTML = flashSaleItems.map(item => {
                     const isHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
+                    const stok = item.stok !== null && item.stok !== undefined ? parseInt(item.stok) : null;
+                    // Badge sisa stok hanya tampil saat jam operasional
+                    let stokFsBadge = '';
+                    if (jamBuka && !isHabis && stok !== null && stok <= 5 && stok > 0) {
+                        stokFsBadge = `<span style="position:absolute;bottom:6px;left:6px;background:#FEF3C7;color:#D97706;font-size:7px;font-weight:900;padding:2px 6px;border-radius:5px;border:1px solid #FDE68A;">Sisa ${stok}</span>`;
+                    } else if (!jamBuka && !isHabis) {
+                        stokFsBadge = `<span style="position:absolute;bottom:6px;left:6px;background:#e0f2fe;color:#0369a1;font-size:7px;font-weight:900;padding:2px 6px;border-radius:5px;border:1px solid #bae6fd;">Pre-Order</span>`;
+                    }
                     return `
                         <div class="flash-card${isHabis ? ' opacity-60' : ''}">
                             <div class="relative">
                                 <img src="${item.gambar_url || 'https://placehold.co/150?text=Warunk+Arsi'}" alt="${item.nama}" style="${isHabis ? 'filter:grayscale(0.7)' : ''}">
                                 ${isHabis ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);border-radius:10px;display:flex;align-items:center;justify-content:center"><span style="background:#000;color:#fff;font-size:9px;font-weight:900;padding:2px 8px;border-radius:99px">Habis</span></div>' : '<span style="position:absolute;top:6px;left:6px;background:#DC2626;color:#fff;font-size:8px;font-weight:900;padding:2px 6px;border-radius:6px">Sale 🔥</span>'}
+                                ${stokFsBadge}
                             </div>
                             <div>
                                 <h3 style="font-size:11px;font-weight:700;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.nama}</h3>
@@ -1019,7 +1105,26 @@
                 const hargaTampil = isFsActive ? item.harga_flash_sale : item.harga_normal;
                 const isHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
                 const imgFilter = isHabis ? 'style="filter:grayscale(0.6) opacity(0.5)"' : '';
-                
+
+                // Stok badge: hanya tampil saat jam operasional
+                const stok = item.stok !== null && item.stok !== undefined ? parseInt(item.stok) : null;
+                let stokBadgeHtml = '';
+                if (isHabis) {
+                    stokBadgeHtml = '';
+                } else if (!jamBuka) {
+                    // Di luar jam: Pre-Order badge
+                    stokBadgeHtml = `<span style="background:#e0f2fe;color:#0369a1;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;border:1px solid #bae6fd;">Pre-Order</span>`;
+                } else if (stok !== null && stok <= 5 && stok > 0) {
+                    stokBadgeHtml = `<span class="stok-badge-rendah"><i class="fa-solid fa-fire" style="font-size:7px"></i> Sisa ${stok}</span>`;
+                } else if (stok === 0) {
+                    stokBadgeHtml = `<span class="stok-badge-habis"><i class="fa-solid fa-circle-xmark" style="font-size:7px"></i> Habis</span>`;
+                }
+
+                // Deskripsi
+                const deskripsiHtml = item.deskripsi
+                    ? `<p class="menu-card-deskripsi">${item.deskripsi}</p>`
+                    : '';
+
                 return `
                     <div class="menu-card${isHabis ? ' opacity-75' : ''}">
                         <div class="menu-card-img-wrap relative">
@@ -1028,8 +1133,12 @@
                             ${isFsActive && !isHabis ? '<span style="position:absolute;top:8px;left:8px;background:#DC2626;color:#fff;font-size:9px;font-weight:900;padding:3px 8px;border-radius:8px;letter-spacing:0.04em">SALE 🔥</span>' : ''}
                         </div>
                         <div class="menu-card-body">
-                            <span class="menu-card-badge">${item.kategori}</span>
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;flex-wrap:wrap;">
+                                <span class="menu-card-badge">${item.kategori}</span>
+                                ${stokBadgeHtml}
+                            </div>
                             <h3 class="menu-card-nama">${item.nama}</h3>
+                            ${deskripsiHtml}
                         </div>
                         <div class="menu-card-footer">
                             <span class="menu-card-harga">Rp ${Number(hargaTampil).toLocaleString('id-ID')}</span>
@@ -1061,6 +1170,18 @@
             const item = menusDataCache.find(m => m.id == menuId);
             const isHabis = !item || item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
             if (isHabis) return;
+
+            // Cek batas stok HANYA saat jam operasional
+            if (isJamOperasional()) {
+                const stokTersedia = item.stok !== null && item.stok !== undefined ? parseInt(item.stok) : null;
+                const indeksEksis = keranjangBelanja.findIndex(k => k.id == menuId);
+                const qtyDiKeranjang = indeksEksis > -1 ? keranjangBelanja[indeksEksis].qty : 0;
+                if (stokTersedia !== null && stokTersedia > 0 && qtyDiKeranjang >= stokTersedia) {
+                    alert(`Stok ${item.nama} hanya tersisa ${stokTersedia} pcs.`);
+                    return;
+                }
+            }
+            // Di luar jam operasional: Pre-Order, stok unlimited — tidak ada batasan qty
 
             const hargaFinal = isFlashSale ? item.harga_flash_sale : item.harga_normal;
             const indeksEksis = keranjangBelanja.findIndex(k => k.id == menuId);
@@ -1399,7 +1520,7 @@
                     + '-----------------------------\n'
                     + 'TOTAL  :  Rp ' + Number(total).toLocaleString('id-ID') + '\n'
                     + '-----------------------------\n'
-                    + 'Mohon segera proses pesanan ini ya! Terimakasih.';
+                    + 'Segera proses pesanan ini ya! Pelanggan sedang memantau status ordernya di aplikasi.';
 
                 keranjangBelanja = [];
                 document.getElementById('order-note-input').value = '';
