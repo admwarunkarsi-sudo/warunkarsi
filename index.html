@@ -1033,7 +1033,8 @@
             const flashSaleContainer = document.getElementById('flash-sale-container');
             
             const jamBuka = isJamOperasional();
-            const flashSaleItems = menusDataCache.filter(m => Number(m.harga_flash_sale) > 0);
+            // Flash sale hanya tampil jika admin mengaktifkan is_flash_sale=1 DAN mengisi harga flash sale
+            const flashSaleItems = menusDataCache.filter(m => m.is_flash_sale === 1 && Number(m.harga_flash_sale) > 0);
             
             if(flashSaleItems.length > 0 && !searchKeyword && selectedCategory === "Semua") {
                 sectionFlashSale.style.display = 'block';
@@ -1085,7 +1086,7 @@
             }
 
             regularContainer.innerHTML = filteredItems.map(item => {
-                const isFsActive = Number(item.harga_flash_sale) > 0;
+                const isFsActive = item.is_flash_sale === 1 && Number(item.harga_flash_sale) > 0;
                 const hargaTampil = isFsActive ? item.harga_flash_sale : item.harga_normal;
                 const stok = item.stok !== null && item.stok !== undefined ? parseInt(item.stok) : null;
                 // adminHabis: is_tersedia=false → habis kapan pun
