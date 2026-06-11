@@ -1373,31 +1373,33 @@
 
                 if (error) throw error;
 
-                // ── NOTIFIKASI WHATSAPP OTOMATIS ──
+                // ── NOTIFIKASI WHATSAPP KE ADMIN ──
                 const namaCustomer = sessionUserCache.nama || 'Pelanggan';
-                const nomorWaUser = (sessionUserCache.wa || '').replace(/\D/g, '');
-                const nomorWarunk = '6285175150408';
+                const nomorWaCustomer = sessionUserCache.wa || '-';
+                const nomorAdmin = '6285175150408';
 
                 const rincianItem = keranjangBelanja.map((item, i) =>
-                    `  ${i + 1}. ${item.nama} x${item.qty}  →  Rp ${Number(item.harga * item.qty).toLocaleString('id-ID')}`
+                    (i + 1) + '. ' + item.nama + ' x' + item.qty + '  ->  Rp ' + Number(item.harga * item.qty).toLocaleString('id-ID')
                 ).join('\n');
 
-                const pesanWA = 
-`🧾 *KONFIRMASI ORDER - Warunk Arsi*
-━━━━━━━━━━━━━━━━━━━━
-📋 *No. Order :* ${orderId}
-👤 *Nama     :* ${namaCustomer}
-📦 *Opsi     :* ${opsiAmbil}
-💳 *Bayar    :* ${metodeBayar}${opsiAmbil === 'GoSend' ? '\n📍 *Alamat  :* ' + alamatTeks : ''}${noteText ? '\n📝 *Catatan :* ' + noteText : ''}
-━━━━━━━━━━━━━━━━━━━━
-🛒 *Rincian Pesanan:*
-${rincianItem}
-━━━━━━━━━━━━━━━━━━━━
-💰 *Total   :* Rp ${Number(total).toLocaleString('id-ID')}
-━━━━━━━━━━━━━━━━━━━━
-⏳ Pesananmu sedang diproses oleh kasir. Pantau status orderanmu langsung di aplikasi kami ya, Kak! 🙏
+                const barisTambahan = (opsiAmbil === 'GoSend' ? 'Alamat    : ' + alamatTeks + '\n' : '')
+                                    + (noteText ? 'Catatan   : ' + noteText + '\n' : '');
 
-_Terima kasih sudah order di Warunk Arsi ☕_`;
+                const pesanWA = '*ORDER MASUK - Warunk Arsi*\n'
+                    + '-----------------------------\n'
+                    + 'No. Order : ' + orderId + '\n'
+                    + 'Nama      : ' + namaCustomer + '\n'
+                    + 'No. WA    : ' + nomorWaCustomer + '\n'
+                    + 'Opsi      : ' + opsiAmbil + '\n'
+                    + 'Bayar     : ' + metodeBayar + '\n'
+                    + barisTambahan
+                    + '-----------------------------\n'
+                    + 'RINCIAN PESANAN:\n'
+                    + rincianItem + '\n'
+                    + '-----------------------------\n'
+                    + 'TOTAL  :  Rp ' + Number(total).toLocaleString('id-ID') + '\n'
+                    + '-----------------------------\n'
+                    + 'Segera proses pesanan ini ya! Pelanggan sedang memantau status ordernya di aplikasi.';
 
                 keranjangBelanja = [];
                 document.getElementById('order-note-input').value = '';
@@ -1405,15 +1407,9 @@ _Terima kasih sudah order di Warunk Arsi ☕_`;
                 updateFloatingCartBar();
                 renderApplicationUi();
 
-                // Kirim notif ke nomor user via WhatsApp
-                if (nomorWaUser) {
-                    const urlWaUser = `https://wa.me/${nomorWaUser}?text=${encodeURIComponent(pesanWA)}`;
-                    setTimeout(() => { window.open(urlWaUser, '_blank'); }, 400);
-                } else {
-                    // Fallback: buka chat ke nomor Warunk Arsi jika nomor user tidak tersedia
-                    const urlWaWarunk = `https://wa.me/${nomorWarunk}?text=${encodeURIComponent(pesanWA)}`;
-                    setTimeout(() => { window.open(urlWaWarunk, '_blank'); }, 400);
-                }
+                // Buka WhatsApp ke nomor admin Warunk Arsi
+                const urlWaAdmin = 'https://wa.me/' + nomorAdmin + '?text=' + encodeURIComponent(pesanWA);
+                setTimeout(function() { window.open(urlWaAdmin, '_blank'); }, 400);
 
             } catch (err) { alert("Gagal memproses orderan ke Cloud Kasir POS."); }
         }
