@@ -344,15 +344,16 @@
         <div class="max-w-md mx-auto">
             <!-- Logo + Alamat -->
             <div class="flex items-center justify-between mb-3">
-                <div>
-                    <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.55)">Warunk Arsi ☕</p>
-                    <div onclick="bukaModalAlamat()" class="flex items-center gap-1.5 mt-0.5 cursor-pointer active:opacity-75 transition">
-                        <i class="fa-solid fa-location-dot text-sm" style="color:var(--emas)"></i>
+                <div class="min-w-0 flex-1 pr-3">
+                    <p id="header-label-atas" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.55)">Warunk Arsi ☕</p>
+                    <div id="header-sub-row" onclick="bukaModalAlamat()" class="flex items-center gap-1.5 mt-0.5 cursor-pointer active:opacity-75 transition">
+                        <i id="header-sub-icon" class="fa-solid fa-location-dot text-sm" style="color:var(--emas)"></i>
                         <span id="toko-alamat" class="text-xs font-bold truncate" style="max-width:200px">Jl. Mawar IV No. 35</span>
-                        <i class="fa-solid fa-chevron-down" style="font-size:9px;opacity:0.6"></i>
+                        <i id="header-sub-chevron" class="fa-solid fa-chevron-down" style="font-size:9px;opacity:0.6"></i>
                     </div>
                 </div>
-                <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(255,255,255,0.12)">
+                <!-- Avatar: default store icon, berubah jadi foto profil saat login -->
+                <div id="header-avatar-wrap" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer active:opacity-75 transition" style="background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.15)">
                     <i class="fa-solid fa-store text-sm"></i>
                 </div>
             </div>
@@ -489,8 +490,11 @@
                 <i class="fa-solid fa-clipboard-list text-lg"></i>
                 <span class="text-[10px] tracking-wide">Pesanan</span>
             </button>
-            <button onclick="bukaModalAkun()" id="nav-akun" class="flex flex-col items-center gap-1 text-gray-400 font-medium transition">
-                <i class="fa-solid fa-user text-lg"></i>
+            <button onclick="bukaModalAkun()" id="nav-akun" class="flex flex-col items-center gap-1 text-gray-400 font-medium transition relative">
+                <div class="relative">
+                    <i class="fa-solid fa-user text-lg"></i>
+                    <span id="chat-nav-badge" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white font-black text-[9px] rounded-full items-center justify-center hidden">!</span>
+                </div>
                 <span class="text-[10px] tracking-wide">Akun</span>
             </button>
         </div>
@@ -675,6 +679,59 @@
             if (savedSession) {
                 sessionUserCache = JSON.parse(savedSession);
             }
+            updateHeaderUser();
+        }
+
+        // ── Update header berdasarkan status login ──
+        function updateHeaderUser() {
+            const labelAtas  = document.getElementById('header-label-atas');
+            const subRow     = document.getElementById('header-sub-row');
+            const subIcon    = document.getElementById('header-sub-icon');
+            const tokoAlamat = document.getElementById('toko-alamat');
+            const subChevron = document.getElementById('header-sub-chevron');
+            const avatarWrap = document.getElementById('header-avatar-wrap');
+
+            if (!avatarWrap) return;
+
+            if (sessionUserCache && sessionUserCache.nama) {
+                const isMember = sessionUserCache.isMember;
+
+                // Label atas
+                if (labelAtas) labelAtas.innerHTML = isMember
+                    ? `<span style="color:rgba(255,255,255,0.45)">Selamat datang</span> <span style="color:var(--emas)">⭐ VVIP Member</span>`
+                    : `<span style="color:rgba(255,255,255,0.45)">Halo,</span> <span style="color:rgba(255,255,255,0.75)">Pelanggan</span>`;
+
+                // Sub row
+                if (subRow) subRow.onclick = () => bukaModalAkun();
+                if (subIcon) { subIcon.className = 'fa-solid fa-user text-sm'; subIcon.style.color = 'var(--emas)'; }
+                if (tokoAlamat) tokoAlamat.textContent = sessionUserCache.nama;
+                if (subChevron) subChevron.style.display = 'inline';
+
+                // Avatar — selalu render ulang innerHTML agar tidak null-ref
+                avatarWrap.style.border = '2px solid var(--emas)';
+                avatarWrap.onclick = () => bukaModalAkun();
+                const foto = sessionUserCache.foto_profil;
+                if (foto) {
+                    avatarWrap.style.background = 'transparent';
+                    avatarWrap.innerHTML = `<img src="${foto}" alt="Foto Profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.innerHTML='<span style=\\'font-size:12px;font-weight:900;color:var(--emas)\\'>${sessionUserCache.nama.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}</span>'">`;
+                } else {
+                    const inisial = sessionUserCache.nama.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                    avatarWrap.style.background = 'rgba(230,161,92,0.25)';
+                    avatarWrap.innerHTML = `<span style="font-size:12px;font-weight:900;color:var(--emas);letter-spacing:0.03em">${inisial}</span>`;
+                }
+
+            } else {
+                // Belum login — branding toko
+                if (labelAtas) labelAtas.textContent = 'Warunk Arsi ☕';
+                if (subRow) subRow.onclick = () => bukaModalAlamat();
+                if (subIcon) { subIcon.className = 'fa-solid fa-location-dot text-sm'; subIcon.style.color = 'var(--emas)'; }
+                if (subChevron) subChevron.style.display = 'inline';
+
+                avatarWrap.style.background = 'rgba(255,255,255,0.12)';
+                avatarWrap.style.border = '2px solid rgba(255,255,255,0.15)';
+                avatarWrap.onclick = null;
+                avatarWrap.innerHTML = `<i class="fa-solid fa-store text-sm"></i>`;
+            }
         }
 
         function pemicuPencegatanLoginMP(fungsiCallbackPenerus) {
@@ -765,12 +822,13 @@
                             nama: memberTerdeteksiCache.nama, 
                             isMember: true, 
                             id: memberTerdeteksiCache.id, 
-                            poin: memberTerdeteksiCache.poin 
+                            poin: memberTerdeteksiCache.poin,
+                            foto_profil: memberTerdeteksiCache.foto_profil || null
                         };
                     } else {
                         const { data: member } = await _supabase.from('members').select('*').eq('wa', wa).maybeSingle();
                         if (member) {
-                            dataUserFinal = { wa: member.wa, nama: member.nama, isMember: true, id: member.id, poin: member.poin };
+                            dataUserFinal = { wa: member.wa, nama: member.nama, isMember: true, id: member.id, poin: member.poin, foto_profil: member.foto_profil || null };
                         }
                     }
 
@@ -779,6 +837,7 @@
 
                     alert(`Selamat Datang, ${dataUserFinal.nama}! 🎉\nStatus: ${dataUserFinal.isMember ? 'VIP Member' : 'Pelanggan Umum'}`);
                     tutupModal();
+                    updateHeaderUser();
                     fungsiCallbackPenerus(); 
                 } catch (err) { 
                     alert('Gagal sinkronisasi data.'); 
@@ -835,12 +894,13 @@
 
                 if (error) throw error;
 
-                const dataUserFinal = { wa: wa, nama: nama, isMember: true, id: newMemberId, poin: 0 };
+                const dataUserFinal = { wa: wa, nama: nama, isMember: true, id: newMemberId, poin: 0, foto_profil: null };
                 localStorage.setItem('warunkarsi_user_session', JSON.stringify(dataUserFinal));
                 sessionUserCache = dataUserFinal;
 
                 alert(`Pendaftaran Berhasil! 🎉\n\nSelamat Kak ${nama}, Anda resmi menjadi VVIP Member Warunk Arsi.\nID Anda: ${newMemberId}\n\nSilakan bertransaksi untuk mengumpulkan poin pertamamu.`);
                 tutupModal();
+                updateHeaderUser();
             } catch (err) {
                 alert('Gagal melakukan pendaftaran, periksa kembali koneksi internet Anda.');
             }
@@ -1033,7 +1093,6 @@
             const flashSaleContainer = document.getElementById('flash-sale-container');
             
             const jamBuka = isJamOperasional();
-            // Flash sale hanya tampil jika admin mengaktifkan is_flash_sale=1 DAN mengisi harga flash sale
             const flashSaleItems = menusDataCache.filter(m => m.is_flash_sale === 1 && Number(m.harga_flash_sale) > 0);
             
             if(flashSaleItems.length > 0 && !searchKeyword && selectedCategory === "Semua") {
@@ -1311,12 +1370,22 @@
 
         function cartReviewTambah(menuId) {
             const idx = keranjangBelanja.findIndex(k => k.id == menuId);
-            if (idx > -1) {
-                keranjangBelanja[idx].qty += 1;
-                updateFloatingCartBar();
-                renderApplicationUi();
-                renderCartReviewList();
+            if (idx === -1) return;
+
+            // Cek stok saat jam operasional
+            const item = menusDataCache.find(m => m.id == menuId);
+            if (item && isJamOperasional()) {
+                const stok = (item.stok !== null && item.stok !== undefined) ? parseInt(item.stok) : null;
+                if (stok !== null && keranjangBelanja[idx].qty >= stok) {
+                    alert(`Stok ${item.nama} hanya tersisa ${stok} pcs.`);
+                    return;
+                }
             }
+
+            keranjangBelanja[idx].qty += 1;
+            updateFloatingCartBar();
+            renderApplicationUi();
+            renderCartReviewList();
         }
 
         function lanjutKeCheckoutDariReview() {
@@ -1641,34 +1710,214 @@
         function bukaModalAkun() {
             setNavAktif('nav-akun');
             pemicuPencegatanLoginMP(async () => {
-                // Fetch poin terbaru dari DB setiap kali modal akun dibuka
+                // Fetch data terbaru dari DB
                 if (sessionUserCache && sessionUserCache.isMember && sessionUserCache.id) {
                     try {
                         const { data: freshData } = await _supabase
-                            .from('members').select('poin').eq('id', sessionUserCache.id).single();
+                            .from('members').select('poin, nama, wa, foto_profil').eq('id', sessionUserCache.id).single();
                         if (freshData) {
                             sessionUserCache.poin = freshData.poin;
+                            sessionUserCache.nama = freshData.nama;
+                            sessionUserCache.wa = freshData.wa;
+                            sessionUserCache.foto_profil = freshData.foto_profil || null;
                             localStorage.setItem('warunkarsi_user_session', JSON.stringify(sessionUserCache));
+                            updateHeaderUser();
                         }
-                    } catch(e) { /* pakai cache jika gagal */ }
+                    } catch(e) { /* pakai cache */ }
                 }
 
-                let tombolRewardHtml = sessionUserCache.isMember ? 
-                    `<button onclick="bukaKatalogKuponDalamAkun()" class="w-full bg-[#E6A15C] hover:bg-amber-600 text-white font-black py-3.5 rounded-xl text-xs shadow-sm transition mt-3 flex items-center justify-center gap-1"><i class="fa-solid fa-gift"></i> Lihat Katalog Tukar Poin</button>` : '';
+                const isMember = sessionUserCache.isMember;
+                const foto = sessionUserCache.foto_profil;
+                const inisial = sessionUserCache.nama.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+
+                const avatarHtml = foto
+                    ? `<img src="${foto}" class="w-16 h-16 rounded-full object-cover border-2 border-white/40 flex-shrink-0" onerror="this.style.display='none'">`
+                    : `<div class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-white/30" style="background:rgba(230,161,92,0.25)"><span style="font-size:20px;font-weight:900;color:var(--emas)">${inisial}</span></div>`;
+
+                const tombolRewardHtml = isMember
+                    ? `<button onclick="bukaKatalogKuponDalamAkun()" class="w-full bg-[#E6A15C] text-white font-black py-3 rounded-xl text-xs shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5"><i class="fa-solid fa-gift"></i> Lihat Katalog Tukar Poin</button>` : '';
 
                 bukaModal("<i class='fa-solid fa-id-card text-[#1E4D3A]'></i> Info Akun", `
-                    <div class='bg-gradient-to-br from-[#1E4D3A] to-[#2d6b52] rounded-2xl p-5 text-white shadow-lg relative overflow-hidden'>
-                        <p class='text-[10px] uppercase tracking-wider text-emerald-200 font-bold'>Warunk Arsi Card Session</p>
-                        <h4 class='text-base font-black tracking-wide mt-1 uppercase'>${sessionUserCache.nama}</h4>
-                        <div class='mt-7 flex justify-between items-end text-[11px]'>
-                            <div><p class='text-[8px] text-emerald-200'>ID REGISTRASI / WA</p><p class='font-mono font-bold text-xs'>${sessionUserCache.isMember ? sessionUserCache.id : sessionUserCache.wa}</p></div>
-                            <div class='text-right'><p class='text-[8px] text-emerald-200'>TABUNGAN REWARD</p><p class='font-black text-amber-300 text-base'><i class='fa-solid fa-star'></i> ${sessionUserCache.poin} Poin</p></div>
+                    <!-- ── Kartu Profil ── -->
+                    <div class='bg-gradient-to-br from-[#1E4D3A] to-[#2d6b52] rounded-2xl p-4 text-white shadow-lg relative overflow-hidden'>
+                        <div class='flex items-center gap-3'>
+                            ${avatarHtml}
+                            <div class='min-w-0 flex-1'>
+                                <p class='text-[9px] uppercase tracking-wider text-emerald-300 font-bold'>${isMember ? '⭐ VVIP Member' : 'Pelanggan Umum'}</p>
+                                <h4 class='text-sm font-black truncate mt-0.5'>${sessionUserCache.nama}</h4>
+                                <p class='text-[10px] text-emerald-200 font-mono mt-0.5 truncate'>${sessionUserCache.wa}</p>
+                                ${isMember ? `<p class='text-[9px] text-emerald-300 mt-1'>ID: ${sessionUserCache.id}</p>` : ''}
+                            </div>
+                        </div>
+                        ${isMember ? `
+                        <div class='mt-3 pt-3 border-t border-white/15 flex justify-between items-center'>
+                            <span class='text-[9px] text-emerald-300 uppercase tracking-wider font-bold'>Tabungan Reward</span>
+                            <span class='font-black text-amber-300 text-sm'><i class='fa-solid fa-star text-xs'></i> ${sessionUserCache.poin} Poin</span>
+                        </div>` : ''}
+                    </div>
+
+                    ${tombolRewardHtml}
+
+                    <!-- ── Tombol Chat ── -->
+                    <button onclick="tutupModal(); bukaChat();" class="w-full flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 cursor-pointer transition active:bg-emerald-100" style="text-align:left;">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:var(--hijau)">
+                            <i class="fa-solid fa-comments text-white text-sm"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-black text-gray-800 text-xs">Live Chat</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5 font-medium">Chat langsung dengan admin Warunk Arsi</p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span id="chat-akun-badge" style="display:none;background:#DC2626;color:#fff;font-size:9px;font-weight:800;min-width:18px;height:18px;border-radius:9px;align-items:center;justify-content:center;padding:0 4px;"></span>
+                            <i class="fa-solid fa-chevron-right text-gray-400" style="font-size:10px;"></i>
+                        </div>
+                    </button>
+
+                    <!-- ── Form Edit Profil ── -->
+                    <div class='mt-3 border border-gray-100 rounded-2xl overflow-hidden'>
+                        <div class='bg-gray-50 px-4 py-2.5 flex items-center justify-between cursor-pointer select-none' onclick="toggleEditProfil()">
+                            <span class='text-xs font-black text-gray-700 flex items-center gap-2'><i class='fa-solid fa-pen text-[#1E4D3A] text-[10px]'></i> Edit Profil</span>
+                            <i id='chevron-edit-profil' class='fa-solid fa-chevron-down text-gray-400' style='font-size:10px;transition:transform 0.2s'></i>
+                        </div>
+                        <div id='panel-edit-profil' class='hidden px-4 pb-4 pt-2 space-y-3 bg-white'>
+
+                            <!-- Foto Profil -->
+                            <div class='space-y-1.5'>
+                                <label class='block text-[11px] font-bold text-gray-600 uppercase tracking-wide'>Foto Profil</label>
+                                <div class='flex items-center gap-3'>
+                                    <div id='edit-foto-preview-wrap' class='w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-gray-200 flex items-center justify-center bg-gray-50' style=''>
+                                        ${foto ? `<img src="${foto}" class='w-full h-full object-cover' id='edit-foto-preview-img'>` : `<span style='font-size:15px;font-weight:900;color:#9CA3AF' id='edit-foto-initial'>${inisial}</span>`}
+                                    </div>
+                                    <div class='flex-1 space-y-1.5'>
+                                        <label for='edit-foto-file' class='flex items-center justify-center gap-1.5 w-full py-2 border-2 border-dashed border-[#1E4D3A] rounded-xl text-[11px] font-bold text-[#1E4D3A] bg-emerald-50 cursor-pointer active:bg-emerald-100 transition'>
+                                            <i class='fa-solid fa-camera text-xs'></i> <span id='edit-foto-label'>Pilih Foto dari HP</span>
+                                        </label>
+                                        <input type='file' id='edit-foto-file' accept='image/*' class='hidden' onchange='previewFotoProfil(this)'>
+                                        <input type='text' id='edit-foto-url' placeholder='…atau tempel URL foto' class='w-full border rounded-xl px-3 py-2 text-[11px] outline-none focus:ring-1 focus:ring-[#1E4D3A] font-mono' value='${foto || ""}' oninput='previewFotoUrl(this.value)'>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nama -->
+                            <div class='space-y-1'>
+                                <label class='block text-[11px] font-bold text-gray-600 uppercase tracking-wide'>Nama Lengkap</label>
+                                <input type='text' id='edit-nama-profil' value='${sessionUserCache.nama}' placeholder='Nama Lengkap...' class='w-full border rounded-xl px-3 py-2.5 text-xs font-bold outline-none focus:ring-1 focus:ring-[#1E4D3A]'>
+                            </div>
+
+                            <!-- WhatsApp -->
+                            <div class='space-y-1'>
+                                <label class='block text-[11px] font-bold text-gray-600 uppercase tracking-wide'>Nomor WhatsApp</label>
+                                <div class='relative'>
+                                    <i class='fa-brands fa-whatsapp absolute left-3 top-1/2 -translate-y-1/2 text-emerald-600 text-sm pointer-events-none'></i>
+                                    <input type='text' id='edit-wa-profil' value='${sessionUserCache.wa}' placeholder='08xxxxxxxxxx' class='w-full border rounded-xl pl-8 pr-3 py-2.5 text-xs font-bold outline-none focus:ring-1 focus:ring-[#1E4D3A]'>
+                                </div>
+                                ${!isMember ? `<p class='text-[10px] text-amber-600 font-semibold'><i class='fa-solid fa-circle-info'></i> Ubah WA tidak mengubah data member, hanya sesi ini.</p>` : ''}
+                            </div>
+
+                            <button onclick='simpanEditProfil()' id='btn-simpan-profil' class='w-full bg-[#1E4D3A] text-white font-black py-3 rounded-xl text-xs shadow-md active:scale-95 transition flex items-center justify-center gap-2'>
+                                <i class='fa-solid fa-floppy-disk'></i> SIMPAN PERUBAHAN
+                            </button>
+                            <p id='edit-profil-status' class='text-center text-[11px] font-bold hidden'></p>
                         </div>
                     </div>
-                    ${tombolRewardHtml}
-                    <button onclick='localStorage.removeItem("warunkarsi_user_session"); location.reload();' class='w-full border border-red-200 hover:bg-red-50 text-red-600 font-bold py-3 rounded-xl text-xs mt-2 transition text-center block'>KELUAR / LOGOUT AKUN</button>
+
+                    <button onclick='localStorage.removeItem("warunkarsi_user_session"); sessionUserCache=null; updateHeaderUser(); location.reload();' class='w-full border border-red-200 text-red-600 font-bold py-3 rounded-xl text-xs mt-2 transition active:bg-red-50 text-center block flex items-center justify-center gap-2'>
+                        <i class='fa-solid fa-right-from-bracket'></i> KELUAR / LOGOUT
+                    </button>
                 `);
             });
+        }
+
+        function toggleEditProfil() {
+            const panel = document.getElementById('panel-edit-profil');
+            const chevron = document.getElementById('chevron-edit-profil');
+            if (!panel) return;
+            const isHidden = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !isHidden);
+            if (chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function previewFotoProfil(input) {
+            if (!input.files || !input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                _fotoProfilBlob = input.files[0];
+                const wrap = document.getElementById('edit-foto-preview-wrap');
+                if (wrap) wrap.innerHTML = `<img src="${e.target.result}" class='w-full h-full object-cover' id='edit-foto-preview-img'>`;
+                const label = document.getElementById('edit-foto-label');
+                if (label) label.textContent = '✓ ' + input.files[0].name.slice(0,20);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function previewFotoUrl(url) {
+            if (!url) return;
+            const wrap = document.getElementById('edit-foto-preview-wrap');
+            if (wrap) wrap.innerHTML = `<img src="${url}" class='w-full h-full object-cover' onerror="this.parentElement.innerHTML='<span style=\\'font-size:11px;color:#EF4444;font-weight:700;\\'>URL Error</span>'" id='edit-foto-preview-img'>`;
+            _fotoProfilBlob = null;
+        }
+
+        let _fotoProfilBlob = null;
+
+        async function simpanEditProfil() {
+            if (!sessionUserCache) return;
+            const btn = document.getElementById('btn-simpan-profil');
+            const statusEl = document.getElementById('edit-profil-status');
+            const namaBaru = (document.getElementById('edit-nama-profil')?.value || '').trim();
+            const waBaru = (document.getElementById('edit-wa-profil')?.value || '').trim();
+
+            if (!namaBaru) return alert('Nama tidak boleh kosong!');
+            if (!waBaru || waBaru.length < 9) return alert('Nomor WhatsApp tidak valid!');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> Menyimpan...';
+            if (statusEl) { statusEl.className = 'text-center text-[11px] font-bold text-gray-400'; statusEl.textContent = 'Memproses...'; statusEl.classList.remove('hidden'); }
+
+            try {
+                let urlFotoFinal = (document.getElementById('edit-foto-url')?.value || '').trim() || sessionUserCache.foto_profil || null;
+
+                // Upload file jika ada
+                if (_fotoProfilBlob) {
+                    if (statusEl) statusEl.textContent = 'Mengunggah foto...';
+                    const ext = _fotoProfilBlob.name.split('.').pop();
+                    const fileName = `profil_${sessionUserCache.id || sessionUserCache.wa}_${Date.now()}.${ext}`;
+                    const { error: upErr } = await _supabase.storage
+                        .from('menu-images').upload(fileName, _fotoProfilBlob, { cacheControl: '3600', upsert: true });
+                    if (upErr) throw new Error('Gagal upload foto: ' + upErr.message);
+                    const { data: urlData } = _supabase.storage.from('menu-images').getPublicUrl(fileName);
+                    urlFotoFinal = urlData?.publicUrl || urlFotoFinal;
+                    _fotoProfilBlob = null;
+                }
+
+                // Simpan ke DB jika member
+                if (sessionUserCache.isMember && sessionUserCache.id) {
+                    const updatePayload = { nama: namaBaru, wa: waBaru };
+                    if (urlFotoFinal !== undefined) updatePayload.foto_profil = urlFotoFinal;
+                    const { error: dbErr } = await _supabase.from('members').update(updatePayload).eq('id', sessionUserCache.id);
+                    if (dbErr) throw new Error('Gagal simpan ke database: ' + dbErr.message);
+                }
+
+                // Update session lokal
+                sessionUserCache.nama = namaBaru;
+                sessionUserCache.wa = waBaru;
+                sessionUserCache.foto_profil = urlFotoFinal;
+                localStorage.setItem('warunkarsi_user_session', JSON.stringify(sessionUserCache));
+
+                updateHeaderUser();
+
+                if (statusEl) { statusEl.className = 'text-center text-[11px] font-bold text-emerald-600'; statusEl.textContent = '✓ Profil berhasil disimpan!'; }
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-300"></i> TERSIMPAN!';
+                setTimeout(() => {
+                    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> SIMPAN PERUBAHAN'; }
+                }, 2500);
+
+            } catch(err) {
+                console.error('Gagal simpan profil:', err);
+                if (statusEl) { statusEl.className = 'text-center text-[11px] font-bold text-red-500'; statusEl.textContent = '✗ ' + (err.message || 'Gagal menyimpan.'); }
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> SIMPAN PERUBAHAN';
+            }
         }
 
         // ============================================================
@@ -1900,6 +2149,533 @@
             setInterval(checkStoreStatus, 60000); 
             setInterval(fetchMenuData, 15000); 
         };
+    </script>
+
+    <!-- ═══════════════════════════════════
+         FITUR CHAT REALTIME — USER SIDE
+    ═══════════════════════════════════ -->
+
+    <!-- Chat FAB + Modal -->
+    <style>
+        /* ── CHAT MODAL ── */
+        #chat-modal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 300;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        #chat-modal.open { display: flex; }
+        .chat-sheet {
+            background: #fff;
+            width: 100%; max-width: 430px;
+            height: 90vh;
+            max-height: 90vh;
+            border-radius: 28px 28px 0 0;
+            display: flex; flex-direction: column;
+            box-shadow: 0 -12px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            animation: chatSlideUp 0.3s ease-out;
+            min-height: 0;
+        }
+        @keyframes chatSlideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .chat-header {
+            background: linear-gradient(160deg, #1a4535 0%, #1E4D3A 100%);
+            padding: 16px 18px 14px;
+            flex-shrink: 0;
+        }
+        .chat-header-handle {
+            width: 36px; height: 4px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 99px;
+            margin: 0 auto 14px;
+        }
+        .chat-header-info { display: flex; align-items: center; gap: 10px; }
+        .chat-avatar-store {
+            width: 40px; height: 40px;
+            background: rgba(230,161,92,0.2);
+            border: 1.5px solid rgba(230,161,92,0.4);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #E6A15C; flex-shrink: 0;
+        }
+        .chat-header-title { font-weight: 900; color: #fff; font-size: 14px; }
+        .chat-header-sub { font-size: 10px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+        .chat-header-close {
+            margin-left: auto;
+            width: 32px; height: 32px;
+            background: rgba(255,255,255,0.1);
+            border: none; border-radius: 50%;
+            color: #fff; font-size: 14px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        /* messages area */
+        .chat-messages {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 14px 14px 8px;
+            display: flex; flex-direction: column; gap: 10px;
+            background: #FAF7F2;
+        }
+        .chat-messages::-webkit-scrollbar { width: 3px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #D1C9BE; border-radius: 3px; }
+
+        .chat-bubble-wrap { display: flex; align-items: flex-end; gap: 7px; }
+        .chat-bubble-wrap.sent { flex-direction: row-reverse; }
+
+        .chat-bubble {
+            max-width: 78%;
+            min-width: 56px;
+            padding: 9px 14px;
+            border-radius: 18px; font-size: 13px; font-weight: 500;
+            line-height: 1.55; word-break: break-word;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .chat-bubble.recv {
+            background: #fff;
+            color: #1f2937;
+            border: 1.5px solid #EDE8E0;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-bubble.sent {
+            background: #1E4D3A;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble-time {
+            font-size: 9px; color: #9CA3AF; font-weight: 600;
+            white-space: nowrap; padding-bottom: 4px;
+        }
+        .chat-mini-avatar {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: rgba(30,77,58,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 900; color: #1E4D3A;
+            flex-shrink: 0;
+        }
+        .chat-date-divider {
+            text-align: center; font-size: 10px; font-weight: 700;
+            color: #9CA3AF; padding: 4px 0;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .chat-date-divider::before, .chat-date-divider::after {
+            content: ''; flex: 1; height: 1px; background: #EDE8E0;
+        }
+
+        /* input area */
+        .chat-input-area {
+            padding: 10px 12px 16px;
+            border-top: 1.5px solid #F0EAE0;
+            background: #fff;
+            flex-shrink: 0;
+            /* Stick to bottom of flex container */
+        }
+        .chat-input-row {
+            display: flex; gap: 8px; align-items: flex-end;
+        }
+        .chat-text-input {
+            flex: 1;
+            border: 1.5px solid #EDE8E0;
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 13px; font-weight: 500;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            outline: none; resize: none; max-height: 80px;
+            background: #FAF7F2; color: #1f2937;
+            transition: border-color 0.2s;
+            line-height: 1.4;
+            /* iOS font size fix */
+            -webkit-text-size-adjust: 100%;
+        }
+        .chat-text-input:focus { border-color: #1E4D3A; background: #fff; }
+        .chat-send-btn {
+            width: 44px; height: 44px;
+            background: #1E4D3A; color: #fff;
+            border: none; border-radius: 50%;
+            font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: transform 0.1s, background 0.15s;
+        }
+        .chat-send-btn:active { transform: scale(0.92); background: #2d6b52; }
+        .chat-send-btn:disabled { background: #D1D5DB; cursor: not-allowed; }
+
+        .chat-login-prompt {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; gap: 10px; padding: 24px;
+            color: #6B7280; font-size: 12px;
+        }
+        .chat-typing-indicator {
+            display: flex; align-items: center; gap: 4px; padding: 4px 0;
+        }
+        .chat-typing-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #9CA3AF;
+            animation: typingBounce 1.2s infinite;
+        }
+        .chat-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .chat-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+        }
+        .chat-empty-state {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 8px; color: #9CA3AF; font-size: 12px;
+            padding: 24px; text-align: center;
+        }
+        .chat-empty-state i { font-size: 32px; color: #D1C9BE; margin-bottom: 4px; }
+
+        /* notification toast khusus chat */
+        .chat-toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #1E4D3A; color: #fff;
+            padding: 10px 18px; border-radius: 99px;
+            font-size: 12px; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
+            z-index: 9999; opacity: 0;
+            transition: opacity 0.3s, top 0.3s;
+            box-shadow: 0 4px 20px rgba(30,77,58,0.4);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .chat-toast.show { opacity: 1; top: 28px; }
+    </style>
+
+    <!-- Chat Modal HTML -->
+    <div id="chat-modal">
+        <div class="chat-sheet">
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="chat-header-handle"></div>
+                <div class="chat-header-info">
+                    <div class="chat-avatar-store"><i class="fa-solid fa-store"></i></div>
+                    <div>
+                        <div class="chat-header-title">Warunk Arsi</div>
+                        <div class="chat-header-sub" id="chat-admin-status">● Online</div>
+                    </div>
+                    <button class="chat-header-close" onclick="tutupChat()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="chat-messages" id="chat-messages-list">
+            </div>
+
+            <!-- Input -->
+            <div class="chat-input-area" id="chat-input-area">
+                <div id="chat-login-prompt-user" style="display:none" class="text-center py-3">
+                    <p class="text-xs text-gray-400 font-semibold mb-2">Login terlebih dahulu untuk mengirim pesan</p>
+                    <button onclick="tutupChat(); pemicuPencegatanLoginMP(() => bukaChat());" class="text-xs font-black text-[#1E4D3A] underline">Masuk sekarang →</button>
+                </div>
+                <div id="chat-input-logged" class="chat-input-row">
+                    <textarea id="chat-input-text" class="chat-text-input" rows="1" placeholder="Ketik pesan..." oninput="autoResizeChatInput(this)" onkeydown="handleChatEnter(event)"></textarea>
+                    <button class="chat-send-btn" id="chat-send-btn" onclick="kirimPesanUser()"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Notification Toast -->
+    <div class="chat-toast" id="chat-toast-user">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span id="chat-toast-user-text">Pesan baru dari Admin</span>
+    </div>
+
+    <script>
+    // ══════════════════════════════════════════════════════════
+    // CHAT SYSTEM — USER SIDE
+    // Table Supabase: chat_messages
+    // Columns: id, sender_id, sender_name, sender_role (user/admin),
+    //          message, created_at, member_id (nullable),
+    //          is_read_admin, is_read_user
+    // ══════════════════════════════════════════════════════════
+
+    let chatSubscription = null;
+    let chatMessages = [];
+    let chatUnreadCount = 0;
+    let lastChatMessageId = null;
+
+    // Audio beep sederhana via Web Audio API
+    function playChatNotifSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            osc.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.4);
+        } catch(e) {}
+    }
+
+    function playOrderNotifSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            [0, 0.15, 0.3].forEach((t, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime([880, 1100, 1320][i], ctx.currentTime + t);
+                gain.gain.setValueAtTime(0.35, ctx.currentTime + t);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.3);
+                osc.start(ctx.currentTime + t);
+                osc.stop(ctx.currentTime + t + 0.3);
+            });
+        } catch(e) {}
+    }
+
+    function showChatToastUser(teks) {
+        const el = document.getElementById('chat-toast-user');
+        const txt = document.getElementById('chat-toast-user-text');
+        if (!el) return;
+        txt.textContent = teks;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 3500);
+    }
+
+    function updateChatNavBadge() {
+        const badge = document.getElementById('chat-nav-badge');
+        const badgeAkun = document.getElementById('chat-akun-badge');
+        if (!badge) return;
+        if (chatUnreadCount > 0) {
+            const txt = chatUnreadCount > 9 ? '9+' : chatUnreadCount;
+            badge.textContent = txt;
+            badge.style.display = 'flex';
+            if (badgeAkun) { badgeAkun.textContent = txt; badgeAkun.style.display = 'flex'; }
+        } else {
+            badge.style.display = 'none';
+            if (badgeAkun) badgeAkun.style.display = 'none';
+        }
+    }
+
+    function bukaChat() {
+        document.getElementById('chat-modal').classList.add('open');
+        setNavAktif('nav-akun');
+        chatUnreadCount = 0;
+        updateChatNavBadge();
+
+        const isLoggedIn = !!(sessionUserCache && sessionUserCache.nama);
+        document.getElementById('chat-login-prompt-user').style.display = isLoggedIn ? 'none' : 'block';
+        document.getElementById('chat-input-logged').style.display = isLoggedIn ? 'flex' : 'none';
+
+        if (isLoggedIn) {
+            // Render pesan yang sudah ada dulu (atau empty state)
+            renderChatMessages();
+            inisialisasiChat();
+        } else {
+            // Tampilkan prompt login
+            const list = document.getElementById('chat-messages-list');
+            if (list) list.innerHTML = `
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#9CA3AF;font-size:12px;padding:24px;text-align:center;min-height:200px;">
+                    <i class="fa-solid fa-user-lock" style="font-size:32px;color:#D1C9BE;margin-bottom:4px;"></i>
+                    <p style="font-weight:700;color:#6B7280;">Login untuk chat</p>
+                    <p>Masukkan nomor WhatsApp kamu untuk mulai percakapan</p>
+                </div>`;
+        }
+    }
+
+    function tutupChat() {
+        document.getElementById('chat-modal').classList.remove('open');
+        setNavAktif('nav-beranda');
+    }
+
+    async function inisialisasiChat() {
+        if (!sessionUserCache) return;
+        const memberId = sessionUserCache.id || sessionUserCache.wa;
+
+        // Load existing messages
+        const { data, error } = await _supabase
+            .from('chat_messages')
+            .select('*')
+            .eq('member_id', memberId)
+            .order('created_at', { ascending: true })
+            .limit(100);
+
+        if (!error && data) {
+            chatMessages = data;
+            renderChatMessages();
+        }
+
+        // Mark admin messages as read
+        await _supabase.from('chat_messages')
+            .update({ is_read_user: true })
+            .eq('member_id', memberId)
+            .eq('sender_role', 'admin');
+
+        // Subscribe realtime
+        if (chatSubscription) {
+            _supabase.removeChannel(chatSubscription);
+        }
+        chatSubscription = _supabase.channel('chat-user-' + memberId)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'chat_messages',
+                filter: 'member_id=eq.' + memberId
+            }, (payload) => {
+                const msg = payload.new;
+                chatMessages.push(msg);
+                renderChatMessages();
+                scrollChatToBottom();
+
+                if (msg.sender_role === 'admin') {
+                    playChatNotifSound();
+                    const chatOpen = document.getElementById('chat-modal').classList.contains('open');
+                    if (!chatOpen) {
+                        chatUnreadCount++;
+                        updateChatNavBadge();
+                        showChatToastUser('💬 Admin: ' + msg.message.slice(0, 50));
+                    }
+                    // Mark as read jika chat sedang terbuka
+                    if (chatOpen) {
+                        _supabase.from('chat_messages')
+                            .update({ is_read_user: true })
+                            .eq('id', msg.id);
+                    }
+                }
+            })
+            .subscribe();
+    }
+
+    function renderChatMessages() {
+        const list = document.getElementById('chat-messages-list');
+        if (!list) return;
+
+        if (chatMessages.length === 0) {
+            list.innerHTML = `
+                <div class="chat-empty-state" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#9CA3AF;font-size:12px;padding:24px;text-align:center;min-height:200px;">
+                    <i class="fa-solid fa-comments" style="font-size:32px;color:#D1C9BE;margin-bottom:4px;"></i>
+                    <p style="font-weight:700;color:#6B7280;">Belum ada pesan</p>
+                    <p>Tanyakan sesuatu kepada kami!</p>
+                </div>`;
+            return;
+        }
+
+        let html = '';
+        let lastDate = '';
+        chatMessages.forEach(msg => {
+            const d = new Date(msg.created_at);
+            const dateStr = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+            const timeStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            const isAdmin = msg.sender_role === 'admin';
+            const isSent = !isAdmin;
+
+            if (dateStr !== lastDate) {
+                html += `<div class="chat-date-divider">${dateStr}</div>`;
+                lastDate = dateStr;
+            }
+
+            const inisial = isAdmin ? 'WA' : (msg.sender_name ? msg.sender_name.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) : 'U');
+
+            html += `<div class="chat-bubble-wrap ${isSent ? 'sent' : ''}">
+                ${isAdmin ? `<div class="chat-mini-avatar">${inisial}</div>` : ''}
+                <div style="display:flex;flex-direction:column;max-width:78%;${isSent?'align-items:flex-end;':'align-items:flex-start;'}">
+                    <div class="chat-bubble ${isSent ? 'sent' : 'recv'}" style="width:fit-content;max-width:100%;">${escapeHtml(msg.message)}</div>
+                    <span class="chat-bubble-time">${timeStr}</span>
+                </div>
+            </div>`;
+        });
+
+        list.innerHTML = html;
+        scrollChatToBottom();
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function scrollChatToBottom() {
+        const list = document.getElementById('chat-messages-list');
+        if (list) setTimeout(() => { list.scrollTop = list.scrollHeight; }, 50);
+    }
+
+    async function kirimPesanUser() {
+        if (!sessionUserCache) return;
+        const input = document.getElementById('chat-input-text');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        const btn = document.getElementById('chat-send-btn');
+        btn.disabled = true;
+        input.value = '';
+        input.style.height = '';
+
+        const memberId = sessionUserCache.id || sessionUserCache.wa;
+        const { error } = await _supabase.from('chat_messages').insert([{
+            sender_id: memberId,
+            sender_name: sessionUserCache.nama,
+            sender_role: 'user',
+            message: msg,
+            member_id: memberId,
+            is_read_admin: false,
+            is_read_user: true
+        }]);
+
+        btn.disabled = false;
+        if (error) {
+            input.value = msg;
+            alert('Gagal mengirim pesan. Coba lagi.');
+        }
+    }
+
+    function handleChatEnter(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            kirimPesanUser();
+        }
+    }
+
+    function autoResizeChatInput(el) {
+        el.style.height = '';
+        el.style.height = Math.min(el.scrollHeight, 80) + 'px';
+    }
+
+    // Realtime listener untuk notif pesanan di user side
+    function setupOrderNotifUser() {
+        if (!sessionUserCache) return;
+        const memberId = sessionUserCache.id || sessionUserCache.wa;
+        _supabase.channel('order-status-user-' + memberId)
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'orders',
+                filter: 'member_id=eq.' + memberId
+            }, (payload) => {
+                const order = payload.new;
+                playOrderNotifSound();
+                showChatToastUser('🧾 Pesanan ' + order.order_id + ': ' + order.status);
+            })
+            .subscribe();
+    }
+
+    // Override window.onload untuk tambahkan chat listener
+    const _origOnload = window.onload;
+    window.onload = function() {
+        if (_origOnload) _origOnload();
+        setTimeout(() => {
+            if (sessionUserCache) {
+                setupOrderNotifUser();
+            }
+        }, 1000);
+    };
     </script>
 </body>
 </html>
