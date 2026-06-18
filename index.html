@@ -730,10 +730,7 @@
     </div>
 
     <div id="floating-cart-bar" class="fixed bottom-20 inset-x-0 mx-auto max-w-md px-3 z-50 flex-col gap-2 pointer-events-none" style="display:none">
-        <div class="w-full bg-white px-4 py-2.5 rounded-2xl flex items-center gap-2 pointer-events-auto" style="border:1.5px solid #E5E7EB;box-shadow:0 2px 10px rgba(0,0,0,0.06)">
-            <i class="fa-solid fa-pen-to-square text-sm flex-shrink-0" style="color:var(--hijau)"></i>
-            <input type="text" id="order-note-input" placeholder="Catatan pesanan…" class="w-full text-xs text-gray-700 bg-transparent outline-none font-medium" style="font-family:'Plus Jakarta Sans',sans-serif">
-        </div>
+        <!-- Catatan pesanan dipindah ke tiap item di Cart Review Modal -->
         <div onclick="pemicuProsesCheckoutMP()" class="cart-bar text-white px-4 py-3.5 flex justify-between items-center cursor-pointer pointer-events-auto transition-transform active:scale-[0.98]">
             <div class="flex items-center gap-3">
                 <div class="relative rounded-xl flex items-center justify-center w-10 h-10 flex-shrink-0" style="background:rgba(255,255,255,0.15)">
@@ -1660,7 +1657,8 @@
                     id: item.id,
                     nama: item.nama,
                     harga: Number(hargaFinal),
-                    qty: 1
+                    qty: 1,
+                    catatan: ''
                 });
             }
             updateFloatingCartBar();
@@ -1715,6 +1713,13 @@
             document.getElementById('cart-review-modal').style.display = 'none';
         }
 
+        function simpanCatatanDariDom() {
+            keranjangBelanja.forEach(item => {
+                const el = document.getElementById('catatan-item-' + item.id);
+                if (el) item.catatan = el.value;
+            });
+        }
+
         function renderCartReviewList() {
             const listEl = document.getElementById('cart-review-list');
             const totalEl = document.getElementById('cart-review-total');
@@ -1738,27 +1743,42 @@
                 const subtotal = item.harga * item.qty;
                 grandTotal += subtotal;
                 return `
-                    <div class="flex items-center gap-3 py-3" style="border-bottom:1px solid #F3F4F6" id="cart-row-${item.id}">
-                        <!-- Info -->
-                        <div class="flex-1 min-w-0">
-                            <p class="font-bold text-gray-800 leading-snug" style="font-size:13px;white-space:normal">${item.nama}</p>
-                            <p class="font-semibold mt-0.5" style="font-size:12px;color:var(--hijau)">Rp ${item.harga.toLocaleString('id-ID')} / pcs</p>
+                    <div class="py-3" style="border-bottom:1px solid #F3F4F6" id="cart-row-${item.id}">
+                        <div class="flex items-center gap-3">
+                            <!-- Info -->
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-gray-800 leading-snug" style="font-size:13px;white-space:normal">${item.nama}</p>
+                                <p class="font-semibold mt-0.5" style="font-size:12px;color:var(--hijau)">Rp ${item.harga.toLocaleString('id-ID')} / pcs</p>
+                            </div>
+                            <!-- Qty Control -->
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <button onclick="cartReviewKurangi('${item.id}')"
+                                    class="flex items-center justify-center font-black transition active:scale-90"
+                                    style="width:30px;height:30px;border-radius:10px;border:1.5px solid #E5E7EB;background:#fff;color:#374151;font-size:16px;cursor:pointer">
+                                    ${item.qty === 1 ? '<i class="fa-solid fa-trash-can" style="font-size:11px;color:#EF4444"></i>' : '−'}
+                                </button>
+                                <span style="min-width:26px;text-align:center;font-weight:900;font-size:14px;color:var(--hijau)">${item.qty}</span>
+                                <button onclick="cartReviewTambah('${item.id}')"
+                                    class="flex items-center justify-center font-black transition active:scale-90"
+                                    style="width:30px;height:30px;border-radius:10px;border:none;background:var(--hijau);color:#fff;font-size:18px;cursor:pointer">+</button>
+                            </div>
+                            <!-- Subtotal -->
+                            <div class="flex-shrink-0 text-right" style="min-width:72px">
+                                <p class="font-black text-gray-900" style="font-size:13px">Rp ${subtotal.toLocaleString('id-ID')}</p>
+                            </div>
                         </div>
-                        <!-- Qty Control -->
-                        <div class="flex items-center gap-1 flex-shrink-0">
-                            <button onclick="cartReviewKurangi('${item.id}')"
-                                class="flex items-center justify-center font-black transition active:scale-90"
-                                style="width:30px;height:30px;border-radius:10px;border:1.5px solid #E5E7EB;background:#fff;color:#374151;font-size:16px;cursor:pointer">
-                                ${item.qty === 1 ? '<i class="fa-solid fa-trash-can" style="font-size:11px;color:#EF4444"></i>' : '−'}
-                            </button>
-                            <span style="min-width:26px;text-align:center;font-weight:900;font-size:14px;color:var(--hijau)">${item.qty}</span>
-                            <button onclick="cartReviewTambah('${item.id}')"
-                                class="flex items-center justify-center font-black transition active:scale-90"
-                                style="width:30px;height:30px;border-radius:10px;border:none;background:var(--hijau);color:#fff;font-size:18px;cursor:pointer">+</button>
-                        </div>
-                        <!-- Subtotal -->
-                        <div class="flex-shrink-0 text-right" style="min-width:72px">
-                            <p class="font-black text-gray-900" style="font-size:13px">Rp ${subtotal.toLocaleString('id-ID')}</p>
+                        <!-- Catatan per item -->
+                        <div class="flex items-center gap-2 mt-2 px-1 py-1.5 rounded-xl" style="background:#F9F7F3;border:1px solid #EDE8E0">
+                            <i class="fa-solid fa-pen-to-square flex-shrink-0" style="font-size:11px;color:var(--emas);margin-left:4px"></i>
+                            <input
+                                type="text"
+                                id="catatan-item-${item.id}"
+                                value="${(item.catatan || '').replace(/"/g, '&quot;')}"
+                                placeholder="Catatan untuk ${item.nama}… (opsional)"
+                                oninput="keranjangBelanja.find(k=>k.id=='${item.id}').catatan=this.value"
+                                class="flex-1 bg-transparent outline-none text-gray-700 font-medium"
+                                style="font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;min-width:0"
+                            >
                         </div>
                     </div>
                 `;
@@ -1768,6 +1788,7 @@
         }
 
         function cartReviewKurangi(menuId) {
+            simpanCatatanDariDom();
             const idx = keranjangBelanja.findIndex(k => k.id == menuId);
             if (idx === -1) return;
             if (keranjangBelanja[idx].qty <= 1) {
@@ -1782,6 +1803,7 @@
         }
 
         function cartReviewTambah(menuId) {
+            simpanCatatanDariDom();
             const idx = keranjangBelanja.findIndex(k => k.id == menuId);
             if (idx === -1) return;
 
@@ -1813,6 +1835,7 @@
             
             bukaModal("<i class='fa-solid fa-receipt text-[#E6A15C]'></i> Formulir Penyelesaian Order", `
                 <div class="space-y-4 text-xs">
+                    <!-- Total & identitas -->
                     <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex justify-between items-center">
                         <div>
                             <p class="text-[10px] text-gray-400 font-bold uppercase">Total Pembayaran</p>
@@ -1827,123 +1850,189 @@
                         <button onclick='localStorage.removeItem("warunkarsi_user_session"); location.reload();' class='text-[10px] text-red-500 font-bold hover:underline mt-1 block'>(Bukan Saya, Logout)</button>
                     </div>
 
+                    <!-- Opsi pengambilan -->
                     <div class="space-y-1.5">
                         <label class="block font-bold text-gray-700"><i class="fa-solid fa-truck-ramp-box text-[#1E4D3A]"></i> Opsi Pengambilan Pesanan</label>
                         <div class="grid grid-cols-2 gap-2.5">
-                            <div onclick="handleDeliveryChoice('ambil_langsung')" class="border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none shadow-xs" id="label-opsi-ambil">
-                                <i class="fa-solid fa-shop text-[#1E4D3A] text-base mb-0.5"></i>
-                                <span class="font-bold text-[11px] text-gray-800">Ambil Mandiri</span>
+                            <div onclick="handleDeliveryChoice('ambil_langsung')" class="border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none" id="label-opsi-ambil">
+                                <i class="fa-solid fa-shop text-[#1E4D3A] text-lg mb-1"></i>
+                                <span class="font-black text-[11px] text-gray-800">Ambil Mandiri</span>
+                                <span class="text-[9px] text-gray-400 font-medium mt-0.5">Langsung ke kasir</span>
                                 <input type="radio" name="opsi_ambil" id="r-ambil" value="Ambil Sendiri" checked class="hidden" />
                             </div>
-                            <div onclick="handleDeliveryChoice('gosend')" class="border-2 border-gray-200 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-[#1E4D3A] select-none" id="label-opsi-gosend">
-                                <i class="fa-solid fa-motorcycle text-gray-500 text-base mb-0.5" id="icon-gosend"></i>
-                                <span class="font-bold text-[11px] text-gray-800">Kirim GoSend</span>
+                            <div onclick="handleDeliveryChoice('gosend')" class="border-2 border-gray-200 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none" id="label-opsi-gosend">
+                                <i class="fa-solid fa-motorcycle text-gray-400 text-lg mb-1" id="icon-gosend"></i>
+                                <span class="font-black text-[11px] text-gray-800">Kirim GoSend</span>
+                                <span class="text-[9px] text-gray-400 font-medium mt-0.5">Antar ke alamat</span>
                                 <input type="radio" name="opsi_ambil" id="r-gosend" value="GoSend" class="hidden" />
                             </div>
                         </div>
                     </div>
 
-                    <div id="kolom-alamat-checkout" class="space-y-1 hidden">
+                    <!-- Kolom alamat GoSend -->
+                    <div id="kolom-alamat-checkout" class="space-y-1" style="display:none">
                         <label class="block font-bold text-gray-700"><i class="fa-solid fa-map-location-dot text-red-500"></i> Alamat Lengkap Armada GoSend</label>
-                        <textarea id="checkout-alamat-input" placeholder="Tuliskan alamat lengkap pengiriman serta patokan lokasi..." class="w-full border rounded-xl p-2.5 text-xs focus:outline-[#1E4D3A] bg-white min-h-[50px] resize-none"></textarea>
+                        <textarea id="checkout-alamat-input" placeholder="Tuliskan alamat lengkap pengiriman serta patokan lokasi..." class="w-full border rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#1E4D3A] bg-white min-h-[60px] resize-none"></textarea>
                     </div>
 
+                    <!-- Metode pembayaran -->
                     <div class="space-y-1.5">
                         <label class="block font-bold text-gray-700"><i class="fa-solid fa-wallet text-[#1E4D3A]"></i> Metode Pembayaran</label>
-                        <div class="space-y-1.5">
-                            <div onclick="handlePaymentChoice('cod')" class="border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold" id="container-pay-cod">
-                                <span><i class="fa-solid fa-money-bill-wave text-[#1E4D3A] mr-1"></i> Bayar di Tempat (COD)</span>
-                                <input type="radio" name="metode_bayar" id="r-pay-cod" value="Bayar di Tempat (COD)" checked class="accent-[#1E4D3A]" />
+                        <div class="space-y-2">
+                            <div onclick="handlePaymentChoice('cod')" class="border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex items-center gap-3 cursor-pointer transition select-none" id="container-pay-cod">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(30,77,58,0.1)">
+                                    <i class="fa-solid fa-money-bill-wave text-[#1E4D3A] text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-black text-gray-800 text-xs">Bayar di Tempat (COD)</p>
+                                    <p class="text-[10px] text-gray-400 font-medium">Bayar saat ambil / diterima kurir</p>
+                                </div>
+                                <input type="radio" name="metode_bayar" id="r-pay-cod" value="Bayar di Tempat (COD)" checked class="accent-[#1E4D3A] w-4 h-4 flex-shrink-0" />
                             </div>
-                            <div onclick="handlePaymentChoice('qris')" class="border-2 border-gray-200 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold" id="container-pay-qris">
-                                <span><i class="fa-solid fa-qrcode text-gray-600 mr-1" id="icon-qris"></i> Transfer QRIS Otomatis</span>
-                                <input type="radio" name="metode_bayar" id="r-pay-qris" value="Transfer QRIS" class="accent-[#1E4D3A]" />
+                            <div onclick="handlePaymentChoice('qris')" class="border-2 border-gray-200 p-3 rounded-xl flex items-center gap-3 cursor-pointer transition select-none" id="container-pay-qris">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#F5F5F5" id="icon-qris-wrap">
+                                    <i class="fa-solid fa-qrcode text-gray-400 text-sm" id="icon-qris"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-black text-gray-800 text-xs">Transfer QRIS Otomatis</p>
+                                    <p class="text-[10px] text-gray-400 font-medium">Scan QR → Transfer sekarang</p>
+                                </div>
+                                <input type="radio" name="metode_bayar" id="r-pay-qris" value="Transfer QRIS" class="accent-[#1E4D3A] w-4 h-4 flex-shrink-0" />
                             </div>
                         </div>
                     </div>
 
-                    <div id="qris-display-container" class="hidden flex-col items-center justify-center p-3 border border-amber-200 bg-amber-50/40 rounded-2xl space-y-2">
-                        <div class="bg-white p-2 rounded-xl border"><img id="qris-image" src="qris-arsi.jpg" class="w-36 h-auto object-contain mx-auto" onerror="this.src='https://placehold.co/150?text=QRIS+Arsi'"></div>
-                        <button type="button" onclick="downloadQrisImage()" class="bg-[#1E4D3A] text-white font-bold px-3 py-1.5 rounded-xl text-[10px] shadow-xs">Simpan QRIS ke HP</button>
-                    </div>
-
-                    <button onclick="finalizedCheckoutProcess()" class="w-full bg-[#E6A15C] text-white font-black py-3 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-xs tracking-wider">
-                        KONFIRMASI & PROSES ORDER <i class="fa-solid fa-circle-check"></i>
+                    <!-- Tombol konfirmasi -->
+                    <button onclick="finalizedCheckoutProcess()" class="w-full text-white font-black py-3.5 rounded-xl transition active:scale-[0.98] flex items-center justify-center gap-2 text-xs tracking-wider" style="background:linear-gradient(135deg,#1E4D3A 0%,#2d6b52 100%);box-shadow:0 6px 20px rgba(30,77,58,0.45);letter-spacing:0.05em">
+                        <i class="fa-solid fa-circle-check"></i> KONFIRMASI &amp; PROSES ORDER
                     </button>
                 </div>
             `);
         }
 
         function handleDeliveryChoice(type) {
-            const lblAmbil = document.getElementById('label-opsi-ambil');
-            const lblGosend = document.getElementById('label-opsi-gosend');
+            const lblAmbil   = document.getElementById('label-opsi-ambil');
+            const lblGosend  = document.getElementById('label-opsi-gosend');
             const iconGosend = document.getElementById('icon-gosend');
             const areaAlamat = document.getElementById('kolom-alamat-checkout');
-            
-            if(type === 'ambil_langsung') {
+            const clsAktif   = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none";
+            const clsNonaktif= "border-2 border-gray-200 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none";
+
+            if (type === 'ambil_langsung') {
                 document.getElementById('r-ambil').checked = true;
-                lblAmbil.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none shadow-xs";
-                lblGosend.className = "border-2 border-gray-200 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-[#1E4D3A] select-none";
-                iconGosend.className = "fa-solid fa-motorcycle text-gray-400 text-base mb-0.5";
+                lblAmbil.className  = clsAktif;
+                lblGosend.className = clsNonaktif;
+                iconGosend.className = "fa-solid fa-motorcycle text-gray-400 text-lg mb-1";
                 areaAlamat.style.display = 'none';
                 document.getElementById('container-pay-cod').style.display = 'flex';
-            } else if(type === 'gosend') {
+            } else {
                 document.getElementById('r-gosend').checked = true;
-                lblGosend.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none shadow-xs";
-                lblAmbil.className = "border-2 border-gray-200 p-2.5 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-[#1E4D3A] select-none";
-                iconGosend.className = "fa-solid fa-motorcycle text-[#1E4D3A] text-base mb-0.5";
+                lblGosend.className = clsAktif;
+                lblAmbil.className  = clsNonaktif;
+                iconGosend.className = "fa-solid fa-motorcycle text-[#1E4D3A] text-lg mb-1";
                 areaAlamat.style.display = 'block';
                 document.getElementById('checkout-alamat-input').focus();
-                
                 document.getElementById('container-pay-cod').style.display = 'none';
                 handlePaymentChoice('qris');
             }
         }
 
         function handlePaymentChoice(payType) {
-            const containerCod = document.getElementById('container-pay-cod');
+            const containerCod  = document.getElementById('container-pay-cod');
             const containerQris = document.getElementById('container-pay-qris');
-            const iconQris = document.getElementById('icon-qris');
-            const qrisDisplay = document.getElementById('qris-display-container');
-            
-            if(payType === 'cod') {
-                document.getElementById('r-pay-cod').checked = true;
-                containerCod.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold";
-                containerQris.className = "border-2 border-gray-200 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold";
-                iconQris.className = "fa-solid fa-qrcode text-gray-600";
-                qrisDisplay.style.display = 'none';
-            } else if(payType === 'qris') {
+            const iconQrisWrap  = document.getElementById('icon-qris-wrap');
+            const iconQris      = document.getElementById('icon-qris');
+            const clsAktif      = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex items-center gap-3 cursor-pointer transition select-none";
+            const clsNonaktif   = "border-2 border-gray-200 p-3 rounded-xl flex items-center gap-3 cursor-pointer transition select-none";
+
+            if (payType === 'cod') {
+                document.getElementById('r-pay-cod').checked  = true;
+                containerCod.className  = clsAktif;
+                containerQris.className = clsNonaktif;
+                if (iconQrisWrap) iconQrisWrap.style.background = '#F5F5F5';
+                if (iconQris) iconQris.className = "fa-solid fa-qrcode text-gray-400 text-sm";
+            } else {
                 document.getElementById('r-pay-qris').checked = true;
-                containerQris.className = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold";
-                containerCod.className = "border-2 border-gray-200 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition select-none text-xs font-bold";
-                iconQris.className = "fa-solid fa-qrcode text-[#1E4D3A]";
-                qrisDisplay.style.display = 'flex';
+                containerQris.className = clsAktif;
+                containerCod.className  = clsNonaktif;
+                if (iconQrisWrap) iconQrisWrap.style.background = 'rgba(30,77,58,0.1)';
+                if (iconQris) iconQris.className = "fa-solid fa-qrcode text-[#1E4D3A] text-sm";
             }
         }
 
         async function downloadQrisImage() {
-            const qrisImgElement = document.getElementById('qris-image');
-            if(!qrisImgElement) return;
+            const qrisImgElement = document.getElementById('qris-popup-image');
+            if (!qrisImgElement) return;
             try {
                 const response = await fetch(qrisImgElement.src);
                 const blob = await response.blob();
                 const blobUrl = window.URL.createObjectURL(blob);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = blobUrl;
-                downloadLink.download = 'QRIS_Warunk_Arsi.jpg';
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                const a = document.createElement('a');
+                a.href = blobUrl; a.download = 'QRIS_Warunk_Arsi.jpg';
+                document.body.appendChild(a); a.click();
+                document.body.removeChild(a);
                 window.URL.revokeObjectURL(blobUrl);
-            } catch (err) { window.open(qrisImgElement.src, '_blank'); }
+            } catch (e) { window.open(qrisImgElement.src, '_blank'); }
+        }
+
+        // ── POPUP QRIS PAYMENT ──
+        let _qrisCountdownTimer = null;
+
+        function tampilkanPopupQris(orderId, nama, wa, total, pesanWA, nomorAdmin) {
+            // Tutup timer lama jika ada
+            if (_qrisCountdownTimer) clearInterval(_qrisCountdownTimer);
+
+            const modal = document.getElementById('qris-payment-modal');
+            if (!modal) return;
+
+            document.getElementById('qris-popup-order-id').textContent  = orderId;
+            document.getElementById('qris-popup-nama').textContent       = nama;
+            document.getElementById('qris-popup-total').textContent      = 'Rp ' + Number(total).toLocaleString('id-ID');
+
+            // Countdown 10 menit
+            let sisaDetik = 10 * 60;
+            function updateTimer() {
+                const m = String(Math.floor(sisaDetik / 60)).padStart(2,'0');
+                const s = String(sisaDetik % 60).padStart(2,'0');
+                const el = document.getElementById('qris-countdown');
+                if (el) el.textContent = m + ':' + s;
+                if (sisaDetik <= 0) {
+                    clearInterval(_qrisCountdownTimer);
+                    if (el) el.textContent = '00:00';
+                    const peringatanEl = document.getElementById('qris-expired-warning');
+                    if (peringatanEl) peringatanEl.style.display = 'flex';
+                }
+                sisaDetik--;
+            }
+            updateTimer();
+            _qrisCountdownTimer = setInterval(updateTimer, 1000);
+
+            // Tombol sudah bayar
+            document.getElementById('btn-qris-sudah-bayar').onclick = function() {
+                clearInterval(_qrisCountdownTimer);
+                tutupPopupQris();
+                const urlWaAdmin = 'https://wa.me/' + nomorAdmin + '?text=' + encodeURIComponent(pesanWA);
+                setTimeout(() => window.open(urlWaAdmin, '_blank'), 300);
+            };
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function tutupPopupQris() {
+            if (_qrisCountdownTimer) clearInterval(_qrisCountdownTimer);
+            const modal = document.getElementById('qris-payment-modal');
+            if (modal) modal.style.display = 'none';
+            document.body.style.overflow = '';
         }
 
         async function finalizedCheckoutProcess() {
             if (keranjangBelanja.length === 0) return;
 
+            simpanCatatanDariDom();
+
             const total = keranjangBelanja.reduce((acc, c) => acc + (c.harga * c.qty), 0);
             const orderId = 'TX-' + Math.floor(1000 + Math.random() * 9000); 
-            const noteText = document.getElementById('order-note-input').value.trim();
             const opsiAmbil = document.querySelector('input[name="opsi_ambil"]:checked').value;
             const metodeBayar = document.querySelector('input[name="metode_bayar"]:checked').value;
             const alamatTeks = document.getElementById('checkout-alamat-input') ? document.getElementById('checkout-alamat-input').value.trim() : '';
@@ -1953,9 +2042,19 @@
                 return;
             }
 
+            // Kumpulkan catatan per item untuk disimpan ke DB
+            const adaCatatanItem = keranjangBelanja.some(i => i.catatan && i.catatan.trim());
+            let catatanItemText = '';
+            if (adaCatatanItem) {
+                catatanItemText = ' | Catatan Item: ' + keranjangBelanja
+                    .filter(i => i.catatan && i.catatan.trim())
+                    .map(i => i.nama + ': "' + i.catatan.trim() + '"')
+                    .join(', ');
+            }
+
             let catatanGabungan = `[Opsi: ${opsiAmbil}] [Bayar: ${metodeBayar}]`;
             if(opsiAmbil === 'GoSend') catatanGabungan += ` Alamat: ${alamatTeks}.`;
-            if(noteText) catatanGabungan += ` Catatan Tambahan: ${noteText}`;
+            catatanGabungan += catatanItemText;
 
             try {
                 const { error } = await _supabase.from('orders').insert([{
@@ -1976,12 +2075,12 @@
                 const nomorWaCustomer = sessionUserCache.wa || '-';
                 const nomorAdmin = '6285175150408';
 
-                const rincianItem = keranjangBelanja.map((item, i) =>
-                    (i + 1) + '. ' + item.nama + ' x' + item.qty + '  ->  Rp ' + Number(item.harga * item.qty).toLocaleString('id-ID')
-                ).join('\n');
+                const rincianItem = keranjangBelanja.map((item, i) => {
+                    const barisCatatan = (item.catatan && item.catatan.trim()) ? '\n   📝 ' + item.catatan.trim() : '';
+                    return (i + 1) + '. ' + item.nama + ' x' + item.qty + '  ->  Rp ' + Number(item.harga * item.qty).toLocaleString('id-ID') + barisCatatan;
+                }).join('\n');
 
-                const barisTambahan = (opsiAmbil === 'GoSend' ? 'Alamat    : ' + alamatTeks + '\n' : '')
-                                    + (noteText ? 'Catatan   : ' + noteText + '\n' : '');
+                const barisTambahan = (opsiAmbil === 'GoSend' ? 'Alamat    : ' + alamatTeks + '\n' : '');
 
                 const pesanWA = '*ORDER MASUK - Warunk Arsi*\n'
                     + '-----------------------------\n'
@@ -2000,14 +2099,18 @@
                     + 'Segera proses pesanan ini ya! Pelanggan sedang memantau status ordernya di aplikasi.';
 
                 keranjangBelanja = [];
-                document.getElementById('order-note-input').value = '';
                 tutupModal();
                 updateFloatingCartBar();
                 renderApplicationUi();
 
-                // Buka WhatsApp ke nomor admin Warunk Arsi
-                const urlWaAdmin = 'https://wa.me/' + nomorAdmin + '?text=' + encodeURIComponent(pesanWA);
-                setTimeout(function() { window.open(urlWaAdmin, '_blank'); }, 400);
+                if (metodeBayar === 'Transfer QRIS') {
+                    // Tampilkan popup QRIS dengan countdown
+                    setTimeout(() => tampilkanPopupQris(orderId, namaCustomer, nomorWaCustomer, total, pesanWA, nomorAdmin), 200);
+                } else {
+                    // COD: langsung buka WA admin
+                    const urlWaAdmin = 'https://wa.me/' + nomorAdmin + '?text=' + encodeURIComponent(pesanWA);
+                    setTimeout(function() { window.open(urlWaAdmin, '_blank'); }, 400);
+                }
 
             } catch (err) { alert("Gagal memproses orderan ke Cloud Kasir POS."); }
         }
@@ -3092,6 +3195,120 @@
     </script>
 
     <!-- ═══════════════════════════════════════════
+         QRIS PAYMENT POPUP MODAL
+    ═══════════════════════════════════════════ -->
+    <div id="qris-payment-modal" class="fixed inset-0 z-[300] items-end justify-center p-0" style="display:none;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)">
+        <div class="w-full max-w-md bg-white overflow-y-auto" style="border-radius:28px 28px 0 0;max-height:92vh;box-shadow:0 -16px 50px rgba(0,0,0,0.2)">
+            
+            <!-- Header gradient hijau -->
+            <div style="background:linear-gradient(135deg,#1E4D3A 0%,#2d6b52 100%);padding:20px 20px 24px;border-radius:28px 28px 0 0;position:relative">
+                <div style="width:36px;height:4px;background:rgba(255,255,255,0.25);border-radius:99px;margin:0 auto 16px"></div>
+                <!-- Tutup -->
+                <button onclick="tutupPopupQris()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="flex items-center gap-3">
+                    <div style="width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                        <i class="fa-solid fa-qrcode" style="color:#fff;font-size:20px"></i>
+                    </div>
+                    <div>
+                        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.6)">Pembayaran QRIS</p>
+                        <p style="font-size:16px;font-weight:900;color:#fff;letter-spacing:-0.01em">Selesaikan Pembayaran</p>
+                    </div>
+                </div>
+
+                <!-- Info order -->
+                <div style="margin-top:14px;background:rgba(255,255,255,0.12);border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.06em">No. Order</p>
+                        <p id="qris-popup-order-id" style="font-size:13px;font-weight:900;color:#fff;font-family:monospace">-</p>
+                    </div>
+                    <div style="text-align:right">
+                        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.06em">Total</p>
+                        <p id="qris-popup-total" style="font-size:15px;font-weight:900;color:#E6A15C">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div style="padding:20px;space-y:16px">
+
+                <!-- Countdown -->
+                <div style="background:#FFF8F0;border:1.5px solid #FDDCB0;border-radius:16px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;background:#FEF3C7;display:flex;align-items:center;justify-content:center">
+                            <i class="fa-solid fa-clock" style="color:#D97706;font-size:14px"></i>
+                        </div>
+                        <div>
+                            <p style="font-size:9px;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:0.06em">Batas Waktu Bayar</p>
+                            <p style="font-size:10px;font-weight:600;color:#B45309">Segera selesaikan sebelum waktu habis</p>
+                        </div>
+                    </div>
+                    <div style="background:#1E4D3A;border-radius:10px;padding:6px 14px;text-align:center;min-width:68px">
+                        <p id="qris-countdown" style="font-size:20px;font-weight:900;color:#E6A15C;font-family:monospace;letter-spacing:0.05em;line-height:1">10:00</p>
+                        <p style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:0.04em">menit</p>
+                    </div>
+                </div>
+
+                <!-- Peringatan expired (hidden awalnya) -->
+                <div id="qris-expired-warning" style="display:none;background:#FEE2E2;border:1.5px solid #FECACA;border-radius:14px;padding:10px 14px;align-items:center;gap-8px;margin-bottom:16px">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:#DC2626;font-size:14px;margin-right:8px"></i>
+                    <span style="font-size:11px;font-weight:800;color:#991B1B">Waktu habis! Hubungi kasir jika sudah terlanjur transfer.</span>
+                </div>
+
+                <!-- QRIS Image -->
+                <div style="text-align:center;margin-bottom:16px">
+                    <p style="font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">
+                        <i class="fa-solid fa-qrcode" style="color:var(--hijau)"></i> Scan QR Code Berikut
+                    </p>
+                    <div style="display:inline-block;background:#fff;border-radius:20px;padding:14px;border:2px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.08)">
+                        <img id="qris-popup-image" src="qris-arsi.jpg" alt="QRIS Warunk Arsi"
+                            style="width:190px;height:190px;object-fit:contain;display:block;border-radius:8px"
+                            onerror="this.src='https://placehold.co/190x190?text=QRIS+Arsi'">
+                    </div>
+                    <p style="font-size:10px;font-weight:600;color:#9CA3AF;margin-top:8px" id="qris-popup-nama">-</p>
+                </div>
+
+                <!-- Simpan QRIS -->
+                <button onclick="downloadQrisImage()" style="width:100%;background:#F9F7F3;border:1.5px solid #EDE8E0;border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:800;color:#374151;cursor:pointer;margin-bottom:16px">
+                    <i class="fa-solid fa-download" style="color:var(--hijau)"></i> Simpan QRIS ke Galeri HP
+                </button>
+
+                <!-- Langkah cara scan -->
+                <div style="background:#F0FBF5;border:1.5px solid #D1F0E0;border-radius:16px;padding:14px;margin-bottom:20px">
+                    <p style="font-size:10px;font-weight:900;color:#1E4D3A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">
+                        <i class="fa-solid fa-circle-info"></i> Cara Scan QRIS
+                    </p>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                        <div style="display:flex;align-items:flex-start;gap:10px">
+                            <div style="width:22px;height:22px;border-radius:50%;background:#1E4D3A;color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+                            <p style="font-size:11px;font-weight:600;color:#374151;line-height:1.4;padding-top:2px">Buka aplikasi dompet digital kamu (GoPay, OVO, Dana, ShopeePay, m-Banking, dll)</p>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:10px">
+                            <div style="width:22px;height:22px;border-radius:50%;background:#1E4D3A;color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+                            <p style="font-size:11px;font-weight:600;color:#374151;line-height:1.4;padding-top:2px">Pilih menu <b>Scan QR / Pay</b> lalu arahkan kamera ke QR di atas</p>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:10px">
+                            <div style="width:22px;height:22px;border-radius:50%;background:#1E4D3A;color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+                            <p style="font-size:11px;font-weight:600;color:#374151;line-height:1.4;padding-top:2px">Pastikan nominal sesuai, lalu <b>konfirmasi pembayaran</b></p>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:10px">
+                            <div style="width:22px;height:22px;border-radius:50%;background:#E6A15C;color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+                            <p style="font-size:11px;font-weight:600;color:#374151;line-height:1.4;padding-top:2px">Klik tombol <b>"Sudah Bayar"</b> di bawah agar pesanan langsung diproses kasir ✅</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol sudah bayar -->
+                <button id="btn-qris-sudah-bayar" style="width:100%;background:linear-gradient(135deg,#1E4D3A,#2d6b52);color:#fff;font-size:13px;font-weight:900;padding:16px;border-radius:16px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:0.04em;box-shadow:0 6px 20px rgba(30,77,58,0.35);margin-bottom:8px">
+                    <i class="fa-solid fa-check-circle"></i> SUDAH BAYAR — PROSES PESANAN
+                </button>
+                <p style="text-align:center;font-size:10px;font-weight:600;color:#9CA3AF;padding-bottom:4px">Pesanan akan dikirim ke WhatsApp kasir untuk diproses</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
          SOCIAL PROOF NOTIFICATION
          Nama pembeli diambil dari data member yang sudah
          terdaftar (disamarkan untuk privasi, mis. "Budi S."),
@@ -3104,7 +3321,7 @@
             left: 12px;
             bottom: 84px;
             z-index: 45;
-            width: max-content;
+            width: auto;
             max-width: min(272px, 82vw);
             background: #fff;
             border-radius: 16px;
@@ -3115,13 +3332,16 @@
             align-items: center;
             gap: 9px;
             opacity: 0;
+            visibility: hidden;
             transform: translateY(12px) scale(0.97);
-            transition: opacity 0.3s ease, transform 0.3s ease, bottom 0.25s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease, bottom 0.25s ease, visibility 0s linear 0.3s;
             pointer-events: none;
         }
         .social-proof-notif.show {
             opacity: 1;
+            visibility: visible;
             transform: translateY(0) scale(1);
+            transition: opacity 0.3s ease, transform 0.3s ease, bottom 0.25s ease, visibility 0s linear 0s;
             pointer-events: auto;
         }
         .social-proof-avatar {
@@ -3303,12 +3523,15 @@
         }, 3000); // notifikasi pertama tampil 3 detik setelah halaman siap
     }
 
-    // Override window.onload lagi (mengikuti pola fitur chat di atas) — tidak menyentuh onload sebelumnya
-    const _origOnloadSocialProof = window.onload;
-    window.onload = function() {
-        if (_origOnloadSocialProof) _origOnloadSocialProof();
+    // Gunakan addEventListener agar tidak menimpa handler lain — lebih aman & kompatibel Android
+    function _initSocialProof() {
         fetchSocialProofMembers().then(mulaiSocialProofNotif);
-    };
+    }
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(_initSocialProof, 0);
+    } else {
+        window.addEventListener('load', _initSocialProof, { once: true });
+    }
     </script>
 </body>
 </html>
