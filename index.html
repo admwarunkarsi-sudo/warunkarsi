@@ -3090,5 +3090,225 @@
         }, 1000);
     };
     </script>
+
+    <!-- ═══════════════════════════════════════════
+         SOCIAL PROOF NOTIFICATION
+         Nama pembeli diambil dari data member yang sudah
+         terdaftar (disamarkan untuk privasi, mis. "Budi S."),
+         produk yang tampil dipilih acak dari menu yang sedang
+         tersedia. Tidak mengubah kode/markup sebelumnya.
+    ═══════════════════════════════════════════ -->
+    <style>
+        .social-proof-notif {
+            position: fixed;
+            left: 12px;
+            bottom: 84px;
+            z-index: 45;
+            width: max-content;
+            max-width: min(272px, 82vw);
+            background: #fff;
+            border-radius: 16px;
+            border: 1.5px solid #F0EAE0;
+            box-shadow: 0 8px 26px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
+            padding: 9px 10px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            opacity: 0;
+            transform: translateY(12px) scale(0.97);
+            transition: opacity 0.3s ease, transform 0.3s ease, bottom 0.25s ease;
+            pointer-events: none;
+        }
+        .social-proof-notif.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .social-proof-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(30,77,58,0.1);
+            color: var(--hijau);
+            font-size: 12px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .social-proof-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .social-proof-isi { min-width: 0; flex: 1; }
+        .social-proof-isi p { margin: 0; line-height: 1.3; }
+        .social-proof-nama {
+            font-size: 11.5px; font-weight: 800; color: #1f2937;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .social-proof-aksi {
+            font-size: 10.5px; font-weight: 500; color: #6b7280;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin-top: 1px;
+        }
+        .social-proof-aksi b { color: var(--hijau); font-weight: 800; }
+        .social-proof-waktu {
+            font-size: 9px; font-weight: 700; color: #9CA3AF;
+            display: flex; align-items: center; gap: 4px; margin-top: 2px;
+        }
+        .social-proof-dot { width: 5px; height: 5px; border-radius: 50%; background: #34D399; flex-shrink: 0; }
+        .social-proof-close {
+            flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+            background: #F9F7F3; color: #B9B1A4; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+        @media (min-width: 480px) {
+            .social-proof-notif { max-width: 290px; }
+        }
+    </style>
+
+    <div id="social-proof-notif" class="social-proof-notif">
+        <div class="social-proof-avatar" id="sp-avatar">??</div>
+        <div class="social-proof-isi">
+            <p class="social-proof-nama" id="sp-nama">-</p>
+            <p class="social-proof-aksi" id="sp-aksi">-</p>
+            <p class="social-proof-waktu"><span class="social-proof-dot"></span><span id="sp-waktu">baru saja</span></p>
+        </div>
+        <div class="social-proof-close" onclick="sembunyikanSocialProofNotif(true)" role="button" aria-label="Tutup notifikasi"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+
+    <script>
+    // ── SOCIAL PROOF NOTIFICATION ──
+    let socialProofMembersCache = [];
+    let socialProofTimerId = null;
+    let socialProofHideTimerId = null;
+    let socialProofSedangTampil = false;
+    let socialProofDihentikan = false;
+
+    async function fetchSocialProofMembers() {
+        try {
+            const { data, error } = await _supabase.from('members').select('nama, foto_profil').limit(40);
+            if (!error && data) {
+                socialProofMembersCache = data.filter(m => m.nama && m.nama.trim().length > 0);
+            }
+        } catch (e) { console.error('Gagal mengambil data member untuk social proof:', e); }
+    }
+
+    // Samarkan nama demi privasi member, mis. "Budi Santoso" -> "Budi S."
+    function samarkanNamaSocialProof(namaAsli) {
+        const bagian = namaAsli.trim().split(/\s+/);
+        if (bagian.length === 1) return bagian[0];
+        return bagian[0] + ' ' + bagian.slice(1).map(k => k.charAt(0).toUpperCase() + '.').join(' ');
+    }
+
+    function acakDariArray(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function produkBolehDitampilkanSocialProof(item) {
+        return !(item.status === 'Kosong/Habis' || item.is_tersedia === false || item.is_tersedia === 0);
+    }
+
+    function adaModalTerbukaSocialProof() {
+        const idDicek = ['global-modal', 'cart-review-modal', 'chat-modal'];
+        return idDicek.some(id => {
+            const el = document.getElementById(id);
+            if (!el) return false;
+            if (el.classList.contains('open')) return true;
+            return getComputedStyle(el).display !== 'none';
+        });
+    }
+
+    // Hitung posisi bottom agar tidak menutupi bottom-nav / floating cart bar.
+    // Tinggi bottom-nav diukur langsung dari elemennya (bukan angka tebakan),
+    // supaya tetap pas walau ukurannya berubah di berbagai ukuran layar HP.
+    function aturPosisiSocialProofNotif() {
+        const notif = document.getElementById('social-proof-notif');
+        if (!notif) return;
+        const navBar = document.querySelector('.fixed.bottom-0.inset-x-0.bg-white.border-t');
+        const navHeight = (navBar && navBar.offsetHeight) ? navBar.offsetHeight : 64;
+        let bottomOffset = navHeight + 14;
+        const cartBar = document.getElementById('floating-cart-bar');
+        if (cartBar && getComputedStyle(cartBar).display !== 'none') {
+            bottomOffset += cartBar.offsetHeight + 10;
+        }
+        notif.style.bottom = bottomOffset + 'px';
+    }
+
+    function tampilkanSocialProofNotif() {
+        if (socialProofDihentikan || socialProofSedangTampil) return;
+        if (!socialProofMembersCache.length) return;
+        if (!Array.isArray(menusDataCache) || !menusDataCache.length) return;
+        if (adaModalTerbukaSocialProof()) return;
+
+        // Hindari menampilkan nama user yang sedang login sendiri
+        let kandidatMember = socialProofMembersCache;
+        if (sessionUserCache && sessionUserCache.nama) {
+            const namaAktif = sessionUserCache.nama.trim().toLowerCase();
+            const tersaring = kandidatMember.filter(m => m.nama.trim().toLowerCase() !== namaAktif);
+            if (tersaring.length) kandidatMember = tersaring;
+        }
+
+        const produkTersedia = menusDataCache.filter(p => p.nama && produkBolehDitampilkanSocialProof(p));
+        if (!produkTersedia.length) return;
+
+        const member = acakDariArray(kandidatMember);
+        const produk = acakDariArray(produkTersedia);
+
+        const daftarWaktu = ['baru saja', '1 menit lalu', '2 menit lalu', '3 menit lalu', '5 menit lalu', '7 menit lalu'];
+        const namaSamar = samarkanNamaSocialProof(member.nama);
+        const inisial = namaSamar.split(' ').map(k => k[0]).join('').toUpperCase().slice(0, 2);
+
+        document.getElementById('sp-nama').textContent = namaSamar;
+        document.getElementById('sp-aksi').innerHTML = 'memesan <b>' + escapeHtml(produk.nama) + '</b>';
+        document.getElementById('sp-waktu').textContent = acakDariArray(daftarWaktu);
+
+        const avatarEl = document.getElementById('sp-avatar');
+        avatarEl.innerHTML = member.foto_profil
+            ? '<img src="' + member.foto_profil + '" alt="' + namaSamar + '">'
+            : inisial;
+
+        aturPosisiSocialProofNotif();
+
+        const notif = document.getElementById('social-proof-notif');
+        notif.classList.add('show');
+        socialProofSedangTampil = true;
+
+        clearTimeout(socialProofHideTimerId);
+        socialProofHideTimerId = setTimeout(() => sembunyikanSocialProofNotif(false), 4500);
+    }
+
+    function sembunyikanSocialProofNotif(dihentikanPermanen) {
+        const notif = document.getElementById('social-proof-notif');
+        if (notif) notif.classList.remove('show');
+        socialProofSedangTampil = false;
+        clearTimeout(socialProofHideTimerId);
+        if (dihentikanPermanen) {
+            // user menutup manual lewat tombol (x) -> hentikan untuk sesi halaman ini
+            socialProofDihentikan = true;
+            clearTimeout(socialProofTimerId);
+        }
+    }
+
+    function jadwalkanSiklusSocialProof() {
+        if (socialProofDihentikan) return;
+        const delay = 7000 + Math.random() * 6000; // 7–13 detik, biar terasa natural & tidak mengganggu
+        socialProofTimerId = setTimeout(() => {
+            if (document.visibilityState === 'visible') tampilkanSocialProofNotif();
+            jadwalkanSiklusSocialProof();
+        }, delay);
+    }
+
+    function mulaiSocialProofNotif() {
+        clearTimeout(socialProofTimerId);
+        socialProofTimerId = setTimeout(() => {
+            tampilkanSocialProofNotif();
+            jadwalkanSiklusSocialProof();
+        }, 3000); // notifikasi pertama tampil 3 detik setelah halaman siap
+    }
+
+    // Override window.onload lagi (mengikuti pola fitur chat di atas) — tidak menyentuh onload sebelumnya
+    const _origOnloadSocialProof = window.onload;
+    window.onload = function() {
+        if (_origOnloadSocialProof) _origOnloadSocialProof();
+        fetchSocialProofMembers().then(mulaiSocialProofNotif);
+    };
+    </script>
 </body>
 </html>
