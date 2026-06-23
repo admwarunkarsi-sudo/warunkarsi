@@ -1978,7 +1978,7 @@
         // ── POPUP QRIS PAYMENT ──
         let _qrisCountdownTimer = null;
 
-        function tampilkanPopupQris(orderId, nama, wa, total, pesanWA, nomorAdmin) {
+        function tampilkanPopupQris(orderId, nama, wa, total) {
             // Tutup timer lama jika ada
             if (_qrisCountdownTimer) clearInterval(_qrisCountdownTimer);
 
@@ -2011,8 +2011,7 @@
             document.getElementById('btn-qris-sudah-bayar').onclick = function() {
                 clearInterval(_qrisCountdownTimer);
                 tutupPopupQris();
-                const urlWaAdmin = 'https://wa.me/' + nomorAdmin + '?text=' + encodeURIComponent(pesanWA);
-                setTimeout(() => window.open(urlWaAdmin, '_blank'), 300);
+                setTimeout(() => tampilkanPopupTerimaKasih(orderId, nama, total, '', 'Transfer QRIS'), 200);
             };
 
             modal.style.display = 'flex';
@@ -2024,6 +2023,26 @@
             const modal = document.getElementById('qris-payment-modal');
             if (modal) modal.style.display = 'none';
             document.body.style.overflow = '';
+        }
+
+        // ── POPUP TERIMA KASIH ──
+        function tampilkanPopupTerimaKasih(orderId, nama, total, opsiAmbil, metodeBayar) {
+            const modal = document.getElementById('thankyou-popup-modal');
+            if (!modal) return;
+            document.getElementById('ty-order-id').textContent  = orderId;
+            document.getElementById('ty-nama').textContent       = nama;
+            document.getElementById('ty-total').textContent      = 'Rp ' + Number(total).toLocaleString('id-ID');
+            document.getElementById('ty-opsi').textContent       = opsiAmbil || '-';
+            document.getElementById('ty-bayar').textContent      = metodeBayar || '-';
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function tutupPopupTerimaKasih() {
+            const modal = document.getElementById('thankyou-popup-modal');
+            if (modal) modal.style.display = 'none';
+            document.body.style.overflow = '';
+            setTimeout(() => bukaModalPesanan(), 200);
         }
 
         async function finalizedCheckoutProcess() {
@@ -2070,46 +2089,18 @@
 
                 if (error) throw error;
 
-                // ── NOTIFIKASI WHATSAPP KE ADMIN ──
                 const namaCustomer = sessionUserCache.nama || 'Pelanggan';
                 const nomorWaCustomer = sessionUserCache.wa || '-';
-                const nomorAdmin = '6285175150408';
-
-                const rincianItem = keranjangBelanja.map((item, i) => {
-                    const barisCatatan = (item.catatan && item.catatan.trim()) ? '\n   📝 ' + item.catatan.trim() : '';
-                    return (i + 1) + '. ' + item.nama + ' x' + item.qty + '  ->  Rp ' + Number(item.harga * item.qty).toLocaleString('id-ID') + barisCatatan;
-                }).join('\n');
-
-                const barisTambahan = (opsiAmbil === 'GoSend' ? 'Alamat    : ' + alamatTeks + '\n' : '');
-
-                const pesanWA = '*ORDER MASUK - Warunk Arsi*\n'
-                    + '-----------------------------\n'
-                    + 'No. Order : ' + orderId + '\n'
-                    + 'Nama      : ' + namaCustomer + '\n'
-                    + 'No. WA    : ' + nomorWaCustomer + '\n'
-                    + 'Opsi      : ' + opsiAmbil + '\n'
-                    + 'Bayar     : ' + metodeBayar + '\n'
-                    + barisTambahan
-                    + '-----------------------------\n'
-                    + 'RINCIAN PESANAN:\n'
-                    + rincianItem + '\n'
-                    + '-----------------------------\n'
-                    + 'TOTAL  :  Rp ' + Number(total).toLocaleString('id-ID') + '\n'
-                    + '-----------------------------\n'
-                    + 'Segera proses pesanan ini ya! Pelanggan sedang memantau status ordernya di aplikasi.';
 
                 keranjangBelanja = [];
-                tutupModal();
                 updateFloatingCartBar();
                 renderApplicationUi();
+                tutupModal();
 
                 if (metodeBayar === 'Transfer QRIS') {
-                    // Tampilkan popup QRIS dengan countdown
-                    setTimeout(() => tampilkanPopupQris(orderId, namaCustomer, nomorWaCustomer, total, pesanWA, nomorAdmin), 200);
+                    setTimeout(() => tampilkanPopupQris(orderId, namaCustomer, nomorWaCustomer, total), 200);
                 } else {
-                    // COD: langsung buka WA admin
-                    const urlWaAdmin = 'https://wa.me/' + nomorAdmin + '?text=' + encodeURIComponent(pesanWA);
-                    setTimeout(function() { window.open(urlWaAdmin, '_blank'); }, 400);
+                    setTimeout(() => tampilkanPopupTerimaKasih(orderId, namaCustomer, total, opsiAmbil, metodeBayar), 200);
                 }
 
             } catch (err) { alert("Gagal memproses orderan ke Cloud Kasir POS."); }
@@ -2141,20 +2132,23 @@
                     
                     orders.forEach(o => {
                         let badgeColor = "bg-amber-100 text-amber-800 border-amber-200 animate-pulse";
-                        if(o.status === 'Selesai') badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
-                        if(o.status === 'Batal') badgeColor = "bg-red-100 text-red-800 border-red-200";
+                        let labelStatus = "Menunggu Antrean";
+                        if(o.status === 'Diproses') { badgeColor = "bg-orange-100 text-orange-700 border-orange-300 animate-pulse"; labelStatus = "Sedang Diproses"; }
+                        if(o.status === 'Selesai')  { badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200"; labelStatus = "Selesai"; }
+                        if(o.status === 'Batal')    { badgeColor = "bg-red-100 text-red-800 border-red-200"; labelStatus = "Batal"; }
 
-                        // Di sini kita tambahkan event onclick="bukaDetailAntreanSpesifik" supaya bisa diklik interaktif
                         html += `
                         <div onclick="bukaDetailAntreanSpesifik('${o.order_id || o.id}')" class='bg-white border border-gray-200/80 p-3.5 rounded-xl flex justify-between items-center shadow-xs cursor-pointer active:bg-gray-50 transition duration-100'>
                             <div>
                                 <p class='font-black text-gray-800 text-xs tracking-wide flex items-center gap-1'>ORDER #${o.order_id || o.id} <i class="fa-solid fa-chevron-right text-[9px] text-gray-400"></i></p>
                                 <p class='text-[11px] text-gray-500 mt-0.5 font-medium'>Total Nota: <span class="font-bold text-gray-800">Rp ${Number(o.total_harga).toLocaleString('id-ID')}</span></p>
                             </div>
-                            <span class='px-2.5 py-1 rounded-full font-black text-[10px] border ${badgeColor}'>${o.status}</span>
+                            <span class='px-2.5 py-1 rounded-full font-black text-[10px] border ${badgeColor}'>${labelStatus}</span>
                         </div>`;
                     });
                     document.getElementById('modal-body').innerHTML = html + "</div>";
+                    // Mulai polling realtime saat modal pesanan dibuka
+                    mulaiPollingPesanan();
                 } catch(e) { document.getElementById('modal-body').innerHTML = "<p class='text-center py-2'>Gagal memuat antrean.</p>"; }
             });
         }
@@ -2213,7 +2207,15 @@
                             <p class="text-[9px] text-gray-400 font-bold uppercase">Total Pembayaran</p>
                             <p class="text-sm font-black text-[#1E4D3A] mt-0.5">Rp ${Number(dataOrder.total_harga).toLocaleString('id-ID')}</p>
                         </div>
-                        <span class="text-[9px] bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full font-black uppercase tracking-wider">${dataOrder.status}</span>
+                        <span class="text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider border ${
+                            dataOrder.status==='Selesai' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                            dataOrder.status==='Diproses' ? 'bg-orange-100 text-orange-700 border-orange-300' :
+                            dataOrder.status==='Batal'    ? 'bg-red-100 text-red-800 border-red-200' :
+                            'bg-amber-100 text-amber-800 border-amber-200'}">${
+                            dataOrder.status==='Antrean' ? 'Menunggu Antrean' :
+                            dataOrder.status==='Diproses' ? 'Sedang Diproses' :
+                            dataOrder.status
+                        }</span>
                     </div>
 
                     <button onclick="bukaModalPesanan()" class="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-xs transition active:scale-98">
@@ -2221,6 +2223,91 @@
                     </button>
                 </div>
             `);
+        }
+
+        // ── REALTIME POLLING PESANAN USER ──
+        let _pollingPesananTimer = null;
+        let _pollingStatusCache = {}; // order_id -> last known status
+
+        function mulaiPollingPesanan() {
+            hentikanPollingPesanan();
+            _pollingPesananTimer = setInterval(pollStatusPesanan, 4000);
+        }
+
+        function hentikanPollingPesanan() {
+            if (_pollingPesananTimer) { clearInterval(_pollingPesananTimer); _pollingPesananTimer = null; }
+        }
+
+        async function pollStatusPesanan() {
+            if (!sessionUserCache) return;
+            // Hanya poll jika modal pesanan sedang terbuka
+            const modalEl = document.getElementById('global-modal');
+            if (!modalEl || getComputedStyle(modalEl).display === 'none') {
+                hentikanPollingPesanan(); return;
+            }
+            try {
+                const query = _supabase.from('orders').select('order_id, status, catatan').order('id', { ascending: false }).limit(5);
+                if (sessionUserCache.isMember) query.eq('member_id', sessionUserCache.id);
+                else query.eq('member_wa', sessionUserCache.wa);
+                const { data: orders } = await query;
+                if (!orders) return;
+
+                orders.forEach(o => {
+                    const prev = _pollingStatusCache[o.order_id];
+                    const curr = o.status;
+                    if (prev && prev !== curr) {
+                        // Status berubah — tampilkan notif ke user
+                        if (curr === 'Diproses') {
+                            tampilkanNotifStatusPesanan(o.order_id, 'diproses', o.catatan);
+                        } else if (curr === 'Selesai') {
+                            tampilkanNotifStatusPesanan(o.order_id, 'selesai', o.catatan);
+                        }
+                        // Refresh tampilan daftar pesanan
+                        bukaModalPesanan();
+                    }
+                    _pollingStatusCache[o.order_id] = curr;
+                });
+
+                // Init cache pada iterasi pertama (tidak tampilkan notif)
+                if (Object.keys(_pollingStatusCache).length === 0) {
+                    orders.forEach(o => { _pollingStatusCache[o.order_id] = o.status; });
+                }
+            } catch(e) { /* silent fail */ }
+        }
+
+        function tampilkanNotifStatusPesanan(orderId, tipe, catatan) {
+            const modal = document.getElementById('notif-status-pesanan-modal');
+            if (!modal) return;
+
+            const isGoSend = catatan && catatan.toLowerCase().includes('gosend');
+            const opsiLabel = isGoSend ? 'Pesananmu sedang dalam perjalanan via GoSend! 🛵' : 'Pesananmu sudah siap diambil di kasir! 🙌';
+
+            if (tipe === 'diproses') {
+                document.getElementById('nsp-icon').innerHTML = '<i class="fa-solid fa-fire-burner" style="font-size:28px;color:#d97706"></i>';
+                document.getElementById('nsp-header').style.background = 'linear-gradient(135deg,#d97706,#b45309)';
+                document.getElementById('nsp-judul').textContent = 'Pesanan Sedang Diproses!';
+                document.getElementById('nsp-sub').textContent = 'Admin sedang menyiapkan pesananmu dengan penuh semangat 🔥';
+                document.getElementById('nsp-pesan').textContent = 'Harap tunggu sebentar ya, kami segera menyelesaikannya!';
+                document.getElementById('nsp-opsi').style.display = 'none';
+            } else {
+                document.getElementById('nsp-icon').innerHTML = '<i class="fa-solid fa-circle-check" style="font-size:28px;color:#16a34a"></i>';
+                document.getElementById('nsp-header').style.background = 'linear-gradient(135deg,#1E4D3A,#2d6b52)';
+                document.getElementById('nsp-judul').textContent = 'Pesanan Selesai! 🎉';
+                document.getElementById('nsp-sub').textContent = 'Pesananmu sudah selesai disiapkan oleh admin';
+                document.getElementById('nsp-pesan').textContent = opsiLabel;
+                document.getElementById('nsp-opsi').style.display = 'block';
+                document.getElementById('nsp-opsi').textContent = opsiLabel;
+            }
+
+            document.getElementById('nsp-order-id').textContent = orderId;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function tutupNotifStatusPesanan() {
+            const modal = document.getElementById('notif-status-pesanan-modal');
+            if (modal) modal.style.display = 'none';
+            document.body.style.overflow = '';
         }
 
         function bukaModalAkun() {
@@ -2628,6 +2715,7 @@
         }
 
         function tutupModal() {
+            hentikanPollingPesanan();
             document.getElementById('global-modal').style.display = 'none';
             setNavAktif('nav-beranda');
         }
@@ -3307,6 +3395,112 @@
             </div>
         </div>
     </div>
+
+    <!-- ═══════════════════════════════════════════
+         NOTIF STATUS PESANAN (DIPROSES / SELESAI)
+    ═══════════════════════════════════════════ -->
+    <div id="notif-status-pesanan-modal" class="fixed inset-0 z-[400] items-center justify-center p-5" style="display:none;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)">
+        <div class="w-full max-w-sm bg-white overflow-hidden" style="border-radius:26px;box-shadow:0 24px 60px rgba(0,0,0,0.25);animation:tySlideUp 0.35s cubic-bezier(0.34,1.56,0.64,1)">
+            <!-- Header -->
+            <div id="nsp-header" style="padding:28px 20px 36px;text-align:center;position:relative;background:linear-gradient(135deg,#d97706,#b45309)">
+                <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.18);border:3px solid rgba(255,255,255,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                    <div id="nsp-icon"><i class="fa-solid fa-fire-burner" style="font-size:28px;color:#fff"></i></div>
+                </div>
+                <p style="font-size:19px;font-weight:900;color:#fff;letter-spacing:-0.01em;" id="nsp-judul">Pesanan Sedang Diproses!</p>
+                <p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.75);margin-top:6px;" id="nsp-sub">Admin sedang menyiapkan pesananmu</p>
+                <!-- Badge order -->
+                <div style="position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.35);border-radius:20px;padding:7px 20px;white-space:nowrap;backdrop-filter:blur(4px)">
+                    <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.08em;line-height:1;margin-bottom:2px">No. Order</p>
+                    <p id="nsp-order-id" style="font-size:14px;font-weight:900;color:#fff;font-family:monospace;letter-spacing:0.04em;line-height:1">—</p>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div style="padding:32px 20px 22px">
+                <div style="background:#FAF7F2;border:1.5px solid #EDE8E0;border-radius:16px;padding:16px;text-align:center;margin-bottom:16px;">
+                    <p style="font-size:12px;font-weight:700;color:#374151;line-height:1.5;" id="nsp-pesan">Harap tunggu sebentar ya!</p>
+                    <p id="nsp-opsi" style="display:none;margin-top:8px;font-size:11px;font-weight:800;color:#1E4D3A;background:#F0FBF5;border:1.5px solid #D1F0E0;border-radius:10px;padding:10px 14px;line-height:1.4;"></p>
+                </div>
+                <button onclick="tutupNotifStatusPesanan()" style="width:100%;background:linear-gradient(135deg,#1E4D3A,#2d6b52);color:#fff;font-size:13px;font-weight:900;padding:15px;border-radius:16px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:0.04em;box-shadow:0 6px 20px rgba(30,77,58,0.35);">
+                    <i class="fa-solid fa-clipboard-list"></i> OKE, MENGERTI
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         THANK YOU POPUP MODAL
+    ═══════════════════════════════════════════ -->
+    <div id="thankyou-popup-modal" class="fixed inset-0 z-[350] items-center justify-center p-4" style="display:none;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)">
+        <div class="w-full max-w-sm bg-white overflow-hidden" style="border-radius:28px;box-shadow:0 24px 60px rgba(0,0,0,0.25);animation:tySlideUp 0.35s cubic-bezier(0.34,1.56,0.64,1)">
+            <!-- Header hijau -->
+            <div style="background:linear-gradient(135deg,#1E4D3A 0%,#2d6b52 100%);padding:28px 20px 36px;text-align:center;position:relative">
+                <!-- Ikon centang animasi -->
+                <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.15);border:3px solid rgba(255,255,255,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:tyBounce 0.5s ease 0.2s both">
+                    <i class="fa-solid fa-check" style="font-size:28px;color:#fff"></i>
+                </div>
+                <p style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.14em;color:rgba(255,255,255,0.55);margin-bottom:6px">Pesanan Berhasil Masuk!</p>
+                <p style="font-size:20px;font-weight:900;color:#fff;line-height:1.2;letter-spacing:-0.01em">Terima Kasih, <span id="ty-nama">Kak</span>! 🙏</p>
+                <p style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.65);margin-top:6px">Pesananmu sedang diproses oleh admin</p>
+
+                <!-- Order badge -->
+                <div style="position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);background:#E6A15C;border-radius:20px;padding:8px 20px;box-shadow:0 4px 16px rgba(230,161,92,0.45);white-space:nowrap">
+                    <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.08em;line-height:1;margin-bottom:2px">No. Order</p>
+                    <p id="ty-order-id" style="font-size:14px;font-weight:900;color:#fff;font-family:monospace;letter-spacing:0.04em;line-height:1">TX-0000</p>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div style="padding:32px 20px 20px">
+                <!-- Ilustrasi sedang diproses -->
+                <div style="background:#F0FBF5;border:1.5px solid #D1F0E0;border-radius:18px;padding:16px;text-align:center;margin-bottom:16px">
+                    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px">
+                        <span style="width:8px;height:8px;border-radius:50%;background:#34D399;display:inline-block;animation:tyDot 1s ease-in-out infinite"></span>
+                        <span style="width:8px;height:8px;border-radius:50%;background:#34D399;display:inline-block;animation:tyDot 1s ease-in-out 0.2s infinite"></span>
+                        <span style="width:8px;height:8px;border-radius:50%;background:#34D399;display:inline-block;animation:tyDot 1s ease-in-out 0.4s infinite"></span>
+                    </div>
+                    <p style="font-size:12px;font-weight:800;color:#1E4D3A">Admin sedang memproses pesananmu</p>
+                    <p style="font-size:10px;font-weight:500;color:#6b7280;margin-top:3px">Pantau status di halaman <b>Pesanan</b> ya!</p>
+                </div>
+
+                <!-- Ringkasan -->
+                <div style="background:#FAF7F2;border:1.5px solid #EDE8E0;border-radius:14px;padding:12px 14px;margin-bottom:16px;space-y:4px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                        <span style="font-size:10px;font-weight:600;color:#9CA3AF">Total Pembayaran</span>
+                        <span id="ty-total" style="font-size:15px;font-weight:900;color:#1E4D3A">Rp 0</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                        <span style="font-size:10px;font-weight:600;color:#9CA3AF">Metode Bayar</span>
+                        <span id="ty-bayar" style="font-size:10px;font-weight:800;color:#374151">-</span>
+                    </div>
+                    <div id="ty-opsi-row" style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-size:10px;font-weight:600;color:#9CA3AF">Opsi Ambil</span>
+                        <span id="ty-opsi" style="font-size:10px;font-weight:800;color:#374151">-</span>
+                    </div>
+                </div>
+
+                <!-- Tombol lihat pesanan -->
+                <button onclick="tutupPopupTerimaKasih()" style="width:100%;background:linear-gradient(135deg,#1E4D3A,#2d6b52);color:#fff;font-size:13px;font-weight:900;padding:15px;border-radius:16px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:0.04em;box-shadow:0 6px 20px rgba(30,77,58,0.35)">
+                    <i class="fa-solid fa-clipboard-list"></i> LIHAT STATUS PESANAN
+                </button>
+            </div>
+        </div>
+    </div>
+    <style>
+        @keyframes tySlideUp {
+            from { opacity:0; transform:translateY(40px) scale(0.95); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+        @keyframes tyBounce {
+            0%   { transform:scale(0); opacity:0; }
+            70%  { transform:scale(1.2); }
+            100% { transform:scale(1); opacity:1; }
+        }
+        @keyframes tyDot {
+            0%, 100% { transform:translateY(0); opacity:0.4; }
+            50%       { transform:translateY(-5px); opacity:1; }
+        }
+    </style>
 
     <!-- ═══════════════════════════════════════════
          SOCIAL PROOF NOTIFICATION
