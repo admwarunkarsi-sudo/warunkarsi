@@ -3181,15 +3181,19 @@
 
             try {
                 // Simpan ulasan ke Supabase
-                const { error } = await _supabase.from('ulasan_menu').insert([{
-                    menu_id: itemTarget.id,
+                const { data: insertData, error } = await _supabase.from('ulasan_menu').insert([{
+                    menu_id: parseInt(itemTarget.id),
                     nama_user: namaUser,
-                    bintang: bintang,
+                    bintang: parseInt(bintang),
                     teks: teks || null,
                     tanggal: tanggal
-                }]);
+                }]).select();
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase error detail:', error);
+                    showChatToastUser('❌ Error: ' + (error.message || error.code || 'Tidak diketahui'));
+                    return;
+                }
 
                 // Perbarui cache lokal juga agar langsung terlihat tanpa reload
                 if (!_ulasanMenuCache[itemTarget.id]) _ulasanMenuCache[itemTarget.id] = [];
@@ -3199,8 +3203,8 @@
                 showChatToastUser('⭐ Terima kasih atas ulasan Anda! Ulasan sudah tampil untuk semua.');
                 bukaModalPesanan();
             } catch(e) {
-                console.error('Gagal kirim ulasan:', e);
-                showChatToastUser('❌ Gagal mengirim ulasan, coba lagi.');
+                console.error('Gagal kirim ulasan (exception):', e);
+                showChatToastUser('❌ Error: ' + (e.message || 'Tidak diketahui'));
             }
         }
 
