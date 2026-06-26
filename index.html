@@ -1068,8 +1068,9 @@
                 // Kelompokkan ulasan per menu_id ke dalam cache
                 _ulasanMenuCache = {};
                 (data || []).forEach(u => {
-                    if (!_ulasanMenuCache[u.menu_id]) _ulasanMenuCache[u.menu_id] = [];
-                    _ulasanMenuCache[u.menu_id].push({
+                    let idKey = String(u.menu_id);
+                    if (!_ulasanMenuCache[idKey]) _ulasanMenuCache[idKey] = [];
+                    _ulasanMenuCache[idKey].push({
                         bintang: u.bintang,
                         teks: u.teks,
                         nama: u.nama_user,
@@ -2942,7 +2943,14 @@
             if (!item) return;
             
             const ratingInfo = getRatingDefault(item);
-            const ulasanList = _ulasanMenuCache[item.id] || [];
+            
+            // Coba ambil list ulasan berdasarkan id asli, jika gagal coba hapus angka nol di depan
+            // (Kasus khusus: ID "09062612" tersimpan sbg BIGINT "9062612" di database)
+            let ulasanList = _ulasanMenuCache[item.id];
+            if (!ulasanList) {
+                const noZeroId = String(item.id).replace(/^0+/, '');
+                ulasanList = _ulasanMenuCache[noZeroId] || [];
+            }
             
             // Hitung rating gabungan (default + ulasan user)
             let ratingTampil = ratingInfo.rating;
@@ -3180,14 +3188,35 @@
             }
 
             try {
+                // Cari menu_id yang valid: utamakan dari itemTarget.id
+                let menuIdFinal = itemTarget.id;
+                
+                // Fallback: cari di cache berdasarkan nama (jika id kosong atau tidak valid)
+                if (!menuIdFinal) {
+                    let menuMatch = menusDataCache.find(m => m.nama.toLowerCase() === itemTarget.nama.toLowerCase());
+                    
+                    // Jika tidak ketemu exact match, coba hilangkan varian di dalam kurung (contoh: " (Kertas Nasi)")
+                    if (!menuMatch) {
+                        const baseName = itemTarget.nama.replace(/\s*\(.*\)\s*/g, '').trim().toLowerCase();
+                        menuMatch = menusDataCache.find(m => m.nama.toLowerCase() === baseName);
+                    }
+                    
+                    if (menuMatch) menuIdFinal = menuMatch.id;
+                }
+                
+                if (!menuIdFinal) {
+                    showChatToastUser('❌ Menu tidak ditemukan di database. Coba lagi.');
+                    return;
+                }
+
                 // Simpan ulasan ke Supabase
-                const { data: insertData, error } = await _supabase.from('ulasan_menu').insert([{
-                    menu_id: parseInt(itemTarget.id),
+                const { error } = await _supabase.from('ulasan_menu').insert([{
+                    menu_id: menuIdFinal,
                     nama_user: namaUser,
                     bintang: parseInt(bintang),
                     teks: teks || null,
                     tanggal: tanggal
-                }]).select();
+                }]);
 
                 if (error) {
                     console.error('Supabase error detail:', error);
@@ -3196,8 +3225,8 @@
                 }
 
                 // Perbarui cache lokal juga agar langsung terlihat tanpa reload
-                if (!_ulasanMenuCache[itemTarget.id]) _ulasanMenuCache[itemTarget.id] = [];
-                _ulasanMenuCache[itemTarget.id].push({ bintang, teks, nama: namaUser, tanggal });
+                if (!_ulasanMenuCache[menuIdFinal]) _ulasanMenuCache[menuIdFinal] = [];
+                _ulasanMenuCache[menuIdFinal].push({ bintang, teks, nama: namaUser, tanggal });
 
                 window._ulasanBintangDipilih = 0;
                 showChatToastUser('⭐ Terima kasih atas ulasan Anda! Ulasan sudah tampil untuk semua.');
