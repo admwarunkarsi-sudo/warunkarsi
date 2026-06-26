@@ -627,17 +627,41 @@
         <!-- Status Operasional -->
         <div id="status-operasional-container" class="status-card p-3.5 flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(30,77,58,0.09);color:var(--hijau)">
-                    <i class="fa-solid fa-store text-sm"></i>
+                <!-- Logo Warunk Arsi -->
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden" style="background:#fff;border:1.5px solid rgba(30,77,58,0.12);">
+                    <img src="https://raw.githubusercontent.com/mbaim14/warunk-arsi-pos/refs/heads/main/logowarunk.png" alt="Warunk Arsi" class="w-full h-full object-contain" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=&quot;fa-solid fa-store text-sm&quot; style=&quot;color:var(--hijau)&quot;></i>';" />
                 </div>
                 <div class="min-w-0 flex-1">
                     <p class="uppercase truncate" style="font-size:9px;font-weight:800;letter-spacing:0.07em;color:#9CA3AF">Status Warung</p>
                     <p id="realtime-date-text" class="text-xs font-black truncate mt-0.5">-</p>
                 </div>
             </div>
+
+            <!-- Badge status (saat TUTUP / PRE-ORDER) -->
             <div id="badge-status-toko" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black transition-all duration-300 flex-shrink-0 whitespace-nowrap">
                 <span id="dot-status-toko" class="w-1.5 h-1.5 rounded-full block animate-pulse"></span>
                 <span id="text-status-toko">-</span>
+            </div>
+
+            <!-- Countdown kotak kecil (hanya saat jam operasional) -->
+            <div id="countdown-boxes-wrap" style="display:none;flex-shrink:0;">
+                <p style="font-size:8px;font-weight:700;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 4px;text-align:center;">Tutup Dalam</p>
+                <div style="display:flex;align-items:center;gap:3px;">
+                    <div style="background:linear-gradient(135deg,#1E4D3A,#2d6b52);border-radius:6px;padding:4px 6px;text-align:center;min-width:28px;">
+                        <p id="cd-jam" style="font-size:13px;font-weight:900;color:#fff;line-height:1;margin:0;">00</p>
+                        <p style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.6);margin:1px 0 0;text-transform:uppercase;">j</p>
+                    </div>
+                    <span style="font-size:12px;font-weight:900;color:#1E4D3A;line-height:1;padding-bottom:6px;">:</span>
+                    <div style="background:linear-gradient(135deg,#1E4D3A,#2d6b52);border-radius:6px;padding:4px 6px;text-align:center;min-width:28px;">
+                        <p id="cd-menit" style="font-size:13px;font-weight:900;color:#fff;line-height:1;margin:0;">00</p>
+                        <p style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.6);margin:1px 0 0;text-transform:uppercase;">m</p>
+                    </div>
+                    <span style="font-size:12px;font-weight:900;color:#1E4D3A;line-height:1;padding-bottom:6px;">:</span>
+                    <div style="background:linear-gradient(135deg,#E6A15C,#d4883a);border-radius:6px;padding:4px 6px;text-align:center;min-width:28px;">
+                        <p id="cd-detik" style="font-size:13px;font-weight:900;color:#fff;line-height:1;margin:0;">00</p>
+                        <p style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.6);margin:1px 0 0;text-transform:uppercase;">d</p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1536,55 +1560,60 @@
             const sekarang = new Date();
             const hariMasehi = sekarang.getDay();
 
-            const dateLabel = document.getElementById('realtime-date-text');
-            const badge    = document.getElementById('badge-status-toko');
-            const dot      = document.getElementById('dot-status-toko');
+            const dateLabel  = document.getElementById('realtime-date-text');
+            const badge      = document.getElementById('badge-status-toko');
+            const dot        = document.getElementById('dot-status-toko');
             const textStatus = document.getElementById('text-status-toko');
+            const cdBoxes    = document.getElementById('countdown-boxes-wrap');
+            const cdJam      = document.getElementById('cd-jam');
+            const cdMenit    = document.getElementById('cd-menit');
+            const cdDetik    = document.getElementById('cd-detik');
 
             const jam   = sekarang.getHours();
             const menit = sekarang.getMinutes();
             const detik = sekarang.getSeconds();
-            const totalDetik = jam * 3600 + menit * 60 + detik;
+            const totalDetik     = jam * 3600 + menit * 60 + detik;
             const bukaDariDetik  = 5  * 3600;   // 05:00:00
-            const bukaSampaiDetik = 13 * 3600;   // 13:00:00
+            const bukaSampaiDetik = 13 * 3600;  // 13:00:00
 
             if (hariMasehi === 1) {
                 // Senin: full TUTUP seharian
                 dateLabel.innerText = "TUTUP";
                 dateLabel.className = "text-xs font-black truncate mt-0.5 text-red-600";
                 badge.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black bg-red-50 text-red-600 border border-red-100 flex-shrink-0 whitespace-nowrap";
+                badge.style.display = 'flex';
                 dot.className   = "w-1.5 h-1.5 rounded-full block bg-red-600";
                 textStatus.innerText = "TUTUP";
+                if (cdBoxes) cdBoxes.style.display = 'none';
 
             } else if (totalDetik >= bukaDariDetik && totalDetik < bukaSampaiDetik) {
-                // Selasa–Minggu jam 05:00–12:59: BUKA + countdown tutup
+                // Selasa–Minggu jam 05:00–12:59: BUKA + countdown kotak
                 const sisaDetik = bukaSampaiDetik - totalDetik;
-                const cdJam    = Math.floor(sisaDetik / 3600);
-                const cdMenit  = Math.floor((sisaDetik % 3600) / 60);
-                const cdDetik  = sisaDetik % 60;
-
-                let countdownTeks;
-                if (cdJam > 0) {
-                    countdownTeks = `TUTUP ${cdJam}j ${String(cdMenit).padStart(2,'0')}m ${String(cdDetik).padStart(2,'0')}d`;
-                } else if (cdMenit > 0) {
-                    countdownTeks = `TUTUP ${cdMenit}m ${String(cdDetik).padStart(2,'0')}d`;
-                } else {
-                    countdownTeks = `TUTUP ${cdDetik}d`;
-                }
+                const sJ = Math.floor(sisaDetik / 3600);
+                const sM = Math.floor((sisaDetik % 3600) / 60);
+                const sD = sisaDetik % 60;
 
                 dateLabel.innerText = "BUKA";
                 dateLabel.className = "text-xs font-black truncate mt-0.5 text-emerald-700";
-                badge.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200 flex-shrink-0 whitespace-nowrap";
-                dot.className   = "w-1.5 h-1.5 rounded-full block bg-amber-500 animate-pulse";
-                textStatus.innerText = countdownTeks;
+
+                // Sembunyikan badge pill, tampilkan kotak countdown
+                badge.style.display = 'none';
+                if (cdBoxes) {
+                    cdBoxes.style.display = 'block';
+                    cdJam.textContent   = String(sJ).padStart(2,'0');
+                    cdMenit.textContent = String(sM).padStart(2,'0');
+                    cdDetik.textContent = String(sD).padStart(2,'0');
+                }
 
             } else {
                 // Selasa–Minggu jam 13:00–04:59: TUTUP + PRE-ORDER hijau
                 dateLabel.innerText = "TUTUP";
                 dateLabel.className = "text-xs font-black truncate mt-0.5 text-red-600";
                 badge.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-100 flex-shrink-0 whitespace-nowrap";
+                badge.style.display = 'flex';
                 dot.className   = "w-1.5 h-1.5 rounded-full block bg-emerald-500 animate-pulse";
                 textStatus.innerText = "PRE-ORDER";
+                if (cdBoxes) cdBoxes.style.display = 'none';
             }
         }
 
