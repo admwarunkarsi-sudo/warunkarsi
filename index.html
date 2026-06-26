@@ -1371,7 +1371,8 @@
             const jamBuka = isJamOperasional();
             const stokNum = (item.stok !== null && item.stok !== undefined) ? parseInt(item.stok) : null;
             // Produk sendiri (non-mitra) = stok selalu unlimited, hanya is_tersedia yang blokir
-            const _isProdukSendiri = !item.mitra_wa;
+            // Status "Unlimited" juga diperlakukan unlimited — tidak dibatasi stok kapan pun
+            const _isProdukSendiri = !item.mitra_wa || item.status === "Unlimited";
 
             // is_tersedia=false (admin set Habis) = SELALU tidak bisa pesan, kapan pun
             const adminHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
@@ -1441,7 +1442,8 @@
                     const _isProdukSendiri = !item.mitra_wa;
                     const adminHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
                     // Produk sendiri (non-mitra) → stok selalu unlimited, stok=0 diabaikan
-                    const stokHabis = jamBuka && !_isProdukSendiri && stok !== null && stok === 0;
+                    // Status "Unlimited" → selalu bisa dipesan, stok diabaikan
+                    const stokHabis = jamBuka && !_isProdukSendiri && item.status !== "Unlimited" && stok !== null && stok === 0;
                     const isHabis = adminHabis || stokHabis;
 
                     const stokFs = (item.stok_flash_sale !== undefined && item.stok_flash_sale !== null)
@@ -1563,11 +1565,11 @@
                 const isFsActive = item.is_flash_sale === 1 && Number(item.harga_flash_sale) > 0;
                 const hargaTampil = isFsActive ? item.harga_flash_sale : item.harga_normal;
                 const stok = item.stok !== null && item.stok !== undefined ? parseInt(item.stok) : null;
-                const _isProdukSendiri = !item.mitra_wa;
+                const _isProdukSendiri = !item.mitra_wa || item.status === "Unlimited";
                 // adminHabis: is_tersedia=false → habis kapan pun
                 const adminHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
                 // stokHabis: stok=0 hanya habis saat jam operasional
-                // KECUALI produk sendiri (non-mitra) → selalu unlimited, stok=0 diabaikan
+                // KECUALI produk sendiri (non-mitra) atau status "Unlimited" → selalu bisa dipesan
                 const stokHabis = jamBuka && !_isProdukSendiri && stok !== null && stok === 0;
                 const isHabis = adminHabis || stokHabis;
                 const imgFilter = isHabis ? 'style="filter:grayscale(0.6) opacity(0.5)"' : '';
@@ -1576,13 +1578,14 @@
                 let stokBadgeHtml = '';
                 if (adminHabis) {
                     stokBadgeHtml = '';
-                } else if (!jamBuka || _isProdukSendiri) {
-                    // Di luar jam: Pre-Order badge (termasuk stok=0, karena unlimited)
-                    // Produk sendiri: selalu unlimited → tampilkan Pre-Order / ∞
+                } else if (item.status === "Unlimited") {
+                    stokBadgeHtml = `<span style="background:#f0fdf4;color:#15803d;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;border:1px solid #bbf7d0;">∞ Unlimited</span>`;
+                } else if (!jamBuka) {
+                    // Di luar jam operasional saja: tampilkan badge Pre-Order
                     stokBadgeHtml = `<span style="background:#e0f2fe;color:#0369a1;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;border:1px solid #bae6fd;">Pre-Order</span>`;
-                } else if (stok !== null && stok === 0) {
+                } else if (!_isProdukSendiri && stok !== null && stok === 0) {
                     stokBadgeHtml = `<span class="stok-badge-habis"><i class="fa-solid fa-circle-xmark" style="font-size:7px"></i> Habis</span>`;
-                } else if (stok !== null && stok <= 5 && stok > 0) {
+                } else if (!_isProdukSendiri && stok !== null && stok <= 5 && stok > 0) {
                     stokBadgeHtml = `<span class="stok-badge-rendah"><i class="fa-solid fa-fire" style="font-size:7px"></i> Sisa ${stok}</span>`;
                 }
 
@@ -1633,6 +1636,12 @@
         }
 
         function tambahKeKeranjangLokal(menuId, isFlashSale) {
+            // ── LOGIN GATE: pastikan user sudah identifikasi diri sebelum pesan ──
+            if (!sessionUserCache) {
+                pemicuPencegatanLoginMP(() => tambahKeKeranjangLokal(menuId, isFlashSale));
+                return;
+            }
+
             const item = menusDataCache.find(m => m.id == menuId);
             // Admin set Habis: selalu blokir
             const adminHabis = !item || item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
@@ -1640,10 +1649,12 @@
 
             const jamBuka = isJamOperasional();
             const stokTersedia = (item.stok !== null && item.stok !== undefined) ? parseInt(item.stok) : null;
+            // Status "Unlimited": abaikan semua pembatasan stok
+            const isUnlimitedItem = item.status === "Unlimited" || !item.mitra_wa;
 
-            if (jamBuka) {
+            if (jamBuka && !isUnlimitedItem) {
                 // Jam operasional: stok=0 blokir total; stok>0 batasi qty
-                if (stokTersedia !== null && stokTersedia === 0) return; // sudah diblokir di tombol, double-check
+                if (stokTersedia !== null && stokTersedia === 0) return;
                 if (stokTersedia !== null && stokTersedia > 0) {
                     const indeksEksis = keranjangBelanja.findIndex(k => k.id == menuId);
                     const qtyDiKeranjang = indeksEksis > -1 ? keranjangBelanja[indeksEksis].qty : 0;
@@ -1653,9 +1664,12 @@
                     }
                 }
             }
-            // Di luar jam: Pre-Order — stok angka diabaikan (unlimited), hanya is_tersedia=false yang blokir
+            // Di luar jam atau Unlimited: stok angka diabaikan, hanya is_tersedia=false yang blokir
 
-            const hargaFinal = isFlashSale ? item.harga_flash_sale : item.harga_normal;
+            // Fallback harga: gunakan harga_normal jika flash sale tidak ada, hindari NaN
+            const hargaFinal = isFlashSale && Number(item.harga_flash_sale) > 0
+                ? item.harga_flash_sale
+                : (item.harga_normal || item.harga || 0);
             const indeksEksis = keranjangBelanja.findIndex(k => k.id == menuId);
             
             if (indeksEksis > -1) {
@@ -1815,9 +1829,9 @@
             const idx = keranjangBelanja.findIndex(k => k.id == menuId);
             if (idx === -1) return;
 
-            // Cek stok saat jam operasional
+            // Cek stok saat jam operasional (kecuali produk Unlimited / produk sendiri)
             const item = menusDataCache.find(m => m.id == menuId);
-            if (item && isJamOperasional()) {
+            if (item && isJamOperasional() && item.status !== "Unlimited" && item.mitra_wa) {
                 const stok = (item.stok !== null && item.stok !== undefined) ? parseInt(item.stok) : null;
                 if (stok !== null && keranjangBelanja[idx].qty >= stok) {
                     alert(`Stok ${item.nama} hanya tersisa ${stok} pcs.`);
