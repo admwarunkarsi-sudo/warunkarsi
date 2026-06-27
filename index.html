@@ -2798,14 +2798,21 @@
                         pesanWA += "\n\nPesanan Anda akan segera kami proses. Mohon ditunggu ya!";
                     }
 
+                    let targetWa = sessionUserCache.wa || '';
+                    if (targetWa.startsWith('0')) targetWa = '62' + targetWa.substring(1);
+                    else if (targetWa.startsWith('+62')) targetWa = targetWa.substring(1);
+
                     fetch('https://jembatan-fonnte.vercel.app/api/kirim-wa', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            target: sessionUserCache.wa,
+                            target: targetWa,
                             message: pesanWA
                         })
-                    }).catch(err => console.error('Gagal mengirim notifikasi WA:', err));
+                    })
+                    .then(res => res.json())
+                    .then(data => console.log('API Vercel/Fonnte response:', data))
+                    .catch(err => console.error('Gagal mengirim notifikasi WA:', err));
                 } catch (waError) {
                     console.error('Error saat menyusun pesan WA:', waError);
                 }
