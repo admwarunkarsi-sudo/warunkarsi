@@ -3,7 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Warunk Arsi - Aplikasi Member & Pesan Online</title>
+    <!-- ==========================================
+         OPTIMASI META TAGS SEO & OPEN GRAPH
+         ========================================== -->
+    <title>Sarapan Pagi Bekasi Hemat - Warunk Arsi</title>
+    <meta name="description" content="Pesan sarapan pagi Bekasi online di Warunk Arsi, lebih hemat tanpa biaya admin! Gabung VVIP Member untuk promo eksklusif. Nikmati kuliner Kalibaru.">
+    <meta name="keywords" content="Sarapan Pagi Bekasi, Warunk Arsi, Kuliner UMKM Kalibaru, Pesan Online Lebih Hemat, VVIP Member Warunk Arsi">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Warunk Arsi">
+    <meta name="geo.region" content="ID-JB">
+    <meta name="geo.placename" content="Bekasi">
+    <!-- Favicon disesuaikan dengan logo Warunk Arsi -->
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/mbaim14/warunk-arsi-pos/refs/heads/main/logowarunk.png">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Sarapan Pagi Bekasi Hemat - Warunk Arsi">
+    <meta property="og:description" content="Pesan sarapan pagi Bekasi online di Warunk Arsi, lebih hemat tanpa biaya admin! Gabung VVIP Member untuk promo eksklusif.">
+    <meta property="og:url" content="https://warunkarsi.com">
+    <meta property="og:image" content="https://warunkarsi.com/assets/img/og-image.jpg">
+
+    <!-- Schema Markup (Microdata JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Warunk Arsi",
+      "image": "https://warunkarsi.com/assets/img/og-image.jpg",
+      "url": "https://warunkarsi.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Jl. Mawar IV No. 35",
+        "addressLocality": "Kalibaru, Bekasi",
+        "addressRegion": "Jawa Barat",
+        "addressCountry": "ID"
+      },
+      "description": "Pesan sarapan pagi Bekasi online di Warunk Arsi, lebih hemat tanpa biaya admin!"
+    }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -814,7 +850,7 @@
             <div style="width:36px;height:4px;background:#E5E7EB;border-radius:99px;margin:12px auto 0;flex-shrink:0"></div>
             <!-- Gambar Produk -->
             <div class="relative flex-shrink-0">
-                <img id="pd-gambar" src="" class="w-full object-cover" style="height:220px;" onerror="this.src='https://placehold.co/400x220?text=No+Image'">
+                <img id="pd-gambar" src="" class="w-full object-cover" style="height:220px;" alt="Detail Gambar Produk Warunk Arsi" onerror="this.src='https://placehold.co/400x220?text=No+Image'">
                 <button onclick="tutupProductDetail()" class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md text-gray-500 active:scale-95">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
@@ -968,7 +1004,7 @@
                     <div class="bg-gradient-to-br from-[#1E4D3A] to-[#2d6b52] rounded-2xl p-4 text-white">
                         <p class="text-[9px] uppercase tracking-widest text-emerald-300 font-bold mb-2">Reward yang Dipilih</p>
                         <div class="flex items-center gap-3">
-                            <img id="rwd-preview-img" src="" class="w-16 h-16 object-cover rounded-xl border-2 border-white/30 flex-shrink-0">
+                            <img id="rwd-preview-img" src="" class="w-16 h-16 object-cover rounded-xl border-2 border-white/30 flex-shrink-0" alt="Preview Reward Poin Warunk Arsi">
                             <div>
                                 <p id="rwd-preview-nama" class="font-black text-sm leading-tight">-</p>
                                 <p id="rwd-preview-kategori" class="text-emerald-200 text-[10px] mt-0.5 uppercase tracking-wide">-</p>
