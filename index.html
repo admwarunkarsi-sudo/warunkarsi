@@ -2787,6 +2787,30 @@
 
                 if (error) throw error;
 
+                // --- MULAI SISIPAN NOTIFIKASI WHATSAPP ---
+                try {
+                    const detailPesanan = keranjangBelanja.map(item => `${item.qty}x ${item.nama}`).join('\n');
+                    let pesanWA = `Halo ${sessionUserCache.nama}, pesanan Anda di Warunk Arsi telah kami terima.\n\n*ID Pesanan:* ${orderId}\n*Detail Pesanan:*\n${detailPesanan}\n\n*Total:* Rp ${total.toLocaleString('id-ID')}\n*Metode Pembayaran:* ${metodeBayar}`;
+                    
+                    if (metodeBayar === 'Transfer QRIS' || metodeBayar === 'QRIS') {
+                        pesanWA += "\n\nMohon segera selesaikan pembayaran via QRIS Anda. Abaikan pesan ini jika Anda sudah berhasil melakukan pembayaran.";
+                    } else {
+                        pesanWA += "\n\nPesanan Anda akan segera kami proses. Mohon ditunggu ya!";
+                    }
+
+                    fetch('https://jembatan-fonnte.vercel.app/api/kirim-wa', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            target: sessionUserCache.wa,
+                            message: pesanWA
+                        })
+                    }).catch(err => console.error('Gagal mengirim notifikasi WA:', err));
+                } catch (waError) {
+                    console.error('Error saat menyusun pesan WA:', waError);
+                }
+                // --- AKHIR SISIPAN NOTIFIKASI WHATSAPP ---
+
                 const namaCustomer = sessionUserCache.nama || 'Pelanggan';
                 const nomorWaCustomer = sessionUserCache.wa || '-';
 
