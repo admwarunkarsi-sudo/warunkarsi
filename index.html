@@ -3926,7 +3926,11 @@
             ['nav-beranda', 'nav-promo', 'nav-pesanan', 'nav-akun'].forEach(id => {
                 // Gunakan querySelectorAll untuk handle kalau ada duplikat id
                 document.querySelectorAll('#' + id).forEach(el => {
-                    el.className = "flex flex-col items-center gap-1 transition";
+                    if (id === 'nav-akun') {
+                        el.className = "w-1/5 flex flex-col items-center gap-1 transition relative";
+                    } else {
+                        el.className = "w-1/5 flex flex-col items-center gap-1 transition";
+                    }
                     el.style.color = (id === idTombol) ? 'var(--hijau)' : '#9CA3AF';
                     el.style.fontWeight = (id === idTombol) ? '800' : '600';
                 });
