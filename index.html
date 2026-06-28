@@ -810,29 +810,32 @@
     </div>
 
     <div class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-100 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] py-2 px-6 z-50">
-        <div class="max-w-md mx-auto flex justify-between items-center text-center">
-            <button onclick="berandaAction()" id="nav-beranda" class="w-1/5 flex flex-col items-center gap-1 text-[#1E4D3A] font-bold transition">
+        <div class="max-w-md mx-auto flex justify-between items-center text-center relative">
+            <button onclick="berandaAction()" id="nav-beranda" class="flex flex-col items-center gap-1 text-[#1E4D3A] font-bold transition">
                 <i class="fa-solid fa-house text-lg"></i>
                 <span class="text-[10px] tracking-wide">Beranda</span>
             </button>
-            <button onclick="bukaModalDaftarMember()" id="nav-promo" class="w-1/5 flex flex-col items-center gap-1 text-gray-400 font-medium transition">
+            <button onclick="bukaModalDaftarMember()" id="nav-promo" class="flex flex-col items-center gap-1 text-gray-400 font-medium transition">
                 <i class="fa-solid fa-crown text-lg"></i>
                 <span class="text-[10px] tracking-wide">Member</span>
             </button>
 
+            <!-- Spacer agar justify-between bekerja mulus -->
+            <div class="w-[50px]"></div>
+
             <!-- Tombol Floating Snack Box Tengah -->
-            <button onclick="bukaModalSnackBox()" id="nav-snackbox" class="w-1/5 relative flex flex-col items-center justify-center -mt-8 z-50">
+            <button onclick="bukaModalSnackBox()" id="nav-snackbox" class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center -mt-8 z-50">
                 <div class="w-16 h-16 rounded-full flex items-center justify-center border-[4px] border-white shadow-[0_8px_16px_rgba(30,77,58,0.3)] transition-transform active:scale-95" style="background:var(--hijau); color:var(--emas);">
                     <i class="fa-solid fa-box-open text-2xl"></i>
                 </div>
                 <span class="text-[10px] font-black mt-1.5 tracking-wide" style="color:var(--hijau);">Snack Box</span>
             </button>
 
-            <button onclick="bukaModalPesanan()" id="nav-pesanan" class="w-1/5 flex flex-col items-center gap-1 text-gray-400 font-medium transition">
+            <button onclick="bukaModalPesanan()" id="nav-pesanan" class="flex flex-col items-center gap-1 text-gray-400 font-medium transition">
                 <i class="fa-solid fa-clipboard-list text-lg"></i>
                 <span class="text-[10px] tracking-wide">Pesanan</span>
             </button>
-            <button onclick="bukaModalAkun()" id="nav-akun" class="w-1/5 flex flex-col items-center gap-1 text-gray-400 font-medium transition relative">
+            <button onclick="bukaModalAkun()" id="nav-akun" class="flex flex-col items-center gap-1 text-gray-400 font-medium transition relative">
                 <div class="relative">
                     <i class="fa-solid fa-user text-lg"></i>
                     <span id="chat-nav-badge" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white font-black text-[9px] rounded-full items-center justify-center hidden">!</span>
@@ -3927,9 +3930,9 @@
                 // Gunakan querySelectorAll untuk handle kalau ada duplikat id
                 document.querySelectorAll('#' + id).forEach(el => {
                     if (id === 'nav-akun') {
-                        el.className = "w-1/5 flex flex-col items-center gap-1 transition relative";
+                        el.className = "flex flex-col items-center gap-1 transition relative";
                     } else {
-                        el.className = "w-1/5 flex flex-col items-center gap-1 transition";
+                        el.className = "flex flex-col items-center gap-1 transition";
                     }
                     el.style.color = (id === idTombol) ? 'var(--hijau)' : '#9CA3AF';
                     el.style.fontWeight = (id === idTombol) ? '800' : '600';
