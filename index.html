@@ -2340,6 +2340,7 @@
             }
 
             let poBannerHtml = '';
+            const jamBuka = isJamOperasional();
             if (!jamBuka) {
                 poBannerHtml = `
                     <div style="background:#e0f2fe;border:1px solid #bae6fd;border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;">
