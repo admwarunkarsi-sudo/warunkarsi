@@ -1208,7 +1208,7 @@
                 const foto = sessionUserCache.foto_profil;
                 if (foto) {
                     avatarWrap.style.background = 'transparent';
-                    avatarWrap.innerHTML = `<img loading="lazy" src="${foto}" alt="Foto Profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.innerHTML='<span style=\\'font-size:12px;font-weight:900;color:var(--emas)\\'>${sessionUserCache.nama.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}</span>'">`;
+                    avatarWrap.innerHTML = `<img loading="lazy" src="${foto}" alt="Foto Profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
                 } else {
                     const inisial = sessionUserCache.nama.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
                     avatarWrap.style.background = 'rgba(230,161,92,0.25)';
@@ -1271,7 +1271,18 @@
                     checkIcon.classList.add('hidden');
                     
                     try {
-                        const { data: member } = await _supabase.from('members').select('*').eq('wa', waVal).maybeSingle();
+                        let waFormatted = waVal;
+                        if (waFormatted.startsWith('0')) waFormatted = '62' + waFormatted.substring(1);
+                        else if (waFormatted.startsWith('+62')) waFormatted = waFormatted.substring(1);
+                        
+                        // Cek wa asli ATAU wa yang sudah diformat 62
+                        let member = null;
+                        const { data: member1 } = await _supabase.from('members').select('*').eq('wa', waVal).maybeSingle();
+                        if (member1) member = member1;
+                        else {
+                            const { data: member2 } = await _supabase.from('members').select('*').eq('wa', waFormatted).maybeSingle();
+                            if (member2) member = member2;
+                        }
                         
                         if (member) {
                             memberTerdeteksiCache = member;
@@ -1321,7 +1332,18 @@
                             foto_profil: memberTerdeteksiCache.foto_profil || null
                         };
                     } else {
-                        const { data: member } = await _supabase.from('members').select('*').eq('wa', wa).maybeSingle();
+                        let waFormatted = wa;
+                        if (waFormatted.startsWith('0')) waFormatted = '62' + waFormatted.substring(1);
+                        else if (waFormatted.startsWith('+62')) waFormatted = waFormatted.substring(1);
+                        
+                        let member = null;
+                        const { data: member1 } = await _supabase.from('members').select('*').eq('wa', wa).maybeSingle();
+                        if (member1) member = member1;
+                        else {
+                            const { data: member2 } = await _supabase.from('members').select('*').eq('wa', waFormatted).maybeSingle();
+                            if (member2) member = member2;
+                        }
+                        
                         if (member) {
                             dataUserFinal = { wa: member.wa, nama: member.nama, isMember: true, id: member.id, poin: member.poin, foto_profil: member.foto_profil || null };
                         }
@@ -1648,7 +1670,18 @@
             if (wa.length < 9) return alert('Nomor WhatsApp yang Anda masukkan tidak valid!');
 
             try {
-                const { data: eksis } = await _supabase.from('members').select('id').eq('wa', wa).maybeSingle();
+                let waFormatted = wa;
+                if (waFormatted.startsWith('0')) waFormatted = '62' + waFormatted.substring(1);
+                else if (waFormatted.startsWith('+62')) waFormatted = waFormatted.substring(1);
+
+                let eksis = null;
+                const { data: eksis1 } = await _supabase.from('members').select('id').eq('wa', wa).maybeSingle();
+                if (eksis1) eksis = eksis1;
+                else {
+                    const { data: eksis2 } = await _supabase.from('members').select('id').eq('wa', waFormatted).maybeSingle();
+                    if (eksis2) eksis = eksis2;
+                }
+
                 if (eksis) {
                     alert('Nomor WhatsApp ini sudah terdaftar sebagai Member VVIP Warunk Arsi! Silakan gunakan menu Akun untuk mengecek saldo poin.');
                     return;
@@ -3741,7 +3774,7 @@
 
                 // Upload file jika ada
                 if (_fotoProfilBlob) {
-                    if (statusEl) statusEl.textContent = 'Mengunggah foto...';
+                    if (statusEl) { statusEl.textContent = 'Mengunggah foto ke Cloudinary...'; statusEl.classList.remove('hidden'); }
                     const formData = new FormData();
                     formData.append('file', _fotoProfilBlob);
                     formData.append('upload_preset', 'warsi pos');
@@ -3749,15 +3782,20 @@
                     const res = await fetch('https://api.cloudinary.com/v1_1/heswgpdc/image/upload', {
                         method: 'POST', body: formData
                     });
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.error?.message || 'Gagal upload foto');
                     
+                    if (!res.ok) {
+                        const data = await res.json();
+                        throw new Error(data.error?.message || 'Gagal upload foto ke Cloudinary');
+                    }
+                    
+                    const data = await res.json();
                     urlFotoFinal = data.secure_url || urlFotoFinal;
                     _fotoProfilBlob = null;
                 }
 
                 // Simpan ke DB jika member
                 if (sessionUserCache.isMember && sessionUserCache.id) {
+                    if (statusEl) statusEl.textContent = 'Menyimpan ke database...';
                     const updatePayload = { nama: namaBaru, wa: waBaru };
                     if (urlFotoFinal !== undefined) updatePayload.foto_profil = urlFotoFinal;
                     const { error: dbErr } = await _supabase.from('members').update(updatePayload).eq('id', sessionUserCache.id);
@@ -3770,9 +3808,17 @@
                 sessionUserCache.foto_profil = urlFotoFinal;
                 localStorage.setItem('warunkarsi_user_session', JSON.stringify(sessionUserCache));
 
+                // Update UI Modal
+                const urlInput = document.getElementById('edit-foto-url');
+                if (urlInput && urlFotoFinal) urlInput.value = urlFotoFinal;
+                const imgWrap = document.getElementById('edit-foto-preview-wrap');
+                if (imgWrap && urlFotoFinal) {
+                    imgWrap.innerHTML = `<img src="${urlFotoFinal}" class='w-full h-full object-cover' id='edit-foto-preview-img'>`;
+                }
+
                 updateHeaderUser();
 
-                if (statusEl) { statusEl.className = 'text-center text-[11px] font-bold text-emerald-600'; statusEl.textContent = '✓ Profil berhasil disimpan!'; }
+                if (statusEl) { statusEl.className = 'text-center text-[11px] font-bold text-emerald-600'; statusEl.textContent = '✓ Profil berhasil disimpan!'; statusEl.classList.remove('hidden'); }
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-300"></i> TERSIMPAN!';
                 setTimeout(() => {
