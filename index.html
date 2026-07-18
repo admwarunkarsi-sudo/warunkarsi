@@ -645,7 +645,7 @@
                 </div>
                 <!-- Avatar: default store icon, berubah jadi foto profil saat login -->
                 <div id="header-avatar-wrap" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer active:opacity-75 transition" style="background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.15)">
-                    <img src="https://i.ibb.co.com/5gksJL19/534314181-17845743486547960-8463846081803860484-n.jpg" alt="Logo" class="w-full h-full object-cover">
+                    <img loading="lazy" src="https://i.ibb.co.com/5gksJL19/534314181-17845743486547960-8463846081803860484-n.jpg" alt="Logo" class="w-full h-full object-cover">
                 </div>
             </div>
             <!-- Search -->
@@ -665,7 +665,7 @@
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
                 <!-- Logo Warunk Arsi -->
                 <div class="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center border border-gray-100 flex-shrink-0 relative overflow-hidden group">
-                    <img src="https://i.ibb.co.com/5gksJL19/534314181-17845743486547960-8463846081803860484-n.jpg" alt="Warunk Arsi" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=&quot;fa-solid fa-store text-sm&quot; style=&quot;color:var(--hijau)&quot;></i>';" />
+                    <img loading="lazy" src="https://i.ibb.co.com/5gksJL19/534314181-17845743486547960-8463846081803860484-n.jpg" alt="Warunk Arsi" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=&quot;fa-solid fa-store text-sm&quot; style=&quot;color:var(--hijau)&quot;></i>';" />
                     <div class="absolute inset-0 bg-black bg-opacity-5 hidden group-hover:block transition-all"></div>
                 </div>
                 <div class="min-w-0 flex-1">
@@ -706,7 +706,7 @@
         <div id="slider-banner-container" class="banner-container relative bg-gray-200" style="aspect-ratio:16/9;overflow:hidden">
             <div id="slider-wrapper" class="flex transition-transform duration-500 ease-in-out h-full w-full">
                 <div class="w-full h-full flex-shrink-0">
-                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Promo">
+                    <img loading="lazy" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Promo">
                 </div>
             </div>
             <div id="slider-dots" class="absolute bottom-3 inset-x-0 flex justify-center gap-1.5"></div>
@@ -854,7 +854,7 @@
             <div style="width:36px;height:4px;background:#E5E7EB;border-radius:99px;margin:12px auto 0;flex-shrink:0"></div>
             <!-- Gambar Produk -->
             <div class="relative flex-shrink-0">
-                <img id="pd-gambar" src="" class="w-full object-cover" style="height:220px;" alt="Detail Gambar Produk Warunk Arsi" onerror="this.src='https://placehold.co/400x220?text=No+Image'">
+                <img loading="lazy" id="pd-gambar" src="" class="w-full object-cover" style="height:220px;" alt="Detail Gambar Produk Warunk Arsi" onerror="this.src='https://placehold.co/400x220?text=No+Image'">
                 <button onclick="tutupProductDetail()" class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md text-gray-500 active:scale-95">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
@@ -1008,7 +1008,7 @@
                     <div class="bg-gradient-to-br from-[#1E4D3A] to-[#2d6b52] rounded-2xl p-4 text-white">
                         <p class="text-[9px] uppercase tracking-widest text-emerald-300 font-bold mb-2">Reward yang Dipilih</p>
                         <div class="flex items-center gap-3">
-                            <img id="rwd-preview-img" src="" class="w-16 h-16 object-cover rounded-xl border-2 border-white/30 flex-shrink-0" alt="Preview Reward Poin Warunk Arsi">
+                            <img loading="lazy" id="rwd-preview-img" src="" class="w-16 h-16 object-cover rounded-xl border-2 border-white/30 flex-shrink-0" alt="Preview Reward Poin Warunk Arsi">
                             <div>
                                 <p id="rwd-preview-nama" class="font-black text-sm leading-tight">-</p>
                                 <p id="rwd-preview-kategori" class="text-emerald-200 text-[10px] mt-0.5 uppercase tracking-wide">-</p>
@@ -1081,8 +1081,8 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://tcaizfemtfmfeuutgbct.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_3SBNDNn6tk9Ssl6dZOxi6Q_e2ZFFH14";
+        const SUPABASE_URL = "https://ghfnukejqcioulphszil.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_o9CmewmvcOhV-x5yin7qAQ_W4EKfGtw";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let menusDataCache = [];
@@ -1208,7 +1208,7 @@
                 const foto = sessionUserCache.foto_profil;
                 if (foto) {
                     avatarWrap.style.background = 'transparent';
-                    avatarWrap.innerHTML = `<img src="${foto}" alt="Foto Profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.innerHTML='<span style=\\'font-size:12px;font-weight:900;color:var(--emas)\\'>${sessionUserCache.nama.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}</span>'">`;
+                    avatarWrap.innerHTML = `<img loading="lazy" src="${foto}" alt="Foto Profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.innerHTML='<span style=\\'font-size:12px;font-weight:900;color:var(--emas)\\'>${sessionUserCache.nama.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}</span>'">`;
                 } else {
                     const inisial = sessionUserCache.nama.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
                     avatarWrap.style.background = 'rgba(230,161,92,0.25)';
@@ -1225,7 +1225,7 @@
                 avatarWrap.style.background = 'rgba(255,255,255,0.12)';
                 avatarWrap.style.border = '2px solid rgba(255,255,255,0.15)';
                 avatarWrap.onclick = null;
-                avatarWrap.innerHTML = `<img src="https://i.ibb.co.com/5gksJL19/534314181-17845743486547960-8463846081803860484-n.jpg" alt="Logo" class="w-full h-full object-cover">`;
+                avatarWrap.innerHTML = `<img loading="lazy" src="https://i.ibb.co.com/5gksJL19/534314181-17845743486547960-8463846081803860484-n.jpg" alt="Logo" class="w-full h-full object-cover">`;
             }
         }
 
@@ -1383,7 +1383,7 @@
                     return `
                     <div class="menu-card snap-center shrink-0 w-[160px]">
                         <div class="menu-card-img-wrap relative">
-                            <img src="${item.gambar_url || 'https://placehold.co/300?text=Warunk+Arsi'}" alt="${item.nama}" onerror="this.src='https://placehold.co/300?text=No+Img'">
+                            <img loading="lazy" src="${item.gambar_url || 'https://placehold.co/300?text=Warunk+Arsi'}" alt="${item.nama}" onerror="this.src='https://placehold.co/300?text=No+Img'">
                         </div>
                         <div class="menu-card-body pb-3">
                             <h3 class="menu-card-nama text-[11px] leading-tight mb-1">${item.nama}</h3>
@@ -1708,7 +1708,7 @@
                 linkGambarArray.forEach((link, idx) => {
                     sliderWrapper.innerHTML += `
                         <div class="w-full h-full flex-shrink-0">
-                            <img src="${link}" class="w-full h-full object-cover" alt="Banner ${idx+1}" onerror="this.src='https://placehold.co/600x250?text=Warunk+Arsi'">
+                            <img loading="lazy" src="${link}" class="w-full h-full object-cover" alt="Banner ${idx+1}" onerror="this.src='https://placehold.co/600x250?text=Warunk+Arsi'">
                         </div>
                     `;
                     const dot = document.createElement('div');
@@ -1917,11 +1917,11 @@
             const jamBuka = isJamOperasional();
             const flashSaleItems = menusDataCache.filter(m => m.is_flash_sale === 1 && Number(m.harga_flash_sale) > 0);
             
+            const now = new Date();
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+            
             if(flashSaleItems.length > 0 && !searchKeyword && selectedCategory === "Semua") {
                 sectionFlashSale.style.display = 'block';
-
-                const now = new Date();
-                const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
                 // ── Countdown kotak digit ──
                 const countdownWrap = document.getElementById('fs-countdown-wrap');
@@ -1947,12 +1947,8 @@
                     const adminHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
                     // Produk sendiri (non-mitra) → stok selalu unlimited, stok=0 diabaikan
                     // Status "Unlimited" → selalu bisa dipesan, stok diabaikan
-                    const stokHabis = jamBuka && !_isProdukSendiri && item.status !== "Unlimited" && stok !== null && stok === 0;
-                    const isHabis = adminHabis || stokHabis;
-
-                    const stokFs = (item.stok_flash_sale !== undefined && item.stok_flash_sale !== null)
-                        ? parseInt(item.stok_flash_sale) : null;
-
+                    const isPO = !jamBuka; // Waktu PO secara umum (Toko Tutup)
+                    
                     let dilluarWaktu = false;
                     if (item.flash_sale_mulai || item.flash_sale_selesai) {
                         if (item.flash_sale_mulai) {
@@ -1964,9 +1960,17 @@
                             if (nowMinutes >= sh * 60 + sm2) dilluarWaktu = true;
                         }
                     }
+                    
+                    const isPoProduk = isPO || dilluarWaktu; // PO jika toko tutup atau di luar jam khusus produk
 
-                    const efektifHabis = isHabis || (stokFs !== null && stokFs === 0);
-                    const tampilHabis = efektifHabis || dilluarWaktu;
+                    const stokHabis = !_isProdukSendiri && item.status !== "Unlimited" && stok !== null && stok === 0 && !isPoProduk;
+                    const isHabis = adminHabis || stokHabis;
+
+                    const stokFs = (item.stok_flash_sale !== undefined && item.stok_flash_sale !== null)
+                        ? parseInt(item.stok_flash_sale) : null;
+
+                    const efektifHabis = isHabis || (stokFs !== null && stokFs === 0 && !isPoProduk);
+                    const tampilHabis = efektifHabis;
 
                     // Persen diskon
                     const hNormal = Number(item.harga_normal) || 0;
@@ -2016,7 +2020,7 @@
                     return `
                         <div class="fs-card-mp${tampilHabis ? ' opacity-60' : ''}">
                             <div class="fs-card-img-wrap">
-                                <img src="${item.gambar_url || 'https://placehold.co/150?text=Warunk+Arsi'}" alt="${item.nama}" style="${tampilHabis ? 'filter:grayscale(0.6);' : ''}">
+                                <img loading="lazy" src="${item.gambar_url || 'https://placehold.co/150?text=Warunk+Arsi'}" alt="${item.nama}" style="${tampilHabis ? 'filter:grayscale(0.6);' : ''}" onerror="this.src='https://placehold.co/150?text=No+Img'">
                                 ${diskonBadge}
                                 ${tampilHabis ? `<div class="fs-habis-overlay"><span class="fs-habis-label">${dilluarWaktu ? 'Belum Mulai' : 'Habis'}</span></div>` : ''}
                             </div>
@@ -2072,9 +2076,24 @@
                 const _isProdukSendiri = !item.mitra_wa || item.status === "Unlimited";
                 // adminHabis: is_tersedia=false → habis kapan pun
                 const adminHabis = item.status === "Kosong/Habis" || item.is_tersedia === false || item.is_tersedia === 0;
-                // stokHabis: stok=0 hanya habis saat jam operasional
+                
+                // Cek apakah mode PO
+                let dilluarWaktu = false;
+                if (item.flash_sale_mulai || item.flash_sale_selesai) {
+                    if (item.flash_sale_mulai) {
+                        const [mh, mm2] = item.flash_sale_mulai.split(':').map(Number);
+                        if (nowMinutes < mh * 60 + mm2) dilluarWaktu = true;
+                    }
+                    if (!dilluarWaktu && item.flash_sale_selesai) {
+                        const [sh, sm2] = item.flash_sale_selesai.split(':').map(Number);
+                        if (nowMinutes >= sh * 60 + sm2) dilluarWaktu = true;
+                    }
+                }
+                const isPO = !jamBuka || dilluarWaktu;
+                
+                // stokHabis: stok=0 hanya habis saat jam operasional (bukan PO)
                 // KECUALI produk sendiri (non-mitra) atau status "Unlimited" → selalu bisa dipesan
-                const stokHabis = jamBuka && !_isProdukSendiri && stok !== null && stok === 0;
+                const stokHabis = !_isProdukSendiri && stok !== null && stok === 0 && !isPO;
                 const isHabis = adminHabis || stokHabis;
                 const imgFilter = isHabis ? 'style="filter:grayscale(0.6) opacity(0.5)"' : '';
 
@@ -2118,7 +2137,7 @@
                 return `
                     <div class="menu-card${isHabis ? ' opacity-75' : ''}">
                         <div class="menu-card-img-wrap relative" onclick="bukaProductDetail('${item.id}')" style="cursor:pointer;">
-                            <img src="${item.gambar_url || 'https://placehold.co/300?text=Warunk+Arsi'}" alt="${item.nama}" ${imgFilter} onerror="this.src='https://placehold.co/300?text=No+Img'">
+                            <img loading="lazy" src="${item.gambar_url || 'https://placehold.co/300?text=Warunk+Arsi'}" alt="${item.nama}" ${imgFilter} onerror="this.src='https://placehold.co/300?text=No+Img'">
                             ${isHabis ? '<div class="habis-overlay"><span class="habis-badge">Habis</span></div>' : ''}
                             ${isFsActive && !isHabis ? '<span style="position:absolute;top:8px;left:8px;background:#DC2626;color:#fff;font-size:9px;font-weight:900;padding:3px 8px;border-radius:8px;letter-spacing:0.04em">SALE 🔥</span>' : ''}
                             <div style="position:absolute;bottom:6px;right:6px;background:rgba(255,255,255,0.92);border-radius:6px;padding:2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 1px 4px rgba(0,0,0,0.12);">
@@ -2287,8 +2306,21 @@
                 return;
             }
 
+            let poBannerHtml = '';
+            if (!jamBuka) {
+                poBannerHtml = `
+                    <div style="background:#e0f2fe;border:1px solid #bae6fd;border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;">
+                        <i class="fa-solid fa-clock-rotate-left" style="color:#0284c7;font-size:16px;margin-top:2px"></i>
+                        <div>
+                            <p style="font-size:12px;font-weight:800;color:#0369a1;margin:0;">Sistem PO Aktif (Toko Sedang Tutup)</p>
+                            <p style="font-size:11px;font-weight:500;color:#075985;margin:2px 0 0 0;line-height:1.4;">Pesanan Anda akan masuk antrean Pre-Order dan diproses/diantar besok pagi.</p>
+                        </div>
+                    </div>
+                `;
+            }
+
             let grandTotal = 0;
-            listEl.innerHTML = keranjangBelanja.map((item, idx) => {
+            listEl.innerHTML = poBannerHtml + keranjangBelanja.map((item, idx) => {
                 const subtotal = item.harga * item.qty;
                 grandTotal += subtotal;
                 return `
@@ -2922,7 +2954,7 @@
                             return `
                                 <div class="flex-shrink-0 w-16 mr-3">
                                     <div class="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden mb-1.5 border border-gray-100 shadow-sm">
-                                        <img src="${imgSrc}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150?text=No+Image'" />
+                                        <img loading="lazy" src="${imgSrc}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150?text=No+Image'" />
                                     </div>
                                     <p class="text-[9px] text-gray-700 leading-tight line-clamp-2">${it.nama}</p>
                                 </div>
@@ -3519,7 +3551,7 @@
                 const inisial = sessionUserCache.nama.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
 
                 const avatarHtml = foto
-                    ? `<img src="${foto}" class="w-16 h-16 rounded-full object-cover border-2 border-white/40 flex-shrink-0" onerror="this.style.display='none'">`
+                    ? `<img loading="lazy" src="${foto}" class="w-16 h-16 rounded-full object-cover border-2 border-white/40 flex-shrink-0" onerror="this.style.display='none'">`
                     : `<div class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 border-2 border-white/30" style="background:rgba(230,161,92,0.25)"><span style="font-size:20px;font-weight:900;color:var(--emas)">${inisial}</span></div>`;
 
                 const tombolRewardHtml = isMember
@@ -3586,7 +3618,7 @@
                                 <label class='block text-[11px] font-bold text-gray-600 uppercase tracking-wide'>Foto Profil</label>
                                 <div class='flex items-center gap-3'>
                                     <div id='edit-foto-preview-wrap' class='w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-gray-200 flex items-center justify-center bg-gray-50' style=''>
-                                        ${foto ? `<img src="${foto}" class='w-full h-full object-cover' id='edit-foto-preview-img'>` : `<span style='font-size:15px;font-weight:900;color:#9CA3AF' id='edit-foto-initial'>${inisial}</span>`}
+                                        ${foto ? `<img loading="lazy" src="${foto}" class='w-full h-full object-cover' id='edit-foto-preview-img'>` : `<span style='font-size:15px;font-weight:900;color:#9CA3AF' id='edit-foto-initial'>${inisial}</span>`}
                                     </div>
                                     <div class='flex-1 space-y-1.5'>
                                         <label for='edit-foto-file' class='flex items-center justify-center gap-1.5 w-full py-2 border-2 border-dashed border-[#1E4D3A] rounded-xl text-[11px] font-bold text-[#1E4D3A] bg-emerald-50 cursor-pointer active:bg-emerald-100 transition'>
@@ -3674,7 +3706,7 @@
             reader.onload = (e) => {
                 _fotoProfilBlob = input.files[0];
                 const wrap = document.getElementById('edit-foto-preview-wrap');
-                if (wrap) wrap.innerHTML = `<img src="${e.target.result}" class='w-full h-full object-cover' id='edit-foto-preview-img'>`;
+                if (wrap) wrap.innerHTML = `<img loading="lazy" src="${e.target.result}" class='w-full h-full object-cover' id='edit-foto-preview-img'>`;
                 const label = document.getElementById('edit-foto-label');
                 if (label) label.textContent = '✓ ' + input.files[0].name.slice(0,20);
             };
@@ -3684,7 +3716,7 @@
         function previewFotoUrl(url) {
             if (!url) return;
             const wrap = document.getElementById('edit-foto-preview-wrap');
-            if (wrap) wrap.innerHTML = `<img src="${url}" class='w-full h-full object-cover' onerror="this.parentElement.innerHTML='<span style=\\'font-size:11px;color:#EF4444;font-weight:700;\\'>URL Error</span>'" id='edit-foto-preview-img'>`;
+            if (wrap) wrap.innerHTML = `<img loading="lazy" src="${url}" class='w-full h-full object-cover' onerror="this.parentElement.innerHTML='<span style=\\'font-size:11px;color:#EF4444;font-weight:700;\\'>URL Error</span>'" id='edit-foto-preview-img'>`;
             _fotoProfilBlob = null;
         }
 
@@ -3710,13 +3742,17 @@
                 // Upload file jika ada
                 if (_fotoProfilBlob) {
                     if (statusEl) statusEl.textContent = 'Mengunggah foto...';
-                    const ext = _fotoProfilBlob.name.split('.').pop();
-                    const fileName = `profil_${sessionUserCache.id || sessionUserCache.wa}_${Date.now()}.${ext}`;
-                    const { error: upErr } = await _supabase.storage
-                        .from('menu-images').upload(fileName, _fotoProfilBlob, { cacheControl: '3600', upsert: true });
-                    if (upErr) throw new Error('Gagal upload foto: ' + upErr.message);
-                    const { data: urlData } = _supabase.storage.from('menu-images').getPublicUrl(fileName);
-                    urlFotoFinal = urlData?.publicUrl || urlFotoFinal;
+                    const formData = new FormData();
+                    formData.append('file', _fotoProfilBlob);
+                    formData.append('upload_preset', 'warsi pos');
+                    
+                    const res = await fetch('https://api.cloudinary.com/v1_1/heswgpdc/image/upload', {
+                        method: 'POST', body: formData
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error?.message || 'Gagal upload foto');
+                    
+                    urlFotoFinal = data.secure_url || urlFotoFinal;
                     _fotoProfilBlob = null;
                 }
 
@@ -3813,7 +3849,7 @@
                     card.innerHTML =
                         '<div class="flex items-center gap-2.5 min-w-0 flex-1">' +
                             '<div class="relative flex-shrink-0">' +
-                                '<img src="' + imgSrc + '" class="w-12 h-12 object-cover rounded-xl bg-gray-50' + (isHabis ? ' grayscale' : '') + '">' +
+                                '<img loading="lazy" src="' + imgSrc + '" class="w-12 h-12 object-cover rounded-xl bg-gray-50' + (isHabis ? ' grayscale' : '') + '" onerror="this.src=\'https://placehold.co/150?text=No+Img\'">' +
                                 centangHtml +
                             '</div>' +
                             '<div class="min-w-0 flex-1">' +
@@ -4593,7 +4629,7 @@
                         <i class="fa-solid fa-qrcode" style="color:var(--hijau)"></i> Scan QR Code Berikut
                     </p>
                     <div style="display:inline-block;background:#fff;border-radius:20px;padding:14px;border:2px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.08)">
-                        <img id="qris-popup-image" src="qris-arsi.jpg" alt="QRIS Warunk Arsi"
+                        <img loading="lazy" id="qris-popup-image" src="qris-arsi.jpg" alt="QRIS Warunk Arsi"
                             style="width:190px;height:190px;object-fit:contain;display:block;border-radius:8px"
                             onerror="this.src='https://placehold.co/190x190?text=QRIS+Arsi'">
                     </div>
@@ -4918,7 +4954,7 @@
 
         const avatarEl = document.getElementById('sp-avatar');
         avatarEl.innerHTML = member.foto_profil
-            ? '<img src="' + member.foto_profil + '" alt="' + namaSamar + '">'
+            ? '<img loading="lazy" src="' + member.foto_profil + '" alt="' + namaSamar + '" onerror="this.outerHTML=\'' + inisial + '\'">'
             : inisial;
 
         aturPosisiSocialProofNotif();
