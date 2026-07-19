@@ -267,107 +267,77 @@
             display: block;
         }
 
-        /* ── FLASH SALE — MARKETPLACE STYLE ── */
+        /* ── FLASH SALE — SHOPEEFOOD STYLE ── */
         .fs-section-wrap {
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(220,38,38,0.18);
+            background: #fff;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            margin-bottom: 15px;
         }
         .fs-header {
-            background: linear-gradient(135deg, #EF1B1B 0%, #FF4D1A 50%, #FF6B00 100%);
-            padding: 10px 14px 8px;
+            background: #fff;
+            padding: 10px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            border-bottom: 1px solid #f3f4f6;
         }
         .fs-header-left {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-        .fs-bolt-icon {
-            font-size: 18px;
-            color: #FFE566;
-            filter: drop-shadow(0 0 6px rgba(255,229,102,0.8));
-            animation: boltPulse 1.2s ease-in-out infinite alternate;
-        }
-        @keyframes boltPulse {
-            from { transform: scale(1); filter: drop-shadow(0 0 4px rgba(255,229,102,0.6)); }
-            to   { transform: scale(1.15); filter: drop-shadow(0 0 10px rgba(255,229,102,1)); }
+            gap: 6px;
         }
         .fs-title-text {
             font-size: 15px;
             font-weight: 900;
-            color: #fff;
-            letter-spacing: 0.04em;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            color: #EF1B1B;
             font-style: italic;
-        }
-        .fs-title-dot {
-            width: 4px; height: 4px;
-            background: rgba(255,255,255,0.5);
-            border-radius: 50%;
-        }
-        .fs-subtitle {
-            font-size: 9px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.75);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: -0.02em;
         }
         /* Countdown digits */
         .fs-countdown {
             display: flex;
             align-items: center;
-            gap: 3px;
-            flex-shrink: 0;
-        }
-        .fs-countdown-label {
-            font-size: 8px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.7);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-right: 4px;
-            white-space: nowrap;
+            gap: 2px;
+            margin-left: 6px;
         }
         .fs-digit-box {
-            background: #1a0000;
-            color: #FFE566;
-            font-size: 13px;
-            font-weight: 900;
-            font-family: 'JetBrains Mono', monospace;
-            width: 26px; height: 26px;
-            border-radius: 6px;
+            background: #222;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            width: 18px; height: 18px;
+            border-radius: 4px;
             display: flex; align-items: center; justify-content: center;
-            letter-spacing: 0;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        .fs-digit-sep {
-            color: #FFE566;
-            font-weight: 900;
-            font-size: 14px;
-            margin: 0 1px;
             line-height: 1;
+        }
+
+        .fs-digit-sep {
+            color: #222;
+            font-weight: 900;
+            font-size: 12px;
+            margin: 0 1px;
+        }
+        .fs-header-right span {
+            font-size: 11px;
+            color: #6b7280;
         }
         /* Cards body */
         .fs-cards-body {
-            background: #fff1f1;
-            padding: 10px 12px 12px;
+            background: #f8f9fa;
+            padding: 12px 14px;
         }
         /* Each card */
         .fs-card-mp {
-            width: 120px;
+            width: 110px;
             flex-shrink: 0;
             background: #fff;
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
             transition: transform 0.15s;
-            border: 1px solid #FFE4E4;
         }
         .fs-card-mp:active { transform: scale(0.97); }
         .fs-card-img-wrap {
@@ -384,14 +354,14 @@
         }
         .fs-diskon-badge {
             position: absolute;
-            top: 0; left: 0;
-            background: linear-gradient(135deg, #EF1B1B, #FF4D1A);
-            color: #fff;
+            top: 0; right: 0;
+            background: #FFD52E;
+            color: #EF1B1B;
             font-size: 9px;
             font-weight: 900;
-            padding: 3px 7px 3px 6px;
-            border-radius: 0 0 10px 0;
-            letter-spacing: 0.03em;
+            padding: 2px 6px;
+            border-radius: 0 0 0 6px;
+            display: flex; align-items: center; gap: 3px;
         }
         .fs-habis-overlay {
             position: absolute; inset: 0;
@@ -408,119 +378,66 @@
             text-transform: uppercase;
         }
         .fs-card-body {
-            padding: 7px 8px 8px;
+            padding: 8px 6px;
             display: flex;
             flex-direction: column;
             flex: 1;
-            gap: 3px;
+            gap: 4px;
+            text-align: center;
         }
         .fs-card-nama {
-            font-size: 10px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 600;
             color: #111827;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            line-height: 1.35;
-            min-height: 2.4em;
+            line-height: 1.3;
         }
         .fs-card-harga-flash {
-            font-size: 13px;
-            font-weight: 900;
+            font-size: 14px;
+            font-weight: 800;
             color: #EF1B1B;
-            line-height: 1.2;
-            letter-spacing: -0.01em;
-        }
-        .fs-card-harga-coret {
-            font-size: 9px;
-            color: #9CA3AF;
-            text-decoration: line-through;
-            font-weight: 500;
+            line-height: 1;
+            margin-top: 2px;
+            margin-bottom: 4px;
         }
         /* Stok progress bar */
         .fs-stok-bar-wrap {
-            margin-top: 4px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: auto;
         }
         .fs-stok-track {
-            height: 4px;
-            background: #FEE2E2;
+            height: 14px;
+            width: 100%;
+            background: #ffdbcc;
             border-radius: 99px;
             overflow: hidden;
+            position: relative;
         }
         .fs-stok-fill {
             height: 100%;
-            background: linear-gradient(90deg, #EF1B1B, #FF6B00);
+            background: linear-gradient(90deg, #ff7b00, #ff4000);
             border-radius: 99px;
             transition: width 0.4s;
         }
         .fs-stok-label {
-            font-size: 8px;
-            font-weight: 800;
-            color: #EF1B1B;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            margin-top: 2px;
-        }
-        /* Waktu badge */
-        .fs-waktu-badge {
-            font-size: 8px;
-            font-weight: 800;
-            color: #EF1B1B;
-            letter-spacing: 0.03em;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-        /* Beli button */
-        .fs-btn-beli {
-            width: 100%;
-            background: linear-gradient(135deg, #EF1B1B, #FF4D1A);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 900;
-            padding: 6px 0;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            margin-top: 5px;
+            position: absolute;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            transition: opacity 0.15s, transform 0.1s;
-            letter-spacing: 0.03em;
+            font-size: 8px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+            text-transform: uppercase;
         }
-        .fs-btn-beli:active { transform: scale(0.96); opacity: 0.9; }
-        .fs-btn-habis {
-            background: #D1D5DB;
-            color: #9CA3AF;
-            cursor: not-allowed;
-        }
-        .fs-qty-ctrl {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #FFF1F1;
-            border: 1.5px solid #FECACA;
-            border-radius: 8px;
-            padding: 1px;
-            margin-top: 5px;
-        }
-        .fs-qty-btn {
-            width: 26px; height: 26px;
-            border-radius: 6px;
-            border: none;
-            font-weight: 900;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.1s;
-        }
-        .fs-qty-btn:active { transform: scale(0.9); }
-        .fs-qty-minus { background: #fff; color: #EF1B1B; }
-        .fs-qty-plus  { background: linear-gradient(135deg,#EF1B1B,#FF4D1A); color: #fff; }
-        .fs-qty-num { font-weight: 900; color: #EF1B1B; font-size: 12px; min-width: 20px; text-align: center; }
+        .fs-btn-beli { display: none; }
+        .fs-qty-ctrl { display: none; }
 
         /* ── FLOATING CART ── */
         .cart-bar {
@@ -706,7 +623,7 @@
         <div id="slider-banner-container" class="banner-container relative bg-gray-200" style="aspect-ratio:16/9;overflow:hidden">
             <div id="slider-wrapper" class="flex transition-transform duration-500 ease-in-out h-full w-full">
                 <div class="w-full h-full flex-shrink-0">
-                    <img loading="lazy" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Promo">
+                    <img loading="lazy" src="https://res.cloudinary.com/heswgpdc/image/upload/v1784439493/y3wnllxmq96zpfdhipve.jpg" class="w-full h-full object-cover" alt="Promo">
                 </div>
             </div>
             <div id="slider-dots" class="absolute bottom-3 inset-x-0 flex justify-center gap-1.5"></div>
@@ -722,25 +639,33 @@
             <button onclick="filterCategory('LAINNYA')" class="category-tab chip-inaktif text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap flex-shrink-0 transition cursor-pointer">✨ Lainnya</button>
         </div>
 
-        <!-- Flash Sale — Marketplace Style -->
+        <!-- Flash Sale — ShopeeFood Style -->
         <div id="section-flash-sale" class="fs-section-wrap" style="display:none;">
-            <!-- Header merah dengan countdown -->
             <div class="fs-header">
                 <div class="fs-header-left">
-                    <i class="fa-solid fa-bolt fs-bolt-icon"></i>
-                    <div>
-                        <div class="fs-title-text">FLASH SALE</div>
-                        <div class="fs-subtitle">Penawaran terbatas!</div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 7C4 4 7 3 9 4" stroke="#F94D26" stroke-width="2.5" stroke-linecap="round" />
+                        <path d="M20 7C20 4 17 3 15 4" stroke="#F94D26" stroke-width="2.5" stroke-linecap="round" />
+                        <path d="M12 2V4" stroke="#F94D26" stroke-width="2.5" stroke-linecap="round" />
+                        <path d="M7 20L6 22" stroke="#F94D26" stroke-width="2.5" stroke-linecap="round" />
+                        <path d="M17 20L18 22" stroke="#F94D26" stroke-width="2.5" stroke-linecap="round" />
+                        <circle cx="12" cy="13" r="8.5" fill="#F94D26" />
+                        <circle cx="9.5" cy="10.5" r="1.5" fill="white" />
+                        <circle cx="14.5" cy="15.5" r="1.5" fill="white" />
+                        <path d="M15 9.5L9 16.5" stroke="white" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <div class="fs-title-text">FLASH <span style="font-weight:400;">SALE</span></div>
+                    <!-- Countdown kotak -->
+                    <div class="fs-countdown" id="fs-countdown-wrap" style="display:none;">
+                        <div class="fs-digit-box" id="fsd-hh">00</div>
+                        <span class="fs-digit-sep">:</span>
+                        <div class="fs-digit-box" id="fsd-mm">00</div>
+                        <span class="fs-digit-sep">:</span>
+                        <div class="fs-digit-box fs-digit-sec" id="fsd-ss">00</div>
                     </div>
                 </div>
-                <!-- Countdown kotak -->
-                <div class="fs-countdown" id="fs-countdown-wrap" style="display:none;">
-                    <span class="fs-countdown-label">Berakhir dalam</span>
-                    <div class="fs-digit-box" id="fsd-h1">0</div><div class="fs-digit-box" id="fsd-h2">0</div>
-                    <span class="fs-digit-sep">:</span>
-                    <div class="fs-digit-box" id="fsd-m1">0</div><div class="fs-digit-box" id="fsd-m2">0</div>
-                    <span class="fs-digit-sep">:</span>
-                    <div class="fs-digit-box" id="fsd-s1">0</div><div class="fs-digit-box" id="fsd-s2">0</div>
+                <div class="fs-header-right">
+                    <span onclick="alert('Halaman semua promo akan segera hadir!')" style="font-size:11px; color:#6b7280; cursor:pointer;">Lihat Semua <i class="fa-solid fa-chevron-right" style="font-size:9px;"></i></span>
                 </div>
                 <!-- Sembunyikan timer lama -->
                 <div id="flash-sale-timer" style="display:none;"></div>
@@ -1730,8 +1655,8 @@
                 }
                 if (!linkGambarArray.length) {
                     linkGambarArray = [
-                        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop",
-                        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop"
+                        "https://res.cloudinary.com/heswgpdc/image/upload/v1784439493/y3wnllxmq96zpfdhipve.jpg",
+                        "https://res.cloudinary.com/heswgpdc/image/upload/v1784439495/nltbth0lgsuv1ndkpbq2.jpg"
                     ];
                 }
                 sliderWrapper.innerHTML = "";
@@ -1775,11 +1700,10 @@
             const mm = Math.floor((sisaDetik % 3600) / 60);
             const ss = sisaDetik % 60;
             const pad = n => String(n).padStart(2,'0');
-            const hhS = pad(hh), mmS = pad(mm), ssS = pad(ss);
             const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-            set('fsd-h1', hhS[0]); set('fsd-h2', hhS[1]);
-            set('fsd-m1', mmS[0]); set('fsd-m2', mmS[1]);
-            set('fsd-s1', ssS[0]); set('fsd-s2', ssS[1]);
+            set('fsd-hh', pad(hh));
+            set('fsd-mm', pad(mm));
+            set('fsd-ss', pad(ss));
         }
 
         // ── Timer countdown flash sale — update setiap detik ──
@@ -1801,8 +1725,15 @@
                 }
             }
             if (!updated) {
-                countdownWrap.style.display = 'none';
-                renderApplicationUi();
+                _updateFsDigits("00:00", now);
+                // We shouldn't renderApplicationUi constantly if it's over, otherwise it loops every second!
+                // To avoid infinite re-render loop every second when over:
+                if (countdownWrap.getAttribute('data-ended') !== 'true') {
+                    countdownWrap.setAttribute('data-ended', 'true');
+                    renderApplicationUi();
+                }
+            } else {
+                countdownWrap.removeAttribute('data-ended');
             }
         }, 1000);
 
@@ -1967,11 +1898,9 @@
                         if (sisaDetik > 0) { countdownTarget = item.flash_sale_selesai; break; }
                     }
                 }
-                if (countdownTarget && countdownWrap) {
+                if (countdownWrap) {
                     countdownWrap.style.display = 'flex';
-                    _updateFsDigits(countdownTarget, now);
-                } else if (countdownWrap) {
-                    countdownWrap.style.display = 'none';
+                    _updateFsDigits(countdownTarget || "00:00", now);
                 }
 
                 flashSaleContainer.innerHTML = flashSaleItems.map(item => {
@@ -2009,49 +1938,53 @@
                     const hNormal = Number(item.harga_normal) || 0;
                     const hFlash  = Number(item.harga_flash_sale) || 0;
                     const pctDiskon = hNormal > 0 ? Math.round((1 - hFlash / hNormal) * 100) : 0;
-                    const diskonBadge = pctDiskon > 0 ? `<div class="fs-diskon-badge">-${pctDiskon}%</div>` : '';
+                    const diskonBadge = pctDiskon > 0 ? `<div class="fs-diskon-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7C4 4 7 3 9 4" stroke="#EF1B1B" stroke-width="2.5" stroke-linecap="round" /><path d="M20 7C20 4 17 3 15 4" stroke="#EF1B1B" stroke-width="2.5" stroke-linecap="round" /><path d="M12 2V4" stroke="#EF1B1B" stroke-width="2.5" stroke-linecap="round" /><path d="M7 20L6 22" stroke="#EF1B1B" stroke-width="2.5" stroke-linecap="round" /><path d="M17 20L18 22" stroke="#EF1B1B" stroke-width="2.5" stroke-linecap="round" /><circle cx="12" cy="13" r="8.5" fill="#EF1B1B" /><circle cx="9.5" cy="10.5" r="1.5" fill="white" /><circle cx="14.5" cy="15.5" r="1.5" fill="white" /><path d="M15 9.5L9 16.5" stroke="white" stroke-width="2" stroke-linecap="round" /></svg> -${pctDiskon}%</div>` : '';
 
-                    // Progress bar stok
+                    // Progress bar stok (ShopeeFood Style)
                     let stokBarHtml = '';
                     const stokUntukBar = stokFs !== null ? stokFs : stok;
                     if (stokUntukBar !== null && !tampilHabis) {
-                        const maxBar = 20;
-                        const pctBar = Math.min(100, Math.round((stokUntukBar / maxBar) * 100));
-                        const stokTeks = stokUntukBar <= 5 ? `Sisa ${stokUntukBar} lagi!` : 'Stok Terbatas';
+                        const terjual = Number(item.terjual) || 0;
+                        let pctFill = 0;
+                        let stokTeks = '';
+                        let iconTeks = '';
+                        
+                        if (stokFs !== null) {
+                            const maxCapacity = Math.max(10, stokFs + (terjual || 0)); 
+                            pctFill = Math.min(100, Math.round(((maxCapacity - stokFs) / maxCapacity) * 100));
+                        } else {
+                            pctFill = terjual > 0 ? Math.min(90, terjual * 5) : 10;
+                        }
+
+                        if (stokUntukBar <= 5) {
+                            stokTeks = '<span style="color:#EF1B1B; font-weight:900;">STOK TERBATAS</span>';
+                            pctFill = 15; // Set a small fill to mimic ShopeeFood's STOK TERBATAS
+                        } else if (terjual > 0) {
+                            iconTeks = '&#128293; '; // Emoji Api
+                            stokTeks = `${terjual} TERJUAL`;
+                        } else {
+                            stokTeks = '<span style="color:#EF1B1B; font-weight:900;">SEGERA HABIS</span>';
+                            pctFill = 10;
+                        }
+                        
                         stokBarHtml = `
                             <div class="fs-stok-bar-wrap">
                                 <div class="fs-stok-track">
-                                    <div class="fs-stok-fill" style="width:${pctBar}%;"></div>
+                                    <div class="fs-stok-fill" style="width:${pctFill}%;"></div>
+                                    <div class="fs-stok-label">${iconTeks}${stokTeks}</div>
                                 </div>
-                                <div class="fs-stok-label">${stokTeks}</div>
                             </div>`;
-                    }
-
-                    // Waktu badge
-                    let waktuHtml = '';
-                    if (!tampilHabis && item.flash_sale_selesai) {
-                        waktuHtml = `<div class="fs-waktu-badge"><i class="fa-solid fa-clock" style="font-size:7px;"></i> s.d. ${item.flash_sale_selesai.slice(0,5)}</div>`;
-                    }
-
-                    // Tombol aksi
-                    const itemDiKeranjang = keranjangBelanja.find(k => k.id == item.id);
-                    let tombolHtml = '';
-                    if (tampilHabis) {
-                        const labelHabis = dilluarWaktu ? 'Belum Mulai' : 'Habis';
-                        tombolHtml = `<button class="fs-btn-beli fs-btn-habis" disabled><i class="fa-solid fa-circle-xmark" style="font-size:9px"></i> ${labelHabis}</button>`;
-                    } else if (itemDiKeranjang && itemDiKeranjang.qty > 0) {
-                        tombolHtml = `
-                            <div class="fs-qty-ctrl">
-                                <button onclick="kurangiKuantitasLokal('${item.id}')" class="fs-qty-btn fs-qty-minus">−</button>
-                                <span class="fs-qty-num">${itemDiKeranjang.qty}</span>
-                                <button onclick="tambahKuantitasLokal('${item.id}', true)" class="fs-qty-btn fs-qty-plus">+</button>
+                    } else if (tampilHabis) {
+                        stokBarHtml = `
+                            <div class="fs-stok-bar-wrap">
+                                <div class="fs-stok-track" style="background:#f3f4f6;">
+                                    <div class="fs-stok-label" style="color:#9ca3af;">HABIS TERJUAL</div>
+                                </div>
                             </div>`;
-                    } else {
-                        tombolHtml = `<button onclick="tambahKeKeranjangLokal('${item.id}', true)" class="fs-btn-beli"><i class="fa-solid fa-bolt" style="font-size:9px"></i> Beli</button>`;
                     }
 
                     return `
-                        <div class="fs-card-mp${tampilHabis ? ' opacity-60' : ''}">
+                        <div class="fs-card-mp${tampilHabis ? ' opacity-60' : ''}" onclick="bukaProductDetail('${item.id}')" style="cursor:pointer;">
                             <div class="fs-card-img-wrap">
                                 <img loading="lazy" src="${item.gambar_url || 'https://placehold.co/150?text=Warunk+Arsi'}" alt="${item.nama}" style="${tampilHabis ? 'filter:grayscale(0.6);' : ''}" onerror="this.src='https://placehold.co/150?text=No+Img'">
                                 ${diskonBadge}
@@ -2059,13 +1992,8 @@
                             </div>
                             <div class="fs-card-body">
                                 <div class="fs-card-nama">${item.nama}</div>
-                                <div style="display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;">
-                                    <span class="fs-card-harga-flash">Rp ${hFlash.toLocaleString('id-ID')}</span>
-                                    ${hNormal > 0 && hNormal !== hFlash ? `<span class="fs-card-harga-coret">Rp ${hNormal.toLocaleString('id-ID')}</span>` : ''}
-                                </div>
-                                ${waktuHtml}
+                                <div class="fs-card-harga-flash">Rp${hFlash.toLocaleString('id-ID')}</div>
                                 ${stokBarHtml}
-                                ${tombolHtml}
                             </div>
                         </div>
                     `;
@@ -2230,15 +2158,33 @@
             // Status "Unlimited": abaikan semua pembatasan stok
             const isUnlimitedItem = item.status === "Unlimited" || !item.mitra_wa;
 
-            if (jamBuka && !isUnlimitedItem) {
-                // Jam operasional: stok=0 blokir total; stok>0 batasi qty
-                if (stokTersedia !== null && stokTersedia === 0) return;
-                if (stokTersedia !== null && stokTersedia > 0) {
+            // Cek khusus Flash Sale (berlaku saat jam buka maupun tutup, dan untuk semua item)
+            if (isFlashSale) {
+                const stokFsTersedia = (item.stok_flash_sale !== null && item.stok_flash_sale !== undefined) ? parseInt(item.stok_flash_sale) : null;
+                if (stokFsTersedia !== null && stokFsTersedia === 0) {
+                    alert(`Stok Flash Sale ${item.nama} sudah habis.`);
+                    return;
+                }
+                if (stokFsTersedia !== null && stokFsTersedia > 0) {
                     const indeksEksis = keranjangBelanja.findIndex(k => k.id == menuId);
                     const qtyDiKeranjang = indeksEksis > -1 ? keranjangBelanja[indeksEksis].qty : 0;
-                    if (qtyDiKeranjang >= stokTersedia) {
-                        alert(`Stok ${item.nama} hanya tersisa ${stokTersedia} pcs.`);
+                    if (qtyDiKeranjang >= stokFsTersedia) {
+                        alert(`Stok Flash Sale ${item.nama} hanya tersisa ${stokFsTersedia} porsi.`);
                         return;
+                    }
+                }
+            } else {
+                // Bukan Flash Sale: terapkan pembatasan normal
+                if (jamBuka && !isUnlimitedItem) {
+                    // Jam operasional: stok=0 blokir total; stok>0 batasi qty
+                    if (stokTersedia !== null && stokTersedia === 0) return;
+                    if (stokTersedia !== null && stokTersedia > 0) {
+                        const indeksEksis = keranjangBelanja.findIndex(k => k.id == menuId);
+                        const qtyDiKeranjang = indeksEksis > -1 ? keranjangBelanja[indeksEksis].qty : 0;
+                        if (qtyDiKeranjang >= stokTersedia) {
+                            alert(`Stok ${item.nama} hanya tersisa ${stokTersedia} porsi.`);
+                            return;
+                        }
                     }
                 }
             }
