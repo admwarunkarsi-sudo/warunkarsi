@@ -892,6 +892,266 @@
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════
+         MEMBER PROMO MODAL (Landing Page VVIP)
+    ═══════════════════════════════════════════ -->
+    <div id="member-promo-modal" class="fixed inset-0 bg-black/70 z-[200] hidden items-end justify-center p-0 transition-all duration-300">
+        <div class="bg-white w-full max-w-md rounded-t-[28px] shadow-2xl max-h-[92vh] overflow-y-auto flex flex-col relative">
+            
+            <!-- Close Button (Absolute Over Header) -->
+            <button onclick="tutupMemberPromoModal()" class="absolute top-4 right-4 w-9 h-9 bg-white/20 hover:bg-white/30 text-white rounded-full flex items-center justify-center z-10 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- ── HERO HEADER (Full Bleed) ── -->
+            <div style="background:linear-gradient(135deg,#1E4D3A 0%,#2d6b52 60%,#1a3d2e 100%);padding:40px 24px 30px;text-align:center;position:relative;overflow:hidden;flex-shrink:0;">
+                <!-- Decorative circles -->
+                <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(255,255,255,0.06);border-radius:50%;"></div>
+                <div style="position:absolute;bottom:-30px;left:-15px;width:90px;height:90px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+                
+                <div style="font-size:42px;margin-bottom:8px;text-shadow: 0 4px 10px rgba(0,0,0,0.3);"><i class="fa-solid fa-crown text-[#FFD700]"></i></div>
+                <div style="color:#E6A15C;font-size:11px;font-weight:900;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px;">Exclusive Access</div>
+                <h2 style="color:#fff;font-size:26px;font-weight:900;line-height:1.25;margin:0 0 10px;">Jadi Member VVIP<br><span style="color:#FFD700;">Warunk Arsi</span></h2>
+                <p style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.6;margin:0;font-weight:500;">Gratis · Seumur Hidup · Langsung Aktif</p>
+            </div>
+
+            <div style="padding:24px 20px 30px;">
+                <!-- ── P: PROBLEM ── -->
+                <div style="background:#fff8ed;border:1px solid #fde68a;border-radius:20px;padding:18px 20px;margin-bottom:18px;box-shadow: 0 4px 15px rgba(245,158,11,0.05);">
+                    <p style="font-size:12px;font-weight:900;color:#92400e;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;display:flex;align-items:center;gap:6px;">
+                        <i class="fa-solid fa-face-frown-open text-lg"></i> Masalahnya...
+                    </p>
+                    <p style="font-size:14px;color:#78350f;line-height:1.75;margin:0;">
+                        Kamu udah <b>setia makan di Warunk Arsi</b> berkali-kali — tapi nggak dapat apa-apa. 
+                        Bayar penuh terus, nggak ada bonus, nggak ada poin, nggak ada reward.
+                        Padahal pelanggan setia <i>harusnya</i> dapat perlakuan istimewa, kan? <i class="fa-solid fa-comment-dots opacity-60"></i>
+                    </p>
+                </div>
+
+                <!-- ── A: AGITATE ── -->
+                <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:20px;padding:18px 20px;margin-bottom:18px;box-shadow: 0 4px 15px rgba(225,29,72,0.05);">
+                    <p style="font-size:12px;font-weight:900;color:#be123c;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px;display:flex;align-items:center;gap:6px;">
+                        <i class="fa-solid fa-fire text-lg"></i> Bayangkan jika terus begini...
+                    </p>
+                    <ul style="font-size:14px;color:#9f1239;line-height:1.8;margin:0;padding:0;list-style:none;space-y-2;">
+                        <li style="display:flex;align-items:flex-start;gap:8px;"><i class="fa-solid fa-xmark text-[#e11d48] mt-1"></i> <span>Ratusan transaksi berlalu tanpa satu pun reward</span></li>
+                        <li style="display:flex;align-items:flex-start;gap:8px;"><i class="fa-solid fa-xmark text-[#e11d48] mt-1"></i> <span>Orang lain dapat menu gratis, kamu nggak</span></li>
+                        <li style="display:flex;align-items:flex-start;gap:8px;"><i class="fa-solid fa-xmark text-[#e11d48] mt-1"></i> <span>Uangmu habis, tapi loyalitasmu nggak dihargai</span></li>
+                    </ul>
+                    <p style="font-size:13px;color:#be123c;font-weight:800;margin:12px 0 0;text-align:center;">
+                        Sayang banget kalau itu terjadi ke kamu! <i class="fa-solid fa-face-sad-tear"></i>
+                    </p>
+                </div>
+
+                <!-- ── S: SOLUTION ── -->
+                <div style="background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #6ee7b7;border-radius:20px;padding:22px 20px;margin-bottom:20px;box-shadow: 0 8px 20px rgba(16,185,129,0.08);">
+                    <p style="font-size:12px;font-weight:900;color:#065f46;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;">
+                        <i class="fa-solid fa-check-circle text-lg"></i> Solusinya satu kata...
+                    </p>
+                    <p style="font-size:22px;font-weight:900;color:#1E4D3A;text-align:center;margin:0 0 16px;letter-spacing:1px;">DAFTAR MEMBER VVIP</p>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div style="background:#fff;border-radius:16px;padding:14px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+                            <div style="font-size:24px;color:#fbbf24;margin-bottom:6px;"><i class="fa-solid fa-star"></i></div>
+                            <p style="font-size:13px;font-weight:900;color:#1E4D3A;margin:0 0 4px;">Kumpul Poin</p>
+                            <p style="font-size:11px;color:#6b7280;margin:0;line-height:1.4;">Tiap transaksi = poin masuk otomatis</p>
+                        </div>
+                        <div style="background:#fff;border-radius:16px;padding:14px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+                            <div style="font-size:24px;color:#f43f5e;margin-bottom:6px;"><i class="fa-solid fa-gift"></i></div>
+                            <p style="font-size:13px;font-weight:900;color:#1E4D3A;margin:0 0 4px;">Tukar Gratis</p>
+                            <p style="font-size:11px;color:#6b7280;margin:0;line-height:1.4;">Poin cukup? Tukar jadi menu gratis!</p>
+                        </div>
+                        <div style="background:#fff;border-radius:16px;padding:14px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+                            <div style="font-size:24px;color:#eab308;margin-bottom:6px;"><i class="fa-solid fa-bolt"></i></div>
+                            <p style="font-size:13px;font-weight:900;color:#1E4D3A;margin:0 0 4px;">Akses Prioritas</p>
+                            <p style="font-size:11px;color:#6b7280;margin:0;line-height:1.4;">Info promo & flash sale duluan</p>
+                        </div>
+                        <div style="background:#fff;border-radius:16px;padding:14px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+                            <div style="font-size:24px;color:#3b82f6;margin-bottom:6px;"><i class="fa-solid fa-id-card"></i></div>
+                            <p style="font-size:13px;font-weight:900;color:#1E4D3A;margin:0 0 4px;">ID Member</p>
+                            <p style="font-size:11px;color:#6b7280;margin:0;line-height:1.4;">Punya kartu member digital resmi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── SOCIAL PROOF ── -->
+                <div style="text-align:center;margin-bottom:24px;">
+                    <p style="font-size:12px;color:#6b7280;margin:0 0 10px;font-weight:600;">Bergabung bersama pelanggan setia kami <i class="fa-solid fa-hand-point-down ml-1"></i></p>
+                    <div style="display:flex;justify-content:center;gap:16px;">
+                        <div style="text-align:center;">
+                            <p style="font-size:18px;font-weight:900;color:#1E4D3A;margin:0;">100+</p>
+                            <p style="font-size:11px;color:#9ca3af;margin:0;">Member Aktif</p>
+                        </div>
+                        <div style="width:1.5px;background:#e5e7eb;"></div>
+                        <div style="text-align:center;">
+                            <p style="font-size:18px;font-weight:900;color:#1E4D3A;margin:0;">500+</p>
+                            <p style="font-size:11px;color:#9ca3af;margin:0;">Poin Ditukar</p>
+                        </div>
+                        <div style="width:1.5px;background:#e5e7eb;"></div>
+                        <div style="text-align:center;">
+                            <p style="font-size:18px;font-weight:900;color:#E6A15C;margin:0;">GRATIS</p>
+                            <p style="font-size:11px;color:#9ca3af;margin:0;">Tanpa Biaya</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── FORM ── -->
+                <div style="background:#f8fafc;border-radius:20px;padding:20px;box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);border: 1px solid #e5e7eb;">
+                    <p style="font-size:13px;font-weight:900;color:#1E4D3A;text-align:center;margin:0 0 16px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:6px;">
+                        <i class="fa-solid fa-rocket"></i> Daftar Sekarang — Cuma 30 Detik!
+                    </p>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:12px;font-weight:800;color:#374151;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+                            <i class="fa-solid fa-user text-gray-400 mr-1"></i> Nama Lengkap
+                        </label>
+                        <input type="text" id="reg-name-main" placeholder="Contoh: Budi Santoso" 
+                            style="width:100%;border:1.5px solid #d1d5db;border-radius:14px;padding:14px 16px;font-size:14px;font-weight:600;outline:none;box-sizing:border-box;background:#fff;transition:all 0.2s;"
+                            onfocus="this.style.borderColor='#1E4D3A';this.style.boxShadow='0 0 0 3px rgba(30,77,58,0.1)'" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'" />
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:12px;font-weight:800;color:#374151;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+                            <i class="fa-brands fa-whatsapp text-green-500 mr-1 text-sm"></i> No. WhatsApp Aktif
+                        </label>
+                        <input type="text" id="reg-wa-main" placeholder="Contoh: 08123456789" 
+                            style="width:100%;border:1.5px solid #d1d5db;border-radius:14px;padding:14px 16px;font-size:14px;font-weight:600;outline:none;box-sizing:border-box;background:#fff;transition:all 0.2s;"
+                            onfocus="this.style.borderColor='#1E4D3A';this.style.boxShadow='0 0 0 3px rgba(30,77,58,0.1)'" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'" />
+                    </div>
+                    <button onclick="prosesSimpanDaftarMemberMain()" 
+                        style="width:100%;background:linear-gradient(135deg,#1E4D3A,#2d6b52);color:#fff;font-weight:900;font-size:15px;padding:16px;border:none;border-radius:16px;cursor:pointer;box-shadow:0 6px 20px rgba(30,77,58,0.3);transition:all 0.2s;letter-spacing:0.5px;display:flex;align-items:center;justify-content:center;gap:8px;"
+                        onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 25px rgba(30,77,58,0.4)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 6px 20px rgba(30,77,58,0.3)'">
+                        <i class="fa-solid fa-crown"></i> YA! DAFTARKAN SAYA SEKARANG
+                    </button>
+                    <p style="font-size:11px;color:#9ca3af;text-align:center;margin:12px 0 0;font-weight:500;">
+                        <i class="fa-solid fa-shield-halved"></i> Data kamu dijamin 100% aman dan rahasia.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SNACK BOX MODAL
+    ═══════════════════════════════════════════ -->
+    <div id="snack-box-modal" class="fixed inset-0 bg-black/70 z-[200] hidden items-end justify-center p-0 transition-all duration-300">
+        <div class="bg-white w-full max-w-md rounded-t-[28px] shadow-2xl max-h-[92vh] overflow-y-auto flex flex-col relative">
+            
+            <!-- Close Button -->
+            <button onclick="tutupSnackBoxModal()" class="absolute top-4 right-4 w-9 h-9 bg-white/20 hover:bg-white/30 text-white rounded-full flex items-center justify-center z-10 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- ── HERO HEADER ── -->
+            <div style="background:linear-gradient(135deg,#1E4D3A 0%,#2d6b52 60%,#1a3d2e 100%);padding:40px 24px 30px;text-align:center;position:relative;overflow:hidden;flex-shrink:0;">
+                <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(255,255,255,0.06);border-radius:50%;"></div>
+                <div style="position:absolute;bottom:-30px;left:-15px;width:90px;height:90px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+                
+                <i class="fa-solid fa-gift text-5xl mb-4 drop-shadow-md" style="color:#FFD700;"></i>
+                <h2 class="text-white font-black tracking-tight mb-2 leading-tight" style="font-size:26px">Solusi Cerdas Konsumsi<br><span style="color:#FFD700">Acara Spesial Anda!</span></h2>
+                <p class="text-white/80 font-medium px-4 m-0" style="font-size:13px">Pesan Snack Box & Katering dalam jumlah besar tanpa ribet.</p>
+            </div>
+
+            <div style="padding:24px 20px 30px;">
+                <!-- ── PROBLEM ── -->
+                <div style="background:#fff8ed;border:1px solid #fde68a;border-radius:20px;padding:18px 20px;margin-bottom:18px;box-shadow: 0 4px 15px rgba(245,158,11,0.05);">
+                    <h3 style="font-size:13px;font-weight:900;color:#92400e;margin:0 0 8px;display:flex;align-items:center;gap:6px;">
+                        <i class="fa-solid fa-face-frown-open text-lg"></i> Pusing Cari Konsumsi Acara?
+                    </h3>
+                    <p style="font-size:14px;color:#78350f;line-height:1.75;margin:0;">
+                        Pernah ngalamin acara penting tapi makanan telat datang? Rasa hambar? Atau budget tiba-tiba membengkak? Jangan sampai momen spesial hancur gara-gara konsumsi yang zonk!
+                    </p>
+                </div>
+
+                <!-- ── AGITATE ── -->
+                <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:20px;padding:18px 20px;margin-bottom:18px;box-shadow: 0 4px 15px rgba(225,29,72,0.05);">
+                    <p style="font-size:14px;color:#9f1239;line-height:1.75;margin:0;">
+                        Bayangkan jika tamu Anda kecewa, panitia repot, dan acara jadi tidak berkesan. Apalagi kalau pesan mendadak dan bingung memilih menu yang cocok untuk lidah semua orang. Repot banget kan? <i class="fa-solid fa-face-sad-tear opacity-70"></i>
+                    </p>
+                </div>
+
+                <!-- ── SOLUTION ── -->
+                <div style="background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #6ee7b7;border-radius:20px;padding:22px 20px;margin-bottom:24px;box-shadow: 0 8px 20px rgba(16,185,129,0.08);">
+                    <h3 style="font-size:16px;font-weight:900;color:#1E4D3A;margin:0 0 12px;display:flex;align-items:center;gap:8px;">
+                        <i class="fa-solid fa-check-circle" style="color:#FFD700"></i> Tenang, Warunk Arsi Solusinya!
+                    </h3>
+                    <p style="font-size:13px;color:#065f46;line-height:1.6;margin:0 0 16px;">
+                        Kami siap menyajikan hidangan dengan <b>rasa autentik</b>, <b>harga terjangkau</b>, dan <b>pengiriman tepat waktu</b>. Berbagai pilihan menu unggulan siap dikemas cantik untuk acara Anda!
+                    </p>
+                    
+                    <div style="background:#fff;padding:16px;border-radius:16px;border:1px solid #d1fae5;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+                        <h4 style="font-weight:900;font-size:12px;color:#1E4D3A;margin:0 0 12px;text-align:center;text-transform:uppercase;letter-spacing:1px;">
+                            <i class="fa-solid fa-clipboard-list mr-1"></i> Aturan Pemesanan
+                        </h4>
+                        <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;text-align:center;font-size:10px;color:#4b5563;line-height:1.3;">
+                            <div style="display:flex;flex-direction:column;align-items:center;">
+                                <div style="width:36px;height:36px;border-radius:50%;background:#ecfdf5;border:1px solid #d1fae5;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                                    <i class="fa-regular fa-calendar-check text-[#059669] text-sm"></i>
+                                </div>
+                                <b style="color:#1f2937;font-size:11px;margin-bottom:4px;">Waktu Order</b>
+                                Maksimal H-1<br>sebelum acara
+                            </div>
+                            <div style="display:flex;flex-direction:column;align-items:center;">
+                                <div style="width:36px;height:36px;border-radius:50%;background:#ecfdf5;border:1px solid #d1fae5;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                                    <i class="fa-solid fa-wallet text-[#059669] text-sm"></i>
+                                </div>
+                                <b style="color:#1f2937;font-size:11px;margin-bottom:4px;">Pelunasan</b>
+                                100% lunas<br>pada H-1
+                            </div>
+                            <div style="display:flex;flex-direction:column;align-items:center;">
+                                <div style="width:36px;height:36px;border-radius:50%;background:#ecfdf5;border:1px solid #d1fae5;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                                    <i class="fa-solid fa-box-open text-[#059669] text-sm"></i>
+                                </div>
+                                <b style="color:#1f2937;font-size:11px;margin-bottom:4px;">Kemasan</b>
+                                Biaya menyesuaikan<br>opsi kemasan
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── SLIDERS MENU (Dynamic) ── -->
+                <div style="margin-bottom:24px;">
+                    <h2 style="font-weight:900;color:#1E4D3A;font-size:18px;text-align:center;margin:0 0 4px;">Pilihan Menu Kami</h2>
+                    <p style="text-align:center;font-size:12px;color:#6b7280;margin:0 0 16px;">Geser untuk melihat detail hidangan yang tersedia</p>
+                    <div id="snack-box-sliders-container"></div>
+                </div>
+
+                <!-- ── CTA FORM ── -->
+                <div style="background:#f8fafc;border-radius:20px;padding:20px;box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);border: 1px solid #e5e7eb;">
+                    <h3 style="font-weight:900;text-align:center;color:#1E4D3A;font-size:14px;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.5px;">
+                        <i class="fa-solid fa-pen-to-square"></i> Rencanakan Pesanan Anda
+                    </h3>
+                    
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:12px;font-weight:800;color:#374151;margin-bottom:6px;">Rencana Jumlah Pesanan</label>
+                        <input type="text" id="sb-qty" placeholder="Contoh: 50 Box / 100 Pcs" 
+                            style="width:100%;border:1.5px solid #d1d5db;border-radius:14px;padding:12px 16px;font-size:14px;font-weight:600;outline:none;box-sizing:border-box;background:#fff;transition:all 0.2s;"
+                            onfocus="this.style.borderColor='#1E4D3A';this.style.boxShadow='0 0 0 3px rgba(30,77,58,0.1)'" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'">
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+                        <div>
+                            <label style="display:block;font-size:12px;font-weight:800;color:#374151;margin-bottom:6px;">Untuk Tanggal</label>
+                            <input type="date" id="sb-date" 
+                                style="width:100%;border:1.5px solid #d1d5db;border-radius:14px;padding:12px 14px;font-size:14px;font-weight:600;outline:none;box-sizing:border-box;background:#fff;transition:all 0.2s;"
+                                onfocus="this.style.borderColor='#1E4D3A';this.style.boxShadow='0 0 0 3px rgba(30,77,58,0.1)'" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'">
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:12px;font-weight:800;color:#374151;margin-bottom:6px;">Untuk Jam</label>
+                            <input type="time" id="sb-time" 
+                                style="width:100%;border:1.5px solid #d1d5db;border-radius:14px;padding:12px 14px;font-size:14px;font-weight:600;outline:none;box-sizing:border-box;background:#fff;transition:all 0.2s;"
+                                onfocus="this.style.borderColor='#1E4D3A';this.style.boxShadow='0 0 0 3px rgba(30,77,58,0.1)'" onblur="this.style.borderColor='#d1d5db';this.style.boxShadow='none'">
+                        </div>
+                    </div>
+                    
+                    <button onclick="kirimWaSnackBox()" 
+                        style="width:100%;background:linear-gradient(135deg,#1E4D3A,#2d6b52);color:#fff;font-weight:900;font-size:14px;padding:16px;border:none;border-radius:16px;cursor:pointer;box-shadow:0 6px 20px rgba(30,77,58,0.3);transition:all 0.2s;letter-spacing:0.5px;display:flex;align-items:center;justify-content:center;gap:8px;"
+                        onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 25px rgba(30,77,58,0.4)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 6px 20px rgba(30,77,58,0.3)'">
+                        <i class="fa-brands fa-whatsapp text-lg text-[#25D366]"></i> CHAT ADMIN VIA WHATSAPP
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- REWARD CHECKOUT MODAL - Dedicated element agar tidak konflik string dengan global modal -->
     <div id="reward-checkout-modal" class="fixed inset-0 bg-black/60 z-[200] hidden items-end justify-center p-0">
         <div class="bg-white w-full max-w-md rounded-t-[2.5rem] shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -1352,101 +1612,12 @@
             }
 
             // --- HTML LANDING PAGE PAS ---
-            bukaModal('Snack Box', `
-                <div style="margin:-16px;background:#FAFAFA;">
-                    <!-- HERO SECTION -->
-                    <div style="background:linear-gradient(135deg,#1E4D3A 0%,#2d6b52 60%,#1a3d2e 100%);padding:40px 20px 30px;text-align:center;position:relative;overflow:hidden;border-bottom-left-radius:30px;border-bottom-right-radius:30px;">
-                        <i class="fa-solid fa-gift text-5xl mb-4" style="color:var(--emas);"></i>
-                        <h1 class="text-white font-black text-2xl tracking-tight mb-2 leading-tight">Solusi Cerdas Konsumsi<br><span style="color:var(--emas)">Acara Spesial Anda!</span></h1>
-                        <p class="text-white/80 text-xs font-medium px-4">Pesan Snack Box & Katering dalam jumlah besar tanpa ribet.</p>
-                    </div>
+            document.getElementById('snack-box-sliders-container').innerHTML = slidersHtml;
+            document.getElementById('snack-box-modal').style.display = 'flex';
+        }
 
-                    <div class="px-5 py-6">
-                        <!-- PROBLEM -->
-                        <div class="bg-red-50 border border-red-100 p-4 rounded-2xl mb-4">
-                            <h3 class="text-red-700 font-black text-sm mb-2"><i class="fa-solid fa-face-frown-open mr-1"></i> Pusing Cari Konsumsi Acara?</h3>
-                            <p class="text-red-600/90 text-[11px] leading-relaxed">Pernah ngalamin acara penting tapi makanan telat datang? Rasa hambar? Atau budget tiba-tiba membengkak? Jangan sampai momen spesial hancur gara-gara konsumsi yang zonk!</p>
-                        </div>
-
-                        <!-- AGITATE -->
-                        <div class="bg-orange-50 border border-orange-100 p-4 rounded-2xl mb-4">
-                            <p class="text-orange-700/90 text-[11px] leading-relaxed">
-                                Bayangkan jika tamu Anda kecewa, panitia repot, dan acara jadi tidak berkesan. Apalagi kalau pesan mendadak dan bingung memilih menu yang cocok untuk lidah semua orang. Repot banget kan?
-                            </p>
-                        </div>
-
-                        <!-- SOLUTION -->
-                        <div class="bg-green-50 border border-green-200 p-5 rounded-2xl mb-6 shadow-sm">
-                            <h3 class="text-[#1E4D3A] font-black text-base mb-2"><i class="fa-solid fa-check-circle mr-1" style="color:var(--emas)"></i> Tenang, Warunk Arsi Solusinya!</h3>
-                            <p class="text-green-800/90 text-[11px] leading-relaxed mb-4">Kami siap menyajikan hidangan dengan <b>rasa autentik</b>, <b>harga terjangkau</b>, dan <b>pengiriman tepat waktu</b>. Berbagai pilihan menu unggulan siap dikemas cantik untuk acara Anda!</p>
-                            
-                            <div class="bg-white p-4 rounded-xl border border-green-100">
-                                <h4 class="font-black text-[11px] text-[#1E4D3A] mb-4 text-center uppercase tracking-wide">📋 Aturan Pemesanan</h4>
-                                <div class="grid grid-cols-3 gap-2 text-center text-[9px] text-gray-600 leading-tight">
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center mb-1.5 shadow-sm border border-green-100">
-                                            <i class="fa-regular fa-calendar-check text-green-600 text-[13px]"></i>
-                                        </div>
-                                        <b class="text-gray-800 mb-0.5">Waktu Order</b>
-                                        Maksimal H-1<br>sebelum acara
-                                    </div>
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center mb-1.5 shadow-sm border border-green-100">
-                                            <i class="fa-solid fa-wallet text-green-600 text-[13px]"></i>
-                                        </div>
-                                        <b class="text-gray-800 mb-0.5">Pelunasan</b>
-                                        100% lunas<br>pada H-1
-                                    </div>
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center mb-1.5 shadow-sm border border-green-100">
-                                            <i class="fa-solid fa-box-open text-green-600 text-[13px]"></i>
-                                        </div>
-                                        <b class="text-gray-800 mb-0.5">Kemasan</b>
-                                        Biaya menyesuaikan<br>opsi kemasan
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SLIDERS MENU -->
-                        <div class="mb-8">
-                            <h2 class="font-black text-[#1E4D3A] text-lg text-center mb-1">Pilihan Menu Kami</h2>
-                            <p class="text-center text-[10px] text-gray-500 mb-4">Geser untuk melihat detail hidangan yang tersedia</p>
-                            ${slidersHtml}
-                        </div>
-
-                        <!-- CTA FORM -->
-                        <div class="bg-white p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100">
-                            <h3 class="font-black text-center text-[#1E4D3A] text-sm mb-4">Rencanakan Pesanan Anda</h3>
-                            
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-gray-700 mb-1">Rencana Jumlah Pesanan</label>
-                                    <input type="text" id="sb-qty" placeholder="Contoh: 50 Box / 100 Pcs" class="w-full text-xs p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-[#1E4D3A] transition">
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="block text-[10px] font-bold text-gray-700 mb-1">Untuk Tanggal</label>
-                                        <input type="date" id="sb-date" class="w-full text-xs p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-[#1E4D3A] transition">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[10px] font-bold text-gray-700 mb-1">Untuk Jam</label>
-                                        <input type="time" id="sb-time" class="w-full text-xs p-3 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-[#1E4D3A] transition">
-                                    </div>
-                                </div>
-                                
-                                <button onclick="kirimWaSnackBox()" class="w-full mt-2 relative overflow-hidden group bg-gradient-to-r from-[#1E4D3A] to-[#2d6b52] text-white p-4 rounded-xl font-black text-xs shadow-lg shadow-green-900/20 active:scale-95 transition-all">
-                                    <div class="relative z-10 flex items-center justify-center gap-2">
-                                        <i class="fa-brands fa-whatsapp text-lg text-[#25D366]"></i>
-                                        Chat Admin via WhatsApp
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            `);
+        function tutupSnackBoxModal() {
+            document.getElementById('snack-box-modal').style.display = 'none';
         }
 
         function kirimWaSnackBox() {
@@ -1466,125 +1637,13 @@
             window.open(waUrl, '_blank');
         }
 
+        function tutupMemberPromoModal() {
+            document.getElementById('member-promo-modal').style.display = 'none';
+        }
+
         function bukaModalDaftarMember() {
             setNavAktif('nav-promo');
-            bukaModal('', `
-                <div style="margin:-16px;overflow:hidden;">
-                    <!-- ── HERO HEADER ── -->
-                    <div style="background:linear-gradient(135deg,#1E4D3A 0%,#2d6b52 60%,#1a3d2e 100%);padding:28px 20px 20px;text-align:center;position:relative;overflow:hidden;">
-                        <!-- Decorative circles -->
-                        <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,0.04);border-radius:50%;"></div>
-                        <div style="position:absolute;bottom:-30px;left:-15px;width:80px;height:80px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
-                        
-                        <div style="font-size:36px;margin-bottom:6px;">👑</div>
-                        <div style="color:#E6A15C;font-size:9px;font-weight:900;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;">Exclusive Access</div>
-                        <h2 style="color:#fff;font-size:20px;font-weight:900;line-height:1.2;margin:0 0 8px;">Jadi Member VVIP<br><span style="color:#FFD700;">Warunk Arsi</span></h2>
-                        <p style="color:rgba(255,255,255,0.7);font-size:10px;line-height:1.6;margin:0;">Gratis · Seumur Hidup · Langsung Aktif</p>
-                    </div>
-
-                    <div style="padding:20px 18px 0;">
-
-                        <!-- ── P: PROBLEM ── -->
-                        <div style="background:#fff8ed;border:1px solid #fde68a;border-radius:16px;padding:14px 16px;margin-bottom:14px;">
-                            <p style="font-size:10px;font-weight:900;color:#92400e;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;">😩 Masalahnya...</p>
-                            <p style="font-size:12px;color:#78350f;line-height:1.7;margin:0;">
-                                Kamu udah <b>setia makan di Warunk Arsi</b> berkali-kali — tapi nggak dapat apa-apa. 
-                                Bayar penuh terus, nggak ada bonus, nggak ada poin, nggak ada reward.
-                                Padahal pelanggan setia <i>harusnya</i> dapat perlakuan istimewa, kan? 🤔
-                            </p>
-                        </div>
-
-                        <!-- ── A: AGITATE ── -->
-                        <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:16px;padding:14px 16px;margin-bottom:14px;">
-                            <p style="font-size:10px;font-weight:900;color:#be123c;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;">🔥 Bayangkan jika terus begini...</p>
-                            <ul style="font-size:12px;color:#9f1239;line-height:1.8;margin:0;padding:0;list-style:none;">
-                                <li>❌ Ratusan transaksi berlalu tanpa satu pun reward</li>
-                                <li>❌ Orang lain dapat menu gratis, kamu nggak</li>
-                                <li>❌ Uangmu habis, tapi loyalitasmu nggak dihargai</li>
-                            </ul>
-                            <p style="font-size:11px;color:#be123c;font-weight:800;margin:8px 0 0;text-align:center;">
-                                Sayang banget kalau itu terjadi ke kamu! 😰
-                            </p>
-                        </div>
-
-                        <!-- ── S: SOLUTION ── -->
-                        <div style="background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #6ee7b7;border-radius:16px;padding:16px;margin-bottom:16px;">
-                            <p style="font-size:10px;font-weight:900;color:#065f46;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;text-align:center;">✅ Solusinya satu kata...</p>
-                            <p style="font-size:18px;font-weight:900;color:#1E4D3A;text-align:center;margin:0 0 12px;letter-spacing:1px;">DAFTAR MEMBER VVIP 👑</p>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                                <div style="background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                                    <div style="font-size:20px;">⭐</div>
-                                    <p style="font-size:10px;font-weight:900;color:#1E4D3A;margin:4px 0 2px;">Kumpul Poin</p>
-                                    <p style="font-size:9px;color:#6b7280;margin:0;">Tiap transaksi = poin masuk otomatis</p>
-                                </div>
-                                <div style="background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                                    <div style="font-size:20px;">🎁</div>
-                                    <p style="font-size:10px;font-weight:900;color:#1E4D3A;margin:4px 0 2px;">Tukar Gratis</p>
-                                    <p style="font-size:9px;color:#6b7280;margin:0;">Poin cukup? Tukar jadi menu gratis!</p>
-                                </div>
-                                <div style="background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                                    <div style="font-size:20px;">⚡</div>
-                                    <p style="font-size:10px;font-weight:900;color:#1E4D3A;margin:4px 0 2px;">Akses Prioritas</p>
-                                    <p style="font-size:9px;color:#6b7280;margin:0;">Info promo & flash sale duluan</p>
-                                </div>
-                                <div style="background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                                    <div style="font-size:20px;">🆔</div>
-                                    <p style="font-size:10px;font-weight:900;color:#1E4D3A;margin:4px 0 2px;">ID Member</p>
-                                    <p style="font-size:9px;color:#6b7280;margin:0;">Punya kartu member digital resmi</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ── SOCIAL PROOF ── -->
-                        <div style="text-align:center;margin-bottom:14px;">
-                            <p style="font-size:10px;color:#6b7280;margin:0 0 6px;">Bergabung bersama pelanggan setia kami 👇</p>
-                            <div style="display:flex;justify-content:center;gap:12px;">
-                                <div style="text-align:center;">
-                                    <p style="font-size:16px;font-weight:900;color:#1E4D3A;margin:0;">100+</p>
-                                    <p style="font-size:9px;color:#9ca3af;margin:0;">Member Aktif</p>
-                                </div>
-                                <div style="width:1px;background:#e5e7eb;"></div>
-                                <div style="text-align:center;">
-                                    <p style="font-size:16px;font-weight:900;color:#1E4D3A;margin:0;">500+</p>
-                                    <p style="font-size:9px;color:#9ca3af;margin:0;">Poin Ditukar</p>
-                                </div>
-                                <div style="width:1px;background:#e5e7eb;"></div>
-                                <div style="text-align:center;">
-                                    <p style="font-size:16px;font-weight:900;color:#E6A15C;margin:0;">GRATIS</p>
-                                    <p style="font-size:9px;color:#9ca3af;margin:0;">Tanpa Biaya</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ── FORM ── -->
-                        <div style="background:#f8fafc;border-radius:16px;padding:16px;margin-bottom:4px;">
-                            <p style="font-size:11px;font-weight:900;color:#1E4D3A;text-align:center;margin:0 0 12px;text-transform:uppercase;letter-spacing:1px;">
-                                🚀 Daftar Sekarang — 30 Detik!
-                            </p>
-                            <div style="margin-bottom:10px;">
-                                <label style="display:block;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">👤 Nama Lengkap</label>
-                                <input type="text" id="reg-name-main" placeholder="Contoh: Budi Santoso" 
-                                    style="width:100%;border:1.5px solid #e5e7eb;border-radius:12px;padding:11px 14px;font-size:12px;font-weight:600;outline:none;box-sizing:border-box;background:#fff;"
-                                    onfocus="this.style.borderColor='#1E4D3A'" onblur="this.style.borderColor='#e5e7eb'" />
-                            </div>
-                            <div style="margin-bottom:14px;">
-                                <label style="display:block;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">📱 No. WhatsApp Aktif</label>
-                                <input type="text" id="reg-wa-main" placeholder="Contoh: 08123456789" 
-                                    style="width:100%;border:1.5px solid #e5e7eb;border-radius:12px;padding:11px 14px;font-size:12px;font-weight:600;outline:none;box-sizing:border-box;background:#fff;"
-                                    onfocus="this.style.borderColor='#1E4D3A'" onblur="this.style.borderColor='#e5e7eb'" />
-                            </div>
-                            <button onclick="prosesSimpanDaftarMemberMain()" 
-                                style="width:100%;background:linear-gradient(135deg,#1E4D3A,#2d6b52);color:#fff;font-weight:900;font-size:13px;padding:15px;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 15px rgba(30,77,58,0.4);transition:all 0.2s;letter-spacing:0.5px;"
-                                onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
-                                👑 YA! DAFTARKAN SAYA SEKARANG
-                            </button>
-                            <p style="font-size:9px;color:#9ca3af;text-align:center;margin:8px 0 0;">
-                                🔒 Data kamu aman. Tidak ada biaya pendaftaran.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            `);
+            document.getElementById('member-promo-modal').style.display = 'flex';
         }
 
         async function prosesSimpanDaftarMemberMain() {
