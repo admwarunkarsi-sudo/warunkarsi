@@ -15,6 +15,7 @@
     <meta name="geo.placename" content="Bekasi">
     <!-- Favicon disesuaikan dengan logo Warunk Arsi -->
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co.com/5gksJL19/534314181-17845743486547960-8463846081803860484-n.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <meta property="og:type" content="website">
     <meta property="og:title" content="Sarapan Pagi Bekasi Hemat - Warunk Arsi">
@@ -1266,6 +1267,17 @@
     </div>
 
     <script>
+        // Override default alert to use SweetAlert2
+        window.alert = function(message) {
+            Swal.fire({
+                text: message,
+                icon: 'info',
+                confirmButtonColor: '#1E4D3A',
+                confirmButtonText: 'Oke',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-bold px-6 py-2' }
+            });
+        };
+
         const SUPABASE_URL = "https://ghfnukejqcioulphszil.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_o9CmewmvcOhV-x5yin7qAQ_W4EKfGtw";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
