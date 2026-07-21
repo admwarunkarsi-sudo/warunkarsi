@@ -2750,10 +2750,9 @@
                     }
                     throw error;
                 }
-                console.log("Respon Edge Function:", edgeData);
                 // Jika edgeData adalah string mentah dari Kong/API Gateway (biasanya Lalamove Sandbox down)
                 if (typeof edgeData === 'string' && edgeData.includes("upstream server")) {
-                    throw new Error("Sistem uji coba Lalamove saat ini sedang mengalami gangguan (Server Down). Silakan coba lagi nanti.");
+                    throw new Error("Mohon maaf, sistem pengiriman (Delivery) saat ini sedang mengalami gangguan teknis dari pusat. Silakan ganti Opsi Pengambilan Pesanan Anda ke 'Ambil Sendiri' untuk sementara waktu.");
                 }
                 
                 if (edgeData.error) throw new Error(typeof edgeData.error === 'object' ? JSON.stringify(edgeData.error) : edgeData.error);
@@ -3074,8 +3073,15 @@
 
             let displayOpsiAmbil = opsiAmbil === 'Lalamove' ? 'Delivery' : opsiAmbil;
             let catatanGabungan = isPreOrder ? `[PRE-ORDER] [Opsi: ${displayOpsiAmbil}] [Bayar: ${metodeBayar}]` : `[Opsi: ${displayOpsiAmbil}] [Bayar: ${metodeBayar}]`;
-            if(opsiAmbil === 'Lalamove') catatanGabungan += ` Alamat Delivery: ${alamatTeks}. (Ongkir: Rp${lalamoveOngkir})`;
+            if (opsiAmbil === 'Lalamove') {
+                catatanGabungan += ` Alamat Delivery: ${alamatTeks}. (Ongkir: Rp${lalamoveOngkir})`;
+            }
             catatanGabungan += catatanItemText;
+
+            if (opsiAmbil === 'Lalamove' && lalamoveQuotationId) {
+                const lalamoveData = { qid: lalamoveQuotationId, lat, lng, addr: alamatTeks };
+                catatanGabungan += ` | LALAMOVE_DATA: ${JSON.stringify(lalamoveData)}`;
+            }
 
             try {
                 // Tampilkan loading state
@@ -3132,31 +3138,6 @@
 
                 const namaCustomer = sessionUserCache.nama;
                 const nomorWaCustomer = sessionUserCache.wa || '-';
-                
-                // Jika pengiriman menggunakan Lalamove, panggil Edge Function Create Order
-                if (opsiAmbil === 'Lalamove' && lalamoveQuotationId) {
-                    if (lalamoveQuotationId.startsWith('MOCK-')) {
-                        console.log("Mock Lalamove Order Created:", { orderId, lalamoveQuotationId });
-                    } else {
-                        const { data: lalamoveData, error: lalamoveError } = await _supabase.functions.invoke('lalamove-api', {
-                            body: {
-                                action: 'create-order',
-                                quotationId: lalamoveQuotationId,
-                                recipientName: sessionUserCache.nama,
-                                recipientPhone: sessionUserCache.wa,
-                                orderId: orderId,
-                                lat: lat,
-                                lng: lng,
-                                address: alamatTeks
-                            }
-                        });
-                        if (lalamoveError || (lalamoveData && lalamoveData.error)) {
-                            console.error("Gagal create lalamove order:", lalamoveError || lalamoveData.error);
-                            Swal.close();
-                            showChatToastUser('Pesanan masuk, tetapi sistem gagal memanggil kurir secara otomatis. Kasir akan menanganinya manual.');
-                        }
-                    }
-                }
 
                 // Tutup spinner loading
                 Swal.close();
