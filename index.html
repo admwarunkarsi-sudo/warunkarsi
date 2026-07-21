@@ -2511,6 +2511,11 @@
                     <!-- Kolom alamat Delivery (Lalamove) -->
                     <div id="kolom-alamat-checkout" class="space-y-2 relative" style="display:none">
                         <label class="block font-bold text-gray-700" id="label-alamat-title"><i class="fa-solid fa-map-location-dot text-red-500"></i> Alamat Lengkap</label>
+                        
+                        <div class="bg-blue-50 border border-blue-100 p-2 rounded-lg text-[10px] text-blue-800 leading-tight">
+                            <i class="fa-solid fa-circle-info mr-1 text-blue-600"></i> <b>Tips:</b> Ketik nama <b>Daerah / Kelurahan</b> terlebih dahulu dan pilih dari daftar. Setelah tarif ongkir muncul, baru Anda bebas menambahkan detail <i>No. Rumah/RT/RW</i> di sini.
+                        </div>
+
                         <div class="relative">
                             <textarea id="checkout-alamat-input" oninput="debounceCariAlamatOSM(this.value)" placeholder="Tuliskan atau cari alamat lengkap pengiriman serta patokan lokasi..." class="w-full border rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#1E4D3A] bg-white min-h-[60px] resize-none">${sessionUserCache && sessionUserCache.alamat ? sessionUserCache.alamat : ''}</textarea>
                             
@@ -2746,6 +2751,11 @@
                     throw error;
                 }
                 console.log("Respon Edge Function:", edgeData);
+                // Jika edgeData adalah string mentah dari Kong/API Gateway (biasanya Lalamove Sandbox down)
+                if (typeof edgeData === 'string' && edgeData.includes("upstream server")) {
+                    throw new Error("Sistem uji coba Lalamove saat ini sedang mengalami gangguan (Server Down). Silakan coba lagi nanti.");
+                }
+                
                 if (edgeData.error) throw new Error(typeof edgeData.error === 'object' ? JSON.stringify(edgeData.error) : edgeData.error);
                 if (edgeData.errors) throw new Error(JSON.stringify(edgeData.errors));
                 if (edgeData.message) throw new Error("API Lalamove: " + edgeData.message);
@@ -2762,7 +2772,7 @@
                     
                     renderCheckoutPrices();
                 } else {
-                    throw new Error("Format tak terduga dari Lalamove: " + JSON.stringify(edgeData));
+                    throw new Error("Tidak dapat menemukan tarif untuk rute ini pada sistem Lalamove.");
                 }
             } catch (err) {
                 alert("Gagal menghitung tarif: " + err.message);
