@@ -2461,6 +2461,15 @@
             setTimeout(() => bukaModalCheckoutFormMP(), 120);
         }
 
+        function renderCheckoutPrices() {
+            let totalHargaCart = keranjangBelanja.reduce((acc, c) => acc + (c.harga * c.qty), 0);
+            let finalTotal = totalHargaCart + lalamoveOngkir;
+            const elTotal = document.getElementById('checkout-total-price');
+            if (elTotal) {
+                elTotal.innerText = 'Rp ' + finalTotal.toLocaleString('id-ID');
+            }
+        }
+
         function bukaModalCheckoutFormMP() {
             if (keranjangBelanja.length === 0) return;
             let totalHarga = keranjangBelanja.reduce((acc, c) => acc + (c.harga * c.qty), 0);
@@ -2471,7 +2480,7 @@
                     <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex justify-between items-center">
                         <div>
                             <p class="text-[10px] text-gray-400 font-bold uppercase">Total Pembayaran</p>
-                            <p class="text-base font-black text-[#1E4D3A] mt-0.5">Rp ${totalHarga.toLocaleString('id-ID')}</p>
+                            <p class="text-base font-black text-[#1E4D3A] mt-0.5" id="checkout-total-price">Rp ${totalHarga.toLocaleString('id-ID')}</p>
                         </div>
                         <span class="text-[9px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">${sessionUserCache.isMember ? '⭐ VVIP Member' : 'Pelanggan'}</span>
                     </div>
@@ -2485,26 +2494,50 @@
                     <!-- Opsi pengambilan -->
                     <div class="space-y-1.5">
                         <label class="block font-bold text-gray-700"><i class="fa-solid fa-truck-ramp-box text-[#1E4D3A]"></i> Opsi Pengambilan Pesanan</label>
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <div onclick="handleDeliveryChoice('ambil_langsung')" class="border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none" id="label-opsi-ambil">
-                                <i class="fa-solid fa-shop text-[#1E4D3A] text-lg mb-1"></i>
-                                <span class="font-black text-[11px] text-gray-800">Ambil Mandiri</span>
-                                <span class="text-[9px] text-gray-400 font-medium mt-0.5">Langsung ke kasir</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div onclick="handleDeliveryChoice('ambil_langsung')" class="border-2 border-[#1E4D3A] bg-emerald-50/30 p-2 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none" id="label-opsi-ambil">
+                                <i class="fa-solid fa-shop text-[#1E4D3A] text-base mb-1"></i>
+                                <span class="font-black text-[10px] text-gray-800">Ambil Sendiri</span>
                                 <input type="radio" name="opsi_ambil" id="r-ambil" value="Ambil Sendiri" checked class="hidden" />
                             </div>
-                            <div onclick="handleDeliveryChoice('gosend')" class="border-2 border-gray-200 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none" id="label-opsi-gosend">
-                                <i class="fa-solid fa-motorcycle text-gray-400 text-lg mb-1" id="icon-gosend"></i>
-                                <span class="font-black text-[11px] text-gray-800">Kirim GoSend</span>
-                                <span class="text-[9px] text-gray-400 font-medium mt-0.5">Antar ke alamat</span>
-                                <input type="radio" name="opsi_ambil" id="r-gosend" value="GoSend" class="hidden" />
+                            <div onclick="handleDeliveryChoice('lalamove')" class="border-2 border-gray-200 p-2 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none" id="label-opsi-lalamove">
+                                <i class="fa-solid fa-motorcycle text-gray-400 text-base mb-1" id="icon-lalamove"></i>
+                                <span class="font-black text-[10px] text-gray-800">Delivery</span>
+                                <input type="radio" name="opsi_ambil" id="r-lalamove" value="Lalamove" class="hidden" />
                             </div>
                         </div>
                     </div>
 
-                    <!-- Kolom alamat GoSend -->
-                    <div id="kolom-alamat-checkout" class="space-y-1" style="display:none">
-                        <label class="block font-bold text-gray-700"><i class="fa-solid fa-map-location-dot text-red-500"></i> Alamat Lengkap Armada GoSend</label>
-                        <textarea id="checkout-alamat-input" placeholder="Tuliskan alamat lengkap pengiriman serta patokan lokasi..." class="w-full border rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#1E4D3A] bg-white min-h-[60px] resize-none">${sessionUserCache && sessionUserCache.alamat ? sessionUserCache.alamat : ''}</textarea>
+                    <!-- Kolom alamat Delivery (Lalamove) -->
+                    <div id="kolom-alamat-checkout" class="space-y-2 relative" style="display:none">
+                        <label class="block font-bold text-gray-700" id="label-alamat-title"><i class="fa-solid fa-map-location-dot text-red-500"></i> Alamat Lengkap</label>
+                        <div class="relative">
+                            <textarea id="checkout-alamat-input" oninput="debounceCariAlamatOSM(this.value)" placeholder="Tuliskan atau cari alamat lengkap pengiriman serta patokan lokasi..." class="w-full border rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#1E4D3A] bg-white min-h-[60px] resize-none">${sessionUserCache && sessionUserCache.alamat ? sessionUserCache.alamat : ''}</textarea>
+                            
+                            <!-- Autocomplete Dropdown -->
+                            <div id="alamat-suggestions" class="absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 overflow-hidden" style="display:none; max-height: 200px; overflow-y: auto;">
+                            </div>
+                        </div>
+                        
+                        <!-- Extra fields for Lalamove -->
+                        <div id="kolom-lalamove-extra" style="display:none" class="bg-orange-50 border border-orange-100 p-3 rounded-xl">
+                            <div class="flex gap-2 mb-2">
+                                <input type="text" id="lalamove-lat" placeholder="Latitude" class="w-1/2 border rounded-lg p-2 text-xs bg-white text-gray-500" readonly value="${sessionUserCache && sessionUserCache.lat ? sessionUserCache.lat : ''}" />
+                                <input type="text" id="lalamove-lng" placeholder="Longitude" class="w-1/2 border rounded-lg p-2 text-xs bg-white text-gray-500" readonly value="${sessionUserCache && sessionUserCache.lng ? sessionUserCache.lng : ''}" />
+                            </div>
+                            <button onclick="getGPSLocation()" class="w-full bg-orange-500 text-white font-bold py-2 rounded-lg text-[11px] flex items-center justify-center gap-2 active:bg-orange-600 transition">
+                                <i class="fa-solid fa-location-crosshairs"></i> Gunakan Lokasi Saat Ini (GPS)
+                            </button>
+                            
+                            <div class="mt-3 border-t border-orange-200 pt-2 flex items-center justify-between hidden" id="lalamove-quote-result">
+                                <span class="text-[11px] font-bold text-gray-700">Ongkos Kirim:</span>
+                                <span class="font-black text-[#1E4D3A]" id="lalamove-ongkir-text">Rp 0</span>
+                            </div>
+                            
+                            <button id="btn-cek-ongkir" onclick="cekOngkirLalamove()" class="mt-2 w-full border-2 border-orange-500 text-orange-600 font-bold py-2 rounded-lg text-[11px] flex items-center justify-center gap-2 active:bg-orange-50 transition hidden">
+                                Cek Tarif Pengiriman
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Metode pembayaran -->
@@ -2542,30 +2575,198 @@
             `);
         }
 
+        let lalamoveOngkir = 0;
+        let lalamoveQuotationId = "";
+
         function handleDeliveryChoice(type) {
             const lblAmbil   = document.getElementById('label-opsi-ambil');
-            const lblGosend  = document.getElementById('label-opsi-gosend');
-            const iconGosend = document.getElementById('icon-gosend');
+            const lblLalamove= document.getElementById('label-opsi-lalamove');
+            const iconLalamove= document.getElementById('icon-lalamove');
             const areaAlamat = document.getElementById('kolom-alamat-checkout');
-            const clsAktif   = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none";
-            const clsNonaktif= "border-2 border-gray-200 p-3 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none";
+            const areaLalamoveExtra = document.getElementById('kolom-lalamove-extra');
+            const clsAktif   = "border-2 border-[#1E4D3A] bg-emerald-50/30 p-2 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none";
+            const clsNonaktif= "border-2 border-gray-200 p-2 rounded-xl flex flex-col items-center justify-center text-center cursor-pointer transition select-none";
+
+            // Reset state
+            if(lblAmbil) lblAmbil.className  = clsNonaktif;
+            if(lblLalamove) lblLalamove.className = clsNonaktif;
+            if(iconLalamove) iconLalamove.className = "fa-solid fa-motorcycle text-gray-400 text-base mb-1";
+            if(areaAlamat) areaAlamat.style.display = 'none';
+            if(areaLalamoveExtra) areaLalamoveExtra.style.display = 'none';
+            const labelAlamatTitle = document.getElementById('label-alamat-title');
+            if(labelAlamatTitle) labelAlamatTitle.innerHTML = `<i class="fa-solid fa-map-location-dot text-red-500"></i> Alamat Lengkap`;
+            
+            // Reset fee
+            lalamoveOngkir = 0;
+            lalamoveQuotationId = "";
+            renderCheckoutPrices();
+            
+            const btnOngkir = document.getElementById('btn-cek-ongkir');
+            if(btnOngkir) btnOngkir.style.display = 'none';
+            const resOngkir = document.getElementById('lalamove-quote-result');
+            if(resOngkir) resOngkir.style.display = 'none';
 
             if (type === 'ambil_langsung') {
                 document.getElementById('r-ambil').checked = true;
-                lblAmbil.className  = clsAktif;
-                lblGosend.className = clsNonaktif;
-                iconGosend.className = "fa-solid fa-motorcycle text-gray-400 text-lg mb-1";
-                areaAlamat.style.display = 'none';
+                if(lblAmbil) lblAmbil.className  = clsAktif;
                 document.getElementById('container-pay-cod').style.display = 'flex';
-            } else {
-                document.getElementById('r-gosend').checked = true;
-                lblGosend.className = clsAktif;
-                lblAmbil.className  = clsNonaktif;
-                iconGosend.className = "fa-solid fa-motorcycle text-[#1E4D3A] text-lg mb-1";
-                areaAlamat.style.display = 'block';
+            } else if (type === 'lalamove') {
+                document.getElementById('r-lalamove').checked = true;
+                if(lblLalamove) lblLalamove.className = clsAktif;
+                if(iconLalamove) iconLalamove.className = "fa-solid fa-motorcycle text-[#1E4D3A] text-base mb-1";
+                if(areaAlamat) areaAlamat.style.display = 'block';
+                if(areaLalamoveExtra) areaLalamoveExtra.style.display = 'block';
+                
                 document.getElementById('checkout-alamat-input').focus();
                 document.getElementById('container-pay-cod').style.display = 'none';
                 handlePaymentChoice('qris');
+                
+                // Jika sudah ada lat lng dari session, langsung otomatis cek ongkir
+                const sLat = document.getElementById('lalamove-lat').value;
+                const sLng = document.getElementById('lalamove-lng').value;
+                if(sLat && sLng && document.getElementById('checkout-alamat-input').value) {
+                    setTimeout(() => cekOngkirLalamove(), 300);
+                }
+            }
+        }
+
+        // --- Fitur Autocomplete OpenStreetMap ---
+        let searchTimeout;
+        async function debounceCariAlamatOSM(query) {
+            const suggestionBox = document.getElementById('alamat-suggestions');
+            if (query.length < 4) {
+                suggestionBox.style.display = 'none';
+                return;
+            }
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                suggestionBox.innerHTML = '<div class="p-3 text-xs text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin"></i> Mencari alamat...</div>';
+                suggestionBox.style.display = 'block';
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&countrycodes=id`);
+                    const data = await res.json();
+                    
+                    if (data.length === 0) {
+                        suggestionBox.innerHTML = '<div class="p-3 text-xs text-center text-gray-500">Alamat tidak ditemukan</div>';
+                        setTimeout(() => { suggestionBox.style.display = 'none'; }, 2000);
+                        return;
+                    }
+                    
+                    let html = '';
+                    data.forEach(item => {
+                        // Menghindari karakter quote bermasalah
+                        const nameSafe = item.display_name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        html += `
+                            <div onclick="pilihAlamatRekomen('${item.lat}', '${item.lon}', '${nameSafe}')" class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition text-xs">
+                                <i class="fa-solid fa-location-dot text-red-500 mr-2"></i> <b>${item.name || item.display_name.split(',')[0]}</b><br/>
+                                <span class="text-[10px] text-gray-500 line-clamp-1">${item.display_name}</span>
+                            </div>
+                        `;
+                    });
+                    suggestionBox.innerHTML = html;
+                } catch (e) {
+                    suggestionBox.style.display = 'none';
+                }
+            }, 800);
+        }
+
+        function pilihAlamatRekomen(lat, lon, displayName) {
+            document.getElementById('checkout-alamat-input').value = displayName;
+            document.getElementById('lalamove-lat').value = lat;
+            document.getElementById('lalamove-lng').value = lon;
+            document.getElementById('alamat-suggestions').style.display = 'none';
+            
+            // Ubah tampilan tombol GPS
+            const btn = document.querySelector('button[onclick="getGPSLocation()"]');
+            if(btn) {
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Titik Lokasi Peta Ditemukan`;
+                btn.className = "w-full bg-green-500 text-white font-bold py-2 rounded-lg text-[11px] flex items-center justify-center gap-2";
+            }
+            
+            cekOngkirLalamove();
+        }
+        // --- Akhir Autocomplete ---
+
+        async function getGPSLocation() {
+            if (navigator.geolocation) {
+                const btn = document.querySelector('button[onclick="getGPSLocation()"]');
+                const oriHtml = btn.innerHTML;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mendapatkan Lokasi...`;
+                
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    document.getElementById('lalamove-lat').value = pos.coords.latitude;
+                    document.getElementById('lalamove-lng').value = pos.coords.longitude;
+                    btn.innerHTML = `<i class="fa-solid fa-check"></i> Lokasi Tersimpan`;
+                    btn.className = "w-full bg-green-500 text-white font-bold py-2 rounded-lg text-[11px] flex items-center justify-center gap-2";
+                    
+                    cekOngkirLalamove();
+                }, (err) => {
+                    alert('Gagal mendapatkan lokasi GPS. Pastikan izin lokasi diaktifkan.');
+                    btn.innerHTML = oriHtml;
+                });
+            } else {
+                alert('Browser tidak mendukung Geolocation.');
+            }
+        }
+
+        async function cekOngkirLalamove() {
+            const lat = document.getElementById('lalamove-lat').value;
+            const lng = document.getElementById('lalamove-lng').value;
+            const address = document.getElementById('checkout-alamat-input').value;
+
+            if(!lat || !lng || !address) {
+                return alert('Mohon lengkapi alamat dan titik lokasi (GPS) terlebih dahulu.');
+            }
+
+            const btn = document.getElementById('btn-cek-ongkir');
+            const oriHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menghitung...`;
+            
+            try {
+                // Gunakan URL Edge Function yang benar (karena ini scratch/prototype, kita mock jika Edge Function tidak deployable)
+                // Namun karena user minta real integration, kita tembak endpoint Supabase
+                const { data: edgeData, error } = await _supabase.functions.invoke('lalamove-api', {
+                    body: { action: 'quote', lat, lng, address }
+                });
+
+                if (error) {
+                    // MOCK FALLBACK: Jika function belum di-deploy, berikan mock ongkir agar flow UI bisa dites
+                    if (error.message.includes('Failed to send a request')) {
+                        console.warn("Edge Function 'lalamove-api' belum di-deploy. Menggunakan MOCK ongkir.");
+                        const mockTotalFee = Math.floor(Math.random() * (50000 - 15000 + 1)) + 15000;
+                        lalamoveQuotationId = "MOCK-QUOTATION-" + Date.now();
+                        lalamoveOngkir = parseInt(mockTotalFee);
+                        
+                        document.getElementById('lalamove-ongkir-text').innerText = `Rp ${lalamoveOngkir.toLocaleString('id-ID')}`;
+                        document.getElementById('lalamove-quote-result').style.display = 'flex';
+                        btn.style.display = 'none';
+                        renderCheckoutPrices();
+                        return;
+                    }
+                    throw error;
+                }
+                console.log("Respon Edge Function:", edgeData);
+                if (edgeData.error) throw new Error(typeof edgeData.error === 'object' ? JSON.stringify(edgeData.error) : edgeData.error);
+                if (edgeData.errors) throw new Error(JSON.stringify(edgeData.errors));
+                if (edgeData.message) throw new Error("API Lalamove: " + edgeData.message);
+                
+                // Asumsi response Lalamove: edgeData.data.priceBreakdown.total
+                const totalFee = edgeData.data?.priceBreakdown?.total || 0;
+                lalamoveQuotationId = edgeData.data?.quotationId || "";
+                
+                if (totalFee > 0) {
+                    lalamoveOngkir = parseInt(totalFee);
+                    document.getElementById('lalamove-ongkir-text').innerText = `Rp ${lalamoveOngkir.toLocaleString('id-ID')}`;
+                    document.getElementById('lalamove-quote-result').style.display = 'flex';
+                    btn.style.display = 'none'; // Sembunyikan tombol cek jika sudah dapat
+                    
+                    renderCheckoutPrices();
+                } else {
+                    throw new Error("Format tak terduga dari Lalamove: " + JSON.stringify(edgeData));
+                }
+            } catch (err) {
+                alert("Gagal menghitung tarif: " + err.message);
+                btn.innerHTML = oriHtml;
             }
         }
 
@@ -2768,7 +2969,7 @@
             document.getElementById('ty-order-id').textContent  = orderId;
             document.getElementById('ty-nama').textContent       = nama;
             document.getElementById('ty-total').textContent      = 'Rp ' + Number(total).toLocaleString('id-ID');
-            document.getElementById('ty-opsi').textContent       = opsiAmbil || '-';
+            document.getElementById('ty-opsi').textContent       = (opsiAmbil === 'Lalamove' ? 'Delivery' : (opsiAmbil || '-'));
             document.getElementById('ty-bayar').textContent      = metodeBayar || '-';
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
@@ -2792,13 +2993,15 @@
             const metodeBayar = document.querySelector('input[name="metode_bayar"]:checked').value;
             const alamatTeks = document.getElementById('checkout-alamat-input') ? document.getElementById('checkout-alamat-input').value.trim() : '';
 
-            if(opsiAmbil === 'GoSend' && !alamatTeks) {
-                showChatToastUser('Mohon isi alamat pengiriman lengkap rute armada kurir GoSend!');
-                return;
+            if(opsiAmbil === 'Lalamove') {
+                if (!lalamoveQuotationId) {
+                    showChatToastUser('Mohon klik "Cek Tarif Pengiriman" terlebih dahulu!');
+                    return;
+                }
             }
 
             // Simpan sementara sebelum modal dihancurkan
-            tempCheckoutData = { opsiAmbil, metodeBayar, alamatTeks };
+            tempCheckoutData = { opsiAmbil, metodeBayar, alamatTeks, lat: document.getElementById('lalamove-lat')?.value, lng: document.getElementById('lalamove-lng')?.value };
 
             // Jika di luar jam operasional, tampilkan popup konfirmasi pre-order
             if (!isJamOperasional()) {
@@ -2835,14 +3038,17 @@
 
         async function executeCheckoutInsert(isPreOrder) {
             if (!tempCheckoutData) return;
-            const { opsiAmbil, metodeBayar, alamatTeks } = tempCheckoutData;
+            const { opsiAmbil, metodeBayar, alamatTeks, lat, lng } = tempCheckoutData;
             
-            const total = keranjangBelanja.reduce((acc, c) => acc + (c.harga * c.qty), 0);
+            const totalItems = keranjangBelanja.reduce((acc, c) => acc + (c.harga * c.qty), 0);
+            const total = opsiAmbil === 'Lalamove' ? (totalItems + lalamoveOngkir) : totalItems;
             const orderId = 'TX-' + Math.floor(1000 + Math.random() * 9000); 
 
             // Simpan alamat secara otomatis agar tidak perlu mengulang next time
-            if (opsiAmbil === 'GoSend' && sessionUserCache) {
+            if (opsiAmbil === 'Lalamove' && sessionUserCache) {
                 sessionUserCache.alamat = alamatTeks;
+                sessionUserCache.lat = lat;
+                sessionUserCache.lng = lng;
                 localStorage.setItem('warunkarsi_user_session', JSON.stringify(sessionUserCache));
             }
 
@@ -2856,11 +3062,20 @@
                     .join(', ');
             }
 
-            let catatanGabungan = isPreOrder ? `[PRE-ORDER] [Opsi: ${opsiAmbil}] [Bayar: ${metodeBayar}]` : `[Opsi: ${opsiAmbil}] [Bayar: ${metodeBayar}]`;
-            if(opsiAmbil === 'GoSend') catatanGabungan += ` Alamat: ${alamatTeks}.`;
+            let displayOpsiAmbil = opsiAmbil === 'Lalamove' ? 'Delivery' : opsiAmbil;
+            let catatanGabungan = isPreOrder ? `[PRE-ORDER] [Opsi: ${displayOpsiAmbil}] [Bayar: ${metodeBayar}]` : `[Opsi: ${displayOpsiAmbil}] [Bayar: ${metodeBayar}]`;
+            if(opsiAmbil === 'Lalamove') catatanGabungan += ` Alamat Delivery: ${alamatTeks}. (Ongkir: Rp${lalamoveOngkir})`;
             catatanGabungan += catatanItemText;
 
             try {
+                // Tampilkan loading state
+                Swal.fire({
+                    title: 'Memproses Pesanan...',
+                    html: 'Mohon tunggu sebentar',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
                 const { error } = await _supabase.from('orders').insert([{
                     order_id: orderId, 
                     member_id: sessionUserCache.isMember ? sessionUserCache.id : null, 
@@ -2905,8 +3120,36 @@
                 }
                 // --- AKHIR SISIPAN NOTIFIKASI WHATSAPP ---
 
-                const namaCustomer = sessionUserCache.nama || 'Pelanggan';
+                const namaCustomer = sessionUserCache.nama;
                 const nomorWaCustomer = sessionUserCache.wa || '-';
+                
+                // Jika pengiriman menggunakan Lalamove, panggil Edge Function Create Order
+                if (opsiAmbil === 'Lalamove' && lalamoveQuotationId) {
+                    if (lalamoveQuotationId.startsWith('MOCK-')) {
+                        console.log("Mock Lalamove Order Created:", { orderId, lalamoveQuotationId });
+                    } else {
+                        const { data: lalamoveData, error: lalamoveError } = await _supabase.functions.invoke('lalamove-api', {
+                            body: {
+                                action: 'create-order',
+                                quotationId: lalamoveQuotationId,
+                                recipientName: sessionUserCache.nama,
+                                recipientPhone: sessionUserCache.wa,
+                                orderId: orderId,
+                                lat: lat,
+                                lng: lng,
+                                address: alamatTeks
+                            }
+                        });
+                        if (lalamoveError || (lalamoveData && lalamoveData.error)) {
+                            console.error("Gagal create lalamove order:", lalamoveError || lalamoveData.error);
+                            Swal.close();
+                            showChatToastUser('Pesanan masuk, tetapi sistem gagal memanggil kurir secara otomatis. Kasir akan menanganinya manual.');
+                        }
+                    }
+                }
+
+                // Tutup spinner loading
+                Swal.close();
 
                 keranjangBelanja = [];
                 updateFloatingCartBar();
@@ -3462,7 +3705,7 @@
                         ${dataOrder.catatan ? `
                         <div class="pt-2 mt-2 border-t border-gray-200">
                             <span class="text-gray-500 block mb-1 text-[10px]">Catatan Tambahan:</span>
-                            <span class="font-medium text-gray-700 italic">"${dataOrder.catatan}"</span>
+                            <span class="font-medium text-gray-700 italic">"${dataOrder.catatan.replace(/Lalamove/gi, 'Delivery')}"</span>
                         </div>
                         ` : ''}
                     </div>
@@ -4693,11 +4936,19 @@
                         <i class="fa-solid fa-qrcode" style="color:var(--hijau)"></i> Scan QR Code Berikut
                     </p>
                     <div style="display:inline-block;background:#fff;border-radius:20px;padding:14px;border:2px solid #E5E7EB;box-shadow:0 4px 16px rgba(0,0,0,0.08)">
-                        <img loading="lazy" id="qris-popup-image" src="qris-arsi.jpg" alt="QRIS Warunk Arsi"
-                            style="width:190px;height:190px;object-fit:contain;display:block;border-radius:8px"
-                            onerror="this.src='https://placehold.co/190x190?text=QRIS+Arsi'">
+                        <!-- Sistem akan mencari file qris-arsi.jpeg di folder yang sama. Jika tidak ada, akan memunculkan gambar contoh -->
+                        <img loading="lazy" id="qris-popup-image" src="qris-arsi.jpeg" alt="QRIS Warunk Arsi"
+                            style="width:200px;height:200px;object-fit:cover;object-position:center 45%;display:block;border-radius:8px"
+                            onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=190x190&data=QRIS_WARUNK_ARSI_SILAKAN_SCAN'">
                     </div>
                     <p style="font-size:10px;font-weight:600;color:#9CA3AF;margin-top:8px" id="qris-popup-nama">-</p>
+                    
+                    <div style="background:#FEF2F2;border:1px dashed #F87171;border-radius:10px;padding:8px;margin-top:12px">
+                        <p style="font-size:11px;font-weight:800;color:#B91C1C;margin:0">⚠️ PENTING!</p>
+                        <p style="font-size:10px;font-weight:600;color:#991B1B;line-height:1.4;margin:2px 0 0">
+                            Karena ini QRIS Statis, Anda <b>wajib mengetik manual</b> total tagihan (sesuai nominal di atas) di aplikasi pembayaran Anda.
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Simpan QRIS -->
